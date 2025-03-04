@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
+import {PORT, DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER} from "./config.js"
 
 // Fix para __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,18 +38,19 @@ const router = express.Router();
 
 // Conexion con la base de datos
 const conexion = await mysql.createConnection({
-    host: 'localhost',
-    database: 'DBGASGUARDAPPVSSC',
-    user: 'root',
+    host: DB_HOST,
+    database: DB_NAME,
+    user: DB_USER,
    // password: 'n0m3l0'
-    password: 'jaghSQL2806.'
+    password: DB_PASS,
     //password: 'Sally2007.'
+    port: DB_PORT
 });
 
 // Configuracion
 app.use(express.static(__dirname + "/public"));
 
-app.set("port", 4000);
+app.set("port", PORT);
 app.listen(app.get("port"));
 console.log("Servidor corriendo en puerto", app.get("port"));
 
