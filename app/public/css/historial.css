@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-image: url(/images/vector-JUL-2021-61\ \(2\).jpg);
+    background-size: cover;
+}
+
+.contenedor-general {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background-image: url(/images/vecteezy_abstract-red-fluid-wave-background_\ \(2\).jpg);
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    
+    
+}
+
+.menu .logo {
+    display: flex;
+    align-items: center;
+   /* margin-left: -180px;*/
+    margin-left: -292px;
+}
+
+.menu .navbar {
+    display: flex;
+    align-items: center;
+}
+
+.menu .navbar ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /*margin-right: -360px;*/
+    margin-right: -583px;
+    margin-top: 19px;
+}
+
+.menu .navbar ul li {
+    position: relative;
+    margin-right: 50px;
+}
+
+.menu .navbar ul li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    padding: 20px;
+    background-color: white;
+    color: red;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    width: 200px;
+    border-radius: 5px;
+}
+
+.menu .navbar ul li a:hover {
+    background-color: red;
+    color: white;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+#menu {
+    display: none;
+}
+
+.menu-icono {
+    width: 150px;
+    height: 150px;
+}
+
+.menu-label {
+    cursor: pointer;
+    display: none;
+}
+
+.header-content {
+    text-align: center;
+}
+
+.header-content h1 {
+    font-size: 75px;
+    line-height: 80px;
+    color: #F9FAFC;
+    text-transform: uppercase;
+    margin-bottom: 35px;
+}
+
+.header-content p {
+    font-size: 16px;
+    color: #C5C5C5;
+    padding: 0 250px;
+    margin-bottom: 25px;
+}
+
+.contenido-principal {
+    padding: 22px;
+    flex: 1;
+}
+
+.container {
+    padding: 0px 20px;
+    margin: 10px 0;
+}
+
+.header-contenido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.header-contenido h1 {
+    margin: 0;
+}
+
+.add-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: darkred;
+}
+
+.device-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.device {
+    background-color: rgb(224, 223, 226,0.8);
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: #ffffff;
+    
+}
+
+.devicert {
+    background-color: rgb(224, 223, 226,0.8);
+    padding: 15px;
+    border-radius: 10px;
+    align-items: center;
+    border: #ffffff;
+    
+}
+
+.device h2 {
+    margin: 0;
+}
+
+.device p {
+    margin: 0;
+}
+
+.device .address {
+    font-weight: bold;
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
+
+.space1 {
+    display: flex;
+    justify-content: space-between ;
+    gap: 3rem;
+}
+
+.space2 {
+    display: flex;
+    justify-content: space-between ;
+    gap: 5rem;
+}
+
+.poquitin {
+    display: flex;
+    justify-content: space-between ;
+    gap: 1rem;
+}
+
+.fecha {
+    border: 0;
+    background-color:transparent;
+    font-size: 18px;
+}
+
+.pocopoco{
+    font-size: 18px;
+}
+
+
+
+@media screen and (max-width: 500px) {
+    .header-contenido {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .add-button {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+
+    .device {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .delete-button {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+}

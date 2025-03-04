@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispositivo</title>
+    <link rel="stylesheet" href="/css/historial.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <style>
+        table.dataTable thead {
+            background-color: red;
+        }
+
+        th input {
+            border: none;
+            background-color: bisque;
+            border-radius: 10px;
+
+
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .thead-centered th {
+            text-align: center !important;
+        }
+
+        .thead tr {
+            text-align: center !important;
+        }
+
+        .centered {
+            text-align: center !important;
+            color: white !important;
+
+        }
+
+        .left {
+            text-align: left !important;
+        }
+    </style>
+    <script src="/historial.js"></script>
+</head>
+
+<body>
+    <div class="contenedor-general">
+        <header class="header">
+            <div class="menu container">
+                <a href="#" class="logo">
+                    <img src="/images/fuegoblanco.png" class="menu-icono" alt="">
+                </a>
+                <input type="checkbox" id="menu" />
+                <label for="menu" class="menu-label"></label>
+                <nav class="navbar">
+                    <ul>
+                        <li><a href="/principal" target="_self">Inicio</a></li>
+                        <li><a href="/historial" target="_self">Historial</a></li>
+                        <li><a href="/dispositivos" target="_self">Dispositivo</a></li>
+                        <li><a href="/usuario" target="_self">Usuario</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <div class="contenido-principal">
+            <div class="container">
+                <div class="header-contenido">
+                    <div class="space1">
+                        <h1>Historial</h1>
+
+
+
+                    </div>
+
+
+
+                </div>
+                <div class="device-container">
+                    <div class="devicert">
+                        <div class="row">
+                            <div class="col">
+                                <table id="tablaHistorial" class="table  table-striped table">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Fecha</th>
+                                            <th>Hora</th>
+                                            <th>Resistencia</th>
+                                        </tr>
+
+
+
+                                    </thead>
+
+                                    <tbody>
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+    <script>
+        var url = 'http://localhost:4000/api/histor'
+
+
+        $(document).ready(function () {
+            $('#tablaHistorial').DataTable({
+                "ajax": {
+                    "url": url,
+                    "dataSrc": "",
+                },
+
+
+                "lengthMenu": [5, 10, 100],
+                "columns": [
+                    { "data": "fecha" },
+                    { "data": "hora" },
+                    { "data": "resistencia", "className": "text-center"},
+
+                ],
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontro o no existe el registro",
+                    "info": "Mostrando de _START_ a _END_ de los _TOTAL_ registros",
+                    "infoEmpty": "No se encontro el registro",
+                    "infoFiltered": "(Filtrados desde _MAX_ registros)",
+                    "search": "Buscar por fecha u hora exacta:",
+                    "loadingRecords": "Cargando...",
+                    "paginate": {
+                        "first": "primero",
+                        "last": "ultimo",
+                        "next": "siguiente",
+                        "previous": "anterior"
+                    }
+
+                },
+
+
+                "columnDefs": [
+                { "targets": [0, 1, 2], "className": "text-center" },
+                    { "targets": [0], "width": "50%" },
+                    { "targets": [2], "searchable": false },
+                    //resistencia con 2 decimales
+                    {
+                        "targets": [2], 
+                        render(v) {
+                            return Number(v).toFixed(2)
+                        },
+                        
+                    },
+                    //fecha sin datos de tiempo
+                    {
+                        "targets": [0],
+                        render: function (truedate) {
+                            let fecha = new Date(truedate);
+                            let formatoonly = fecha.toLocaleDateString('es-ES', { year: '2-digit', month: '2-digit', day: '2-digit' });
+                            return formatoonly;
+                        }
+                    },
+
+
+                    { "targets": [0, 1, 2], "className": "centered" },
+
+                ],
+                "drawCallback": function (settings) {
+                    // Asegúrate de que todas las celdas del tbody estén alineadas a la izquierda
+                    $('#tablaHistorial tbody tr').each(function () {
+                        $(this).find('td').each(function (index) {
+                            if (index !== 2) {  // No aplicamos .tbody-left a la columna 'resistencia'
+                                $(this).removeClass('centered');  // Quita la clase centrada del tbody
+                                $(this).addClass('tbody-left');   // Agrega la clase de alineación a la izquierda
+                            } else {
+                                $(this).removeClass('centered');
+                                $(this).addClass('left');
+                            }
+                        })
+                    })
+                }
+            })
+        });
+        //Creamos una fila en el head de la tabla y lo clonamos para cada columna
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

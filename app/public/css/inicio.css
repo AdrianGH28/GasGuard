@@ -1,0 +1,178 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-image: url("/images/vector-JUL-2021-61\ \(2\).jpg");
+    height: 100%;
+  width: 100%;
+  
+  overflow: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+.header{
+    /* background-image: */
+        /* url(../imágenes/bannerrojo.jpeg); */
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.menu .logo {
+    display: flex;
+    align-items: center;
+    
+}
+
+.menu .navbar {
+    display: flex;
+    align-items: center;
+}
+
+.menu .navbar ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.menu .navbar ul li {
+    position: relative;
+    margin-right: 50px;
+}
+
+.menu .navbar ul li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    padding: 20px;
+    background-color: red;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    width: 200px;
+    border-radius: 5px;
+}
+
+.menu .navbar ul li a:hover {
+    background-color:white;
+    color: red;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+}
+
+#menu {
+    display: none;
+}
+
+.menu-icono {
+    width: 150px;
+    height: 150px;
+    margin-right: 200px;
+}
+
+.menu-label {
+    cursor: pointer;
+    display: none;
+}
+
+.header-content {
+    text-align: center;
+}
+
+.header-content h1 {
+    font-size: 75px;
+    line-height: 80px;
+    color: #F9FAFC;
+    text-transform: uppercase;
+    margin-bottom: 35px;
+}
+
+.header-content p {
+    font-size: 16px;
+    color: #C5C5C5;
+    padding: 0 250px;
+    margin-bottom: 25px;
+}
+.btn-1 {
+    display: inline-block;
+    padding: 11px 35px;
+    background-color: #CE967B;
+    color: #F9FAFC;
+    text-transform: uppercase;
+}
+
+.btn-1:hover {
+    background-color: #ebad8d;
+}
+#aside1{
+    margin-top: 5%;
+    margin-left:auto;
+    max-width: 50%;
+}
+#aside2{
+    margin-top: -40%;
+    margin-right: auto;
+    width: 50%;
+}
+#mascara{
+    max-width: 600px;
+    min-height: 500px;
+}
+.contenedor-pa {
+    /* background-image: url("../imágenes/bannerrojo.jpeg"); */
+    padding: 25px;
+    /* box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: red;
+    min-width: 600px;
+    font-size: 2.5rem;
+    margin-top: 3%;
+    text-align: center;
+    text-shadow: 2px 2px 4px #5d5d5d95;
+}
+
+.form {
+    /* background: white; */
+    padding: 20px;
+    /* box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8); */
+    min-height: 250px;
+    min-width: 600px;
+    color: #686767;
+    font-size: 1rem;
+    text-align: justify;
+}
+
+.form {
+    margin: auto;
+}
+
+form .grupo {
+    position: relative;
+    margin: 45px;
+}

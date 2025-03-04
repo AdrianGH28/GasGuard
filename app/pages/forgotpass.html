@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <link rel="stylesheet" href="/css/forgotpass.css">
+    <script src="forgotpass.js" defer></script>
+</head>
+<body>
+    <main>
+        <div class="contenedor-general">
+            <div class="contenedor-p">
+                <div class="contenedor-pa">
+                    <div class="img"><img src="/images/WhatsApp_Image_2024-05-19_at_11.12.33_PM-removebg-preview.png" alt="Imagen de WhatsApp"></div>
+                    <div class="txt">
+                        <h1>Olvidaste la contraseña</h1>
+                    </div>
+                </div>
+                <form id="forgot-password-form" action="/forgot-password" method="POST">
+                    <div class="form">
+                        <h1>Recuperar Contraseña</h1>
+                        <div class="grupo">
+                            <input type="email" name="correo" id="correo" required>
+                            <span class="barra"></span>
+                            <label for="correo">Correo</label>
+                        </div>
+                        <button type="submit">Enviar</button>
+                        <p class="error escondido">Error al enviar el correo de recuperación</p>
+                    </div>
+                    <p>¿Recordaste tu contraseña?<a href="/">Inicia Sesión</a></p>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

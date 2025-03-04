@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="/css/principal1.css">
+    <script nonce="undefined" src="https://cdn.zingchart.com/zingchart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="menu container">
+            <a href="#" class="logo">
+                <img src="/images/fuegoblanco.png" class="menu-icono" alt="">
+            </a>
+            <label for="menu" class="menu-label"></label>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="/principal" target="_self">Inicio</a></li>
+                    <li><a href="/historial" target="_self">Historial</a></li>
+                    <li><a href="/dispositivos" target="_self">Dispositivo</a></li>
+                    <li><a href="/usuario" target="_self">Usuario</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="containermlp">
+    <div class="chart-container">
+        <!-- <h2>Valor actual</h2> -->
+        <div id='myChart'>
+        </div>
+    </div>
+    <aside class="chart-container2">
+        <h2>Variación</h2>
+        <canvas id="myLineChart">
+        </canvas>
+
+    </div>
+</div>
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <!-- <span class="closeIcon"><i class="fas fa-times"></i></span> -->
+                <div class="modal-body">
+                    <span class="icono"><i class="fa fa-warning"></i></span>
+                    <div class="center-items">
+                        <h1>¡CUIDADO!</h1>
+                        <p>Se detectó presencia de gas</p>
+                        <p id="modalValue"></p>
+                        <p id="modalDate"></p>
+                        <p id="modalTime"></p>
+                        <!-- <h1>ADIOS MUNDO</h1> -->
+                        <button id="closeee" class="closeModalBtn">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="myModal2" class="modalchart">
+            <div class="modalchart-content">
+                <div class="textotonto">
+                <p>Fecha de Inicio: <input type="date" id="startDate" placeholder="Fecha de inicio">
+                Hora de Inicio: <input type="time" id="startTime" placeholder="Hora de inicio">
+                Fecha de Fin: <input type="date" id="endDate" placeholder="Fecha de fin">
+                Hora de Fin: <input type="time" id="endTime" placeholder="Hora de fin"> <button id="filterBtn">Filtrar</button></p>
+            </div>
+                <div class="modalchartchart">
+                <canvas id="modalChart">
+                </canvas>
+                <button class="closeModalBtn" id="closeModalBtnn">Cerrar</button>
+                </div>
+            </div>
+        </div>
+        <div class="modalcarga" id="loadingModal">
+            <h2>Esperando datos...</h2>
+            <div class="loading">
+            <div class="spinner"></div>
+        </div>
+        </div>
+    <script src="principal.js"></script>
+    <script src="../modalchart.js"></script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+:root {
+    --colorTextos: #665b5b;
+}
+
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-image: url(/images/vector-JUL-2021-61\ \(2\).jpg);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size:cover;
+}
+
+h1 {
+    text-align: center;
+    font-weight: 700;
+}
+
+.txt h1 {
+    color: white;
+    margin: 0;
+}
+
+img {
+    width: 120px;
+    height: 120px;
+}
+
+.form h1 {
+    color: #ff0000;
+    margin-bottom: -30px;
+}
+
+.contenedor-pa {
+    background-image: url(/images/vecteezy_abstract-red-fluid-wave-background_\ \(2\).jpg);
+    padding: 40px;
+    box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 150px;
+}
+
+.img, .txt {
+    display: flex;
+    align-items: center;
+}
+
+.txt {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    
+}
+
+form {
+    background: white;
+    padding: 40px 0;
+    box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
+}
+
+.form {
+    width: 550px;
+    margin: auto;
+}
+
+form .grupo {
+    position: relative;
+    margin: 45px;
+}
+
+form p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: rgb(196, 0, 0);;
+}
+form p a{
+    margin-left: 25px;
+    text-decoration: none;
+    color: rgb(196, 0, 0);
+}
+
+form h6{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: rgb(196, 0, 0);;
+    margin-top: 20px;
+}
+
+form h6 a{
+    margin-left: 25px;
+    text-decoration: none;
+    color: rgb(196, 0, 0);
+}
+
+.error{
+    padding: 10px  0px;
+    color: red;
+}
+
+.escondido{
+    display: none;
+}
+
+input {
+    background: none;
+    color: #c6c6c6;
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--colorTextos);
+}
+
+input:focus {
+    outline: none;
+    color: #5e5d5d;
+}
+
+label {
+    color: var(--colorTextos);
+    font-size: 16px;
+    position: absolute;
+    bottom: 0;
+    left: 5px;
+    top: 10px;
+    transition: 0.5s ease all;
+    pointer-events: none;
+}
+
+input:focus ~ label,
+input:valid ~ label {
+    top: -14px;
+    font-size: 12px;
+    color: #ff0000;
+}
+
+.barra {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.barra::before {
+    content: "";
+    height: 2px;
+    width: 0%;
+    bottom: 0;
+    position: absolute;
+    background: linear-gradient(to right, #ff0000, #ff0000);
+    transition: 0.3s ease width;
+    left: 0;
+}
+
+input:focus ~ .barra::before {
+    width: 100%;
+}
+
+button {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(196, 0, 0);
+    border: none;
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    color: white;
+    height: 40px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(255, 0, 0);
+}
+
+@media screen and (max-width: 500px) {
+    .contenedor-general {
+        width: 80%;
+    }
+}

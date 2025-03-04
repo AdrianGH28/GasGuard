@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario</title>
+    <link rel="stylesheet" href="/css/usuarioadmin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <div class="contenedor-general">
+        <header class="header">
+            <div class="menu container">
+                <a href="#" class="logo">
+                    <img src="/images/fuegoblanco.png" class="menu-icono" alt="">
+                </a>
+                <input type="checkbox" id="menu" />
+                <label for="menu" class="menu-label"></label>
+                <nav class="navbar">
+                    <ul>
+                        <li><a href="/trabajadoresadmin" target="_self">Trabajadores</a></li>
+                        <li><a href="/clientesadmin" target="_self">Clientes</a></li>
+                        <li><a href="/dispositivosadmin" target="_self">Dispositivos</a></li>
+                        <li><a href="/usuarioadmin" target="_self">Usuario</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <div class="contenido-blanco">
+            <h1>USUARIO</h1>
+            <div class="form-container">
+                <div class="column">
+                    <div class="field-container">
+                        <label for="nombre">
+                            Nombre:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('nombre')"></i>
+                        </label>
+                        <input type="text" id="nombre" name="nombre">
+                    </div>
+                    <div class="field-container">
+                        <label for="appat">
+                            Apellido Paterno:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('appat')"></i>
+                        </label>
+                        <input type="text" id="appat" name="appat">
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field-container">
+                        <label for="apmat">
+                            Apellido Materno:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('apmat')"></i>
+                        </label>
+                        <input type="text" id="apmat" name="apmat">
+                    </div>
+                    <div class="field-container">
+                        <label for="pais">
+                            Estado:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('pais')"></i>
+                        </label>
+                        <input type="text" id="pais" name="pais">
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="field-container">
+                        <label for="ciudad">
+                            Ciudad:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('ciudad')"></i>
+                        </label>
+                        <input type="text" id="ciudad" name="ciudad">
+                    </div>
+                    <div class="field-container">
+                        <label for="colonia">
+                            Colonia:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('colonia')"></i>
+                        </label>
+                        <input type="text" id="colonia" name="colonia">
+                    </div>
+                </div>
+                <div class="column">
+
+                    <div class="field-container">
+                        <label for="calle">
+                            Calle:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('calle')"></i>
+                        </label>
+                        <input type="text" id="calle" name="calle">
+                    </div>
+                    <div class="field-container">
+                        <label for="numero">
+                            Número del hogar:
+                            <i class="fas fa-edit edit-icon" onclick="focusInput('numero')"></i>
+                        </label>
+                        <input type="text" id="numero" name="numero">
+                    </div>
+                </div>
+
+            </div>
+            <div class="button-container">
+
+                <button class="actualizar" id="actualizar" onclick="actualizarUsuario()">Actualizar</button>
+                <button class="cerrar" id="cerrars">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+    <script src="usuarioadmin.js"></script>
+</body>
+
+</html>
