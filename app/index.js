@@ -9,7 +9,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
-import {PORT, DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER} from "./config.js"
+import {PORT, DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER} from "./config.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Fix para __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,20 +39,33 @@ app.use(session({
 const router = express.Router();
 
 // Conexion con la base de datos
-const conexion = await mysql.createConnection({
-    host: DB_HOST,
-    database: DB_NAME,
-    user: DB_USER,
-   // password: 'n0m3l0'
-    password: DB_PASS,
-    //password: 'Sally2007.'
-    port: DB_PORT
-});
+
+async function connectDB() {
+    try {
+        const conexion = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+            ssl: { rejectUnauthorized: false }
+        });
+        console.log("Conexión a la base de datos exitosa");
+        return conexion;
+    } catch (error) {
+        console.error("Error al conectar con la base de datos:", error);
+        process.exit(1); // Detiene la aplicación si la conexión falla
+    }
+}
+
+// Llamar a la función de conexión
+const conexion = await connectDB();
+
 
 // Configuracion
 app.use(express.static(__dirname + "/public"));
 
-app.set("port", PORT);
+app.set("port", 4000);
 app.listen(app.get("port"));
 console.log("Servidor corriendo en puerto", app.get("port"));
 
