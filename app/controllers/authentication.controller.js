@@ -7,6 +7,24 @@ import mysql from 'mysql2/promise';
 
 dotenv.config();
 
+async function connectDB() {
+    try {
+        const conexion = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME,
+            port: process.env.DB_PORT,
+            ssl: { rejectUnauthorized: false }
+        });
+        console.log("Conexión a la base de datos exitosa");
+        return conexion;
+    } catch (error) {
+        console.error("Error al conectar con la base de datos:", error);
+        process.exit(1); // Detiene la aplicación si la conexión falla
+    }
+}
+/*
 const conexion = await mysql.createConnection({
     host: 'localhost',
     database: 'DBGASGUARDAPPVSSC',
@@ -15,6 +33,9 @@ const conexion = await mysql.createConnection({
     password: 'jaghSQL2806.'
     //password: 'Sally2007.'
 });
+*/
+// Llamar a la función de conexión
+const conexion = await connectDB();
 
 export const usuarios = [{
     nombre: "a",
