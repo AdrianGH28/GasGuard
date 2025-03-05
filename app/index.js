@@ -9,7 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
-import {PORT, DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER} from "./config.js";
+
 import dotenv from "dotenv";
 dotenv.config();
 
