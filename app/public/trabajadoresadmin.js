@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const res = await fetch("http://localhost:4000/api/trabajadoresadmin");
+        const res = await fetch("https://gasguard-production.up.railway.app/api/trabajadoresadmin");
         if (!res.ok) {
             throw new Error("Error al obtener la información de los trabajadores");
         }
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function eliminarTrabajador(idCliente) {
     if (confirm("¿Está seguro de que desea eliminar este trabajador?")) {
         try {
-            const res = await fetch(`http://localhost:4000/api/trabajadoresadmin/${idCliente}`, {
+            const res = await fetch(`https://gasguard-production.up.railway.app/api/trabajadoresadmin/${idCliente}`, {
                 method: "DELETE"
             });
 

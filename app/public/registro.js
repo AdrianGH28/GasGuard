@@ -26,7 +26,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
 
     try{
 
-    const res = await fetch("http://localhost:4000/api/registro", {
+    const res = await fetch("https://gasguard-production.up.railway.app/api/registro", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

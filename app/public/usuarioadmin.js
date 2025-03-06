@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     try {
-        const res = await fetch("http://localhost:4000/api/usuario");
+        const res = await fetch("https://gasguard-production.up.railway.app/api/usuario");
         if (!res.ok) {
             throw new Error("Error al obtener la información del usuario");
         }

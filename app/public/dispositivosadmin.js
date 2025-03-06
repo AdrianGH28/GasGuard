@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
     // Cerrar sesión
     try {
-        const res = await fetch("http://localhost:4000/api/dispositivosadmin");
+        const res = await fetch("https://gasguard-production.up.railway.app/api/dispositivosadmin");
         if (!res.ok) {
             throw new Error("Error al obtener la información de los dispositivos");
         }
