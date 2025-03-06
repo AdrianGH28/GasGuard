@@ -6,7 +6,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     const password = document.querySelector('#password').value;
 
     try {
-        const res = await fetch("http://localhost:4000/api/login", {
+        const res = await fetch("https://gasguard-production.up.railway.app//api/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -16,6 +16,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
                 password
             })
         });
+        
 
         if (!res.ok) {
             const resJson = await res.json();
