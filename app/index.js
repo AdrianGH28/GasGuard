@@ -18,11 +18,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Server
 const app = express();
+// Configuración del transporte de correo con nodemailer
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD
+        user: 'gasguardad1@gmail.com',
+        pass: 'jxqgehljwskmzfju'        // Cambia esto por tu contraseña
     }
 });
 app.use(express.json());
@@ -74,6 +75,7 @@ app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "
 app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registropago.html"));
 app.get("/registro", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registro.html"));
 app.get("/forgotpass", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/forgotpass.html"));
+app.get("/codigocontra", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/codigocontra.html"));
 app.get("/resetpass", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/resetpass.html"));
 app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/dispositivos.html"));
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
@@ -91,6 +93,7 @@ app.get("/trabajadoresadmin", authorization.verificarRolAdmin, (req, res) => res
 app.post("/api/registro", authentication.registro);
 app.post("/api/login", authentication.login);
 app.post("/api/forgot-password", authentication.forgotPassword);
+app.post("/api/codigo-contra", authentication.verificaCodigo);
 app.post("/api/reset-password", authentication.resetPassword);
 
 // Generar una IP aleatoria
@@ -339,6 +342,71 @@ app.post('/api/forgot-password', async (req, res) => {
         res.status(500).send({ status: "Error", message: "Error al verificar el correo" });
     }
 });
+
+
+// Ruta para reenviar el código al correo
+app.post('/api/reenvio-codigo', async (req, res) => {
+    const { correo } = req.body;
+
+    if (!correo) {
+        return res.status(400).json({ status: 'error', message: 'Correo no proporcionado' });
+    }
+
+    try {
+        // Crear el transporter para nodemailer (configura tu propio servicio de correo)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail', // O el servicio que estés usando
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
+
+        // Genera el código de validación, por ejemplo:
+        const codigo = Math.floor(100000 + Math.random() * 900000); // Código aleatorio de 6 dígitos
+
+        // Configura el correo
+        const mailOptions = {
+            from: 'tu-correo@gmail.com',
+            to: correo,
+            subject: 'Código de recuperación de cuenta',
+            text: `Tu código de recuperación es: ${codigo}`
+        };
+
+        // Envía el correo
+        await transporter.sendMail(mailOptions);
+
+        // Puedes guardar el código en tu base de datos o almacenarlo de alguna forma
+        console.log(`Código enviado al correo: ${correo}, Código: ${codigo}`);
+
+        res.json({ status: 'ok', message: 'Código reenviado con éxito' });
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+        res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
+    }
+});
+
+app.post("/api/codigo-contra", authentication.verificaCodigo);
+
+export const verificaCodigo = async (req, res) => {
+    const { correo, codigo } = req.body; // Asegúrate de que se envíen ambos datos
+
+    if (!correo || !codigo) {
+        return res.status(400).send({ status: "Error", message: "Faltan datos" });
+    }
+
+    const storedCode = recoveryCodes.get(correo);
+    console.log(recoveryCodes);
+
+    if (!storedCode || storedCode.toString() !== codigo.toString()) {
+        return res.status(400).send({ status: "Error", message: "Código incorrecto o expirado" });
+    }
+
+    recoveryCodes.delete(correo); // Eliminar el código después de usarlo
+    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/resetpass" });
+};
+
+
 
 app.post('/api/reset-password', async (req, res) => {
     const { correo, password, confpass } = req.body;

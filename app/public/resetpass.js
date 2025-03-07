@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const correo = localStorage.getItem('resetEmail');
-    if (correo) {
-        document.getElementById('correo').value = correo;
+    if (!correo) {
+        window.location.href = "/forgotpass"; // Redirigir si no hay correo
     }
+    document.getElementById('correo').value = correo;
 });
 
 document.getElementById('reset-password-form').addEventListener('submit', async (event) => {

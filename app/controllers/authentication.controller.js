@@ -323,6 +323,8 @@ export const resetPassword = async (req, res) => {
 };
 */
 
+const recoveryCodes = new Map(); // Almacén temporal de códigos (correo -> código)
+
 export const forgotPassword = async (req, res) => {
     const { correo } = req.body;
 
@@ -336,13 +338,66 @@ export const forgotPassword = async (req, res) => {
             return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
         }
 
+        // Generar código de verificación temporal (6 dígitos)
+        const codigo = Math.floor(100000 + Math.random() * 900000);
+        recoveryCodes.set(correo, codigo); // Guardar temporalmente
+
+        // Configurar transporte de correo
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
+
+        // Configurar contenido del correo
+        const mailOptions = {
+            from: 'tuemail@gmail.com',
+            to: correo,
+            subject: 'Código de recuperación de contraseña',
+            text: `Tu código de recuperación es: ${codigo}`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        // Guardar el correo en la sesión para validarlo después
         req.session.resetEmail = correo;
-        return res.status(200).send({ status: "ok", message: "Correo verificado", redirect: "/resetpass" });
+
+        // Eliminar el código después de 10 minutos
+        setTimeout(() => recoveryCodes.delete(correo), 10 * 60 * 1000);
+
+        return res.status(200).send({ status: "ok", message: "Código enviado", redirect: "/codigocontra" });
+
     } catch (error) {
         console.error('Error durante forgotPassword:', error);
         return res.status(500).send({ status: "Error", message: "Error durante forgotPassword" });
     }
 };
+
+export const verificaCodigo = async (req, res) => {
+    const { correo, codigo } = req.body;
+
+    if (!correo || !codigo) {
+        return res.status(400).send({ status: "Error", message: "Faltan datos" });
+    }
+
+    // Verificar que el código sea un número
+    if (!/^\d{6}$/.test(codigo)) {
+        return res.status(400).send({ status: "Error", message: "El código debe ser un número de 6 dígitos" });
+    }
+
+    const storedCode = recoveryCodes.get(correo);
+    console.log(recoveryCodes);
+
+    if (!storedCode || storedCode.toString() !== codigo.toString()) {
+        return res.status(400).send({ status: "Error", message: "Código incorrecto o expirado" });
+    }
+
+    recoveryCodes.delete(correo); // Eliminar el código después de usarlo
+    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/resetpass" });
+};
+
 
 export const resetPassword = async (req, res) => {
     const { correo, password, confpass } = req.body;
@@ -372,9 +427,11 @@ export const resetPassword = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error durante resetPassword" });
     }
 };
+
 export const methods = {
     login,
     registro,
     forgotPassword,
+    verificaCodigo,
     resetPassword
 };

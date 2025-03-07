@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <script src="codigocontra.js" defer></script>
+    <link rel="stylesheet" href="/css/codigocontra.css">
+</head>
+
+<body>
+    <main>
+        <div class="contenedor-general">
+            <div class="header">
+                <div class="img">
+                    <a href="/inicio">
+                        <img src="/images/fuegonuevo.png" alt="Imagen de WhatsApp">
+                    </a>
+                    <p>GasGuard</p>
+                </div>
+            </div>
+            <div class="contenedor-p">
+                <div class="contenedor-pa">
+                    <div class="txt">
+                        <h1>Recuperación</h1>
+                        <p>Recupera tu cuenta</p>
+                    </div>
+                </div>
+                <form id="codigo-contraseña-form" action="/api/codigo-contra" method="POST">
+
+                    <div class="form">
+                        <div class="contenedor">
+                            <div class="contenedor1">
+                                <p>Se ha enviado un código al correo electrónico</p>
+                                <div class="input-entero">
+                                    <div class="grupo">
+                                        <input type="text" name="codigo" id="codigo" required pattern="\d{6}">
+                                        <span class="barra"></span>
+                                        <label for="codigo">Ingresa el código</label>
+                                    </div>
+                                    
+
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit">Validar</button>
+                        <p class="error escondido">Error al validar el codigo</p>
+                    </div>
+                    <p>¿Aún no ha sido recibido? <a id="reenviar-codigo">Reenviar</a></p>
+
+                </form>
+            </div>
+        </div>
+    </main>
+    
+</body>
+
+</html>
