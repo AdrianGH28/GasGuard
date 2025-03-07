@@ -4,8 +4,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const nombre = document.querySelector('#nombre').value;
-    const appat = document.querySelector('#appat').value;
-    const apmat = document.querySelector('#apmat').value;
     const cp = document.querySelector('#cp').value;
     const ciudad = document.querySelector('#ciudad').value;
     const colonia = document.querySelector('#colonia').value;
@@ -13,7 +11,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     const numero = document.querySelector('#numero').value;
     const estado = document.querySelector('#estado').value;
     const correo = document.querySelector('#correo').value;
-    const confcorreo = document.querySelector('#conf-correo').value;
     const password = document.querySelector('#password').value;
     const confpass = document.querySelector('#conf-pass').value;
 
@@ -33,8 +30,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         },
         body: JSON.stringify({
             nombre: nombre,
-            appat: appat,
-            apmat: apmat,
             cp: cp,
             ciudad: ciudad,
             colonia: colonia,
@@ -42,7 +37,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
             numero: numero,
             estado: estado,
             correo: correo,
-            confcorreo: confcorreo,
             password: password,
             confpass: confpass
         })
