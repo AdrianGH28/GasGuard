@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
-import pool from "../generalidades_back_bd.js";
+import pool from "./generalidades_back_bd.js";
 
 dotenv.config();
 

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import fetch from 'node-fetch';
 import nodemailer from 'nodemailer';
 import mysql from 'mysql2/promise';
-import pool from "./generalidades_back_bd.js"
+import pool from "../generalidades_back_bd.js"
 
 dotenv.config();
 
