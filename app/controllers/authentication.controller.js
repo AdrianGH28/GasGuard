@@ -148,19 +148,15 @@ async function login(req, res) {
                 return res.status(400).send({ status: "Error", message: "Las contraseñas no coinciden" });
             }
         
-            let connection;
             try {
-                connection = await pool.getConnection(); // Obtener conexión del pool
-        
-                // Verificar si el correo ya está registrado
-                const [rows] = await connection.execute('SELECT correo_empr FROM mempresa WHERE correo_empr = ?', [correo]);
+                const [rows] = await pool.execute('SELECT correo_empr FROM mempresa WHERE correo_empr = ?', [correo]);
                 if (rows.length > 0) {
                     return res.status(400).send({ status: "Error", message: "Este usuario ya existe" });
                 }
         
-                // Validación del correo con Hunter API
                 const apiKey = process.env.HUNTER_API_KEY;
                 const apiURL = `https://api.hunter.io/v2/email-verifier?email=${correo}&api_key=${apiKey}`;
+        
                 const response = await fetch(apiURL);
                 const data = await response.json();
         
@@ -173,42 +169,66 @@ async function login(req, res) {
                 const salt = await bcryptjs.genSalt(5);
                 const hashPassword = await bcryptjs.hash(password, salt);
         
-                // Verificar o insertar datos relacionados (colonia, calle, ciudad, estado, código postal)
-                async function obtenerOInsertar(tabla, columna, valor) {
-                    const [result] = await connection.execute(`SELECT id_${tabla} FROM ${tabla} WHERE ${columna} = ?`, [valor]);
-                    if (result.length > 0) {
-                        return result[0][`id_${tabla}`];
-                    } else {
-                        const [insertResult] = await connection.execute(`INSERT INTO ${tabla} (${columna}) VALUES (?)`, [valor]);
-                        return insertResult.insertId;
-                    }
+                const [coloniaResult] = await pool.execute('SELECT id_colonia FROM ccolonia WHERE nom_col = ?', [colonia]);
+                let id_colonia;
+                if (coloniaResult.length > 0) {
+                    id_colonia = coloniaResult[0].id_colonia;
+                } else {
+                    const [insertColoniaResult] = await pool.execute('INSERT INTO ccolonia (nom_col) VALUES (?)', [colonia]);
+                    id_colonia = insertColoniaResult.insertId;
                 }
         
-                const id_colonia = await obtenerOInsertar("ccolonia", "nom_col", colonia);
-                const id_calle = await obtenerOInsertar("dcalle", "nom_calle", calle);
-                const id_ciudad = await obtenerOInsertar("cciudad", "nom_ciudad", ciudad);
-                const id_estado = await obtenerOInsertar("cestado", "nom_estado", estado);
-                const id_copost = await obtenerOInsertar("ccpostal", "cp_copost", cp);
+                const [calleResult] = await pool.execute('SELECT id_calle FROM dcalle WHERE nom_calle = ?', [calle]);
+                let id_calle;
+                if (calleResult.length > 0) {
+                    id_calle = calleResult[0].id_calle;
+                } else {
+                    const [insertCalleResult] = await pool.execute('INSERT INTO dcalle (nom_calle) VALUES (?)', [calle]);
+                    id_calle = insertCalleResult.insertId;
+                }
         
-                // Insertar dirección
-                const [direccionResult] = await connection.execute(
+                const [ciudadResult] = await pool.execute('SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ?', [ciudad]);
+                let id_ciudad;
+                if (ciudadResult.length > 0) {
+                    id_ciudad = ciudadResult[0].id_ciudad;
+                } else {
+                    const [insertCiudadResult] = await pool.execute('INSERT INTO cciudad (nom_ciudad) VALUES (?)', [ciudad]);
+                    id_ciudad = insertCiudadResult.insertId;
+                }
+        
+                const [estadoResult] = await pool.execute('SELECT id_estado FROM cestado WHERE nom_estado = ?', [estado]);
+                let id_estado;
+                if (estadoResult.length > 0) {
+                    id_estado = estadoResult[0].id_estado;
+                } else {
+                    const [insertEstadoResult] = await pool.execute('INSERT INTO cestado (nom_estado) VALUES (?)', [estado]);
+                    id_estado = insertEstadoResult.insertId;
+                }
+        
+                const [copostResult] = await pool.execute('SELECT id_copost FROM ccpostal WHERE cp_copost = ?', [cp]);
+                let id_copost;
+                if (copostResult.length > 0) {
+                    id_copost = copostResult[0].id_copost;
+                } else {
+                    const [insertCopostalResult] = await pool.execute('INSERT INTO ccpostal (cp_copost) VALUES (?)', [cp]);
+                    id_copost = insertCopostalResult.insertId;
+                }
+        
+                const [direccionResult] = await pool.execute(
                     'INSERT INTO ddireccion (numero_direc, id_colonia, id_calle, id_ciudad, id_estado, id_copost) VALUES (?, ?, ?, ?, ?, ?)',
                     [numero, id_colonia, id_calle, id_ciudad, id_estado, id_copost]
                 );
                 const direccionId = direccionResult.insertId;
         
-                // Insertar empresa
-                await connection.execute(
+                await pool.execute(
                     'INSERT INTO mempresa (nom_empr, correo_empr, contra_empre, id_direccion) VALUES (?, ?, ?, ?)',
                     [nombre, correo, hashPassword, direccionId]
                 );
         
-                return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado`, redirect: "/registrop2" });
+                return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado`, redirect: "/" });
             } catch (error) {
                 console.error('Error al registrar usuario:', error);
                 return res.status(500).send({ status: "Error", message: "Error al registrar usuario." });
-            } finally {
-                if (connection) connection.release(); // Liberar la conexión al finalizar
             }
         }
 /*
