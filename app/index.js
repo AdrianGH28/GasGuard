@@ -9,8 +9,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
-
 import dotenv from "dotenv";
+import pool from "../generalidades_back_bd.js";
+
 dotenv.config();
 
 // Fix para __dirname
@@ -41,34 +42,18 @@ const router = express.Router();
 
 // Conexion con la base de datos
 
-async function connectDB() {
-    try {
-        const conexion = await mysql.createConnection({
-            host: process.env.DB_HOST,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASS,
-            database: process.env.DB_NAME,
-            port: process.env.DB_PORT,
-            ssl: { rejectUnauthorized: false }
-        });
-        console.log("Conexión a la base de datos exitosa");
-        return conexion;
-    } catch (error) {
-        console.error("Error al conectar con la base de datos:", error);
-        process.exit(1); // Detiene la aplicación si la conexión falla
-    }
-}
-
-// Llamar a la función de conexión
-const conexion = await connectDB();
 
 
 // Configuracion
 app.use(express.static(__dirname + "/public"));
 
-app.set("port", 4000);
-app.listen(app.get("port"));
-console.log("Servidor corriendo en puerto", app.get("port"));
+const PORT = process.env.PORT || 4000; // Usa el puerto de entorno o el 4000 por defecto
+app.set("port", PORT);
+
+app.listen(app.get("port"), () => {
+    console.log("Servidor corriendo en puerto", app.get("port"));
+});
+
 
 // Rutas
 app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/login.html"));
