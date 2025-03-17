@@ -348,6 +348,8 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         // Genera un nuevo código de 6 dígitos
         const codigo = Math.floor(100000 + Math.random() * 900000);
         authentication.recoveryCodes.set(correo, codigo);
+        console.log(`Código ${codigo} generado para ${correo}`);
+
 
 
         // Configurar transporte de correo

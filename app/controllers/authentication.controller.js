@@ -307,6 +307,13 @@ export const recoveryCodes = new Map(); // Almacén temporal de códigos (correo
 
 
 export const forgotPassword = async (req, res) => {
+    console.log("Solicitud recibida en /api/forgot-password"); // 👈 Esto debería aparecer en la terminal
+    console.log("Cuerpo de la petición:", req.body); // 👈 Esto imprimirá el correo recibido
+    
+    
+    if (!correo) {
+        return res.status(400).send({ status: "Error", message: "El campo de correo está vacío" });
+    }
     const { correo } = req.body;
 
     if (!correo) {
