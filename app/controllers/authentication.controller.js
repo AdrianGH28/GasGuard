@@ -311,9 +311,6 @@ export const forgotPassword = async (req, res) => {
     console.log("Cuerpo de la petición:", req.body); // 👈 Esto imprimirá el correo recibido
     
     
-    if (!correo) {
-        return res.status(400).send({ status: "Error", message: "El campo de correo está vacío" });
-    }
     const { correo } = req.body;
 
     if (!correo) {
