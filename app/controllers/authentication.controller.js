@@ -303,7 +303,6 @@ export const resetPassword = async (req, res) => {
     }
 };
 */
-
 const recoveryCodes = new Map(); // Almacén temporal de códigos (correo -> código)
 
 export const forgotPassword = async (req, res) => {
@@ -314,7 +313,7 @@ export const forgotPassword = async (req, res) => {
     }
 
     try {
-        const [rows] = await conexion.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
         if (rows.length === 0) {
             return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
         }
@@ -379,7 +378,6 @@ export const verificaCodigo = async (req, res) => {
     return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/resetpass" });
 };
 
-
 export const resetPassword = async (req, res) => {
     const { correo, password, confpass } = req.body;
 
@@ -392,7 +390,7 @@ export const resetPassword = async (req, res) => {
     }
 
     try {
-        const [rows] = await conexion.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
         if (rows.length === 0) {
             return res.status(400).send({ status: "Error", message: "Correo no encontrado" });
         }
@@ -400,7 +398,7 @@ export const resetPassword = async (req, res) => {
         const salt = await bcryptjs.genSalt(5);
         const hashPassword = await bcryptjs.hash(password, salt);
 
-        await conexion.execute('UPDATE mempresa SET contra_empre = ? WHERE correo_empr = ?', [hashPassword, correo]);
+        await pool.execute('UPDATE mempresa SET contra_empre = ? WHERE correo_empr = ?', [hashPassword, correo]);
 
         return res.status(200).send({ status: "ok", message: "Contraseña restablecida correctamente", redirect: "/" });
     } catch (error) {
@@ -408,6 +406,7 @@ export const resetPassword = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error durante resetPassword" });
     }
 };
+
 
 export const methods = {
     login,
