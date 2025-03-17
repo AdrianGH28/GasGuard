@@ -83,6 +83,7 @@ app.post("/api/login", authentication.login);
 app.post("/api/forgot-password", authentication.forgotPassword);
 app.post("/api/codigo-contra", authentication.verificaCodigo);
 app.post("/api/reset-password", authentication.resetPassword);
+app.post("/api/codigo-contra", authentication.verificaCodigo);
 
 // Generar una IP aleatoria
 function generarIPAleatoria() {
@@ -332,7 +333,8 @@ app.post('/api/forgot-password', async (req, res) => {
 });
 
 
-// Ruta para reenviar el código al correo
+
+// Ruta para reenviar el código con límite de intentos y bloqueo de 1 minuto
 app.post('/api/reenvio-codigo', async (req, res) => {
     const { correo } = req.body;
 
@@ -341,18 +343,31 @@ app.post('/api/reenvio-codigo', async (req, res) => {
     }
 
     try {
-        // Si hay un código previo, elimínalo antes de generar uno nuevo
-        authentication.recoveryCodes.delete(correo);
+        const storedData = recoveryCodes.get(correo);
 
+        if (!storedData) {
+            return res.status(400).json({ status: 'error', message: 'No hay código para este correo' });
+        }
 
-        // Genera un nuevo código de 6 dígitos
-        const codigo = Math.floor(100000 + Math.random() * 900000);
-        authentication.recoveryCodes.set(correo, codigo);
-        console.log(`Código ${codigo} generado para ${correo}`);
+        if (storedData.reintentos >= 3) {
+            return res.status(400).json({ status: 'error', message: 'Límite de reenvíos alcanzado' });
+        }
 
+        if (storedData.bloqueo && Date.now() < storedData.bloqueo) {
+            return res.status(400).json({ status: 'error', message: 'Debes esperar antes de reenviar el código' });
+        }
 
+        // Generar nuevo código
+        const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
+        recoveryCodes.set(correo, { 
+            codigo: nuevoCodigo, 
+            expiracion: Date.now() + 5 * 60 * 1000, 
+            reintentos: storedData.reintentos + 1, 
+            bloqueo: Date.now() + 60 * 1000 
+        });
 
-        // Configurar transporte de correo
+        console.log(`Código ${nuevoCodigo} generado para ${correo}`);
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -361,20 +376,15 @@ app.post('/api/reenvio-codigo', async (req, res) => {
             }
         });
 
-        // Configurar contenido del correo
         const mailOptions = {
             from: 'gasguardad1@gmail.com',
             to: correo,
             subject: 'Código de recuperación de cuenta',
-            text: `Tu código de recuperación es: ${codigo}`
+            text: `Tu código de recuperación es: ${nuevoCodigo}`
         };
 
         await transporter.sendMail(mailOptions);
-        console.log(`Código ${codigo} enviado correctamente a ${correo}`);
-
-        // Establecer nuevo tiempo de expiración
-        setTimeout(() => authentication.recoveryCodes.delete(correo), 10 * 60 * 1000);
-
+        console.log(`Código ${nuevoCodigo} enviado correctamente a ${correo}`);
 
         res.json({ status: 'ok', message: 'Código reenviado con éxito' });
     } catch (error) {
@@ -384,7 +394,7 @@ app.post('/api/reenvio-codigo', async (req, res) => {
 });
 
 
-app.post("/api/codigo-contra", authentication.verificaCodigo);
+
 
 export const verificaCodigo = async (req, res) => {
     const { correo, codigo } = req.body; // Asegúrate de que se envíen ambos datos

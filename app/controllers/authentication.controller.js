@@ -305,12 +305,10 @@ export const resetPassword = async (req, res) => {
 */
 export const recoveryCodes = new Map(); // Almacén temporal de códigos (correo -> código)
 
-
 export const forgotPassword = async (req, res) => {
-    console.log("Solicitud recibida en /api/forgot-password"); // 👈 Esto debería aparecer en la terminal
-    console.log("Cuerpo de la petición:", req.body); // 👈 Esto imprimirá el correo recibido
-    
-    
+    console.log("Solicitud recibida en /api/forgot-password");
+    console.log("Cuerpo de la petición:", req.body);
+
     const { correo } = req.body;
 
     if (!correo) {
@@ -323,9 +321,11 @@ export const forgotPassword = async (req, res) => {
             return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
         }
 
-        // Generar código de verificación temporal (6 dígitos)
+        // Generar código de verificación
         const codigo = Math.floor(100000 + Math.random() * 900000);
-        recoveryCodes.set(correo, codigo); // Guardar temporalmente
+        
+        // Guardar código con expiración y reintentos
+        recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000, reintentos: 0, bloqueo: null });
 
         // Configurar transporte de correo
         const transporter = nodemailer.createTransport({
@@ -336,9 +336,8 @@ export const forgotPassword = async (req, res) => {
             }
         });
 
-        // Configurar contenido del correo
         const mailOptions = {
-            from: 'tuemail@gmail.com',
+            from: 'gasguardad1@gmail.com',
             to: correo,
             subject: 'Código de recuperación de contraseña',
             text: `Tu código de recuperación es: ${codigo}`
@@ -346,11 +345,8 @@ export const forgotPassword = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        // Guardar el correo en la sesión para validarlo después
-        req.session.resetEmail = correo;
-
-        // Eliminar el código después de 10 minutos
-        setTimeout(() => recoveryCodes.delete(correo), 10 * 60 * 1000);
+        // Eliminar código después de 5 minutos
+        setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
 
         return res.status(200).send({ status: "ok", message: "Código enviado", redirect: "/codigocontra" });
 
