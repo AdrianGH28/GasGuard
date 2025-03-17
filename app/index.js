@@ -12,6 +12,9 @@ import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
 
+console.log("Métodos de autenticación:", authentication);
+console.log("Mapa de códigos:", authentication.recoveryCodes);
+
 dotenv.config();
 
 // Fix para __dirname
@@ -339,11 +342,13 @@ app.post('/api/reenvio-codigo', async (req, res) => {
 
     try {
         // Si hay un código previo, elimínalo antes de generar uno nuevo
-        recoveryCodes.delete(correo);
+        authentication.recoveryCodes.delete(correo);
+
 
         // Genera un nuevo código de 6 dígitos
         const codigo = Math.floor(100000 + Math.random() * 900000);
-        recoveryCodes.set(correo, codigo);
+        authentication.recoveryCodes.set(correo, codigo);
+
 
         // Configurar transporte de correo
         const transporter = nodemailer.createTransport({
