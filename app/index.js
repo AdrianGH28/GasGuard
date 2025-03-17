@@ -371,7 +371,8 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         console.log(`Código ${codigo} enviado correctamente a ${correo}`);
 
         // Establecer nuevo tiempo de expiración
-        setTimeout(() => recoveryCodes.delete(correo), 10 * 60 * 1000);
+        setTimeout(() => authentication.recoveryCodes.delete(correo), 10 * 60 * 1000);
+
 
         res.json({ status: 'ok', message: 'Código reenviado con éxito' });
     } catch (error) {
