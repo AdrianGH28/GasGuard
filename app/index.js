@@ -338,31 +338,35 @@ app.post('/api/reenvio-codigo', async (req, res) => {
     }
 
     try {
-        // Crear el transporter para nodemailer (configura tu propio servicio de correo)
+        // Si hay un código previo, elimínalo antes de generar uno nuevo
+        recoveryCodes.delete(correo);
+
+        // Genera un nuevo código de 6 dígitos
+        const codigo = Math.floor(100000 + Math.random() * 900000);
+        recoveryCodes.set(correo, codigo);
+
+        // Configurar transporte de correo
         const transporter = nodemailer.createTransport({
-            service: 'gmail', // O el servicio que estés usando
+            service: 'gmail',
             auth: {
                 user: 'gasguardad1@gmail.com',
                 pass: 'jxqgehljwskmzfju'
             }
         });
 
-        // Genera el código de validación, por ejemplo:
-        const codigo = Math.floor(100000 + Math.random() * 900000); // Código aleatorio de 6 dígitos
-
-        // Configura el correo
+        // Configurar contenido del correo
         const mailOptions = {
-            from: 'tu-correo@gmail.com',
+            from: 'gasguardad1@gmail.com',
             to: correo,
             subject: 'Código de recuperación de cuenta',
             text: `Tu código de recuperación es: ${codigo}`
         };
 
-        // Envía el correo
         await transporter.sendMail(mailOptions);
+        console.log(`Código ${codigo} enviado correctamente a ${correo}`);
 
-        // Puedes guardar el código en tu base de datos o almacenarlo de alguna forma
-        console.log(`Código enviado al correo: ${correo}, Código: ${codigo}`);
+        // Establecer nuevo tiempo de expiración
+        setTimeout(() => recoveryCodes.delete(correo), 10 * 60 * 1000);
 
         res.json({ status: 'ok', message: 'Código reenviado con éxito' });
     } catch (error) {
@@ -370,6 +374,7 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
     }
 });
+
 
 app.post("/api/codigo-contra", authentication.verificaCodigo);
 
