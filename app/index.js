@@ -343,7 +343,7 @@ app.post('/api/reenvio-codigo', async (req, res) => {
     }
 
     try {
-        const storedData = recoveryCodes.get(correo);
+        const storedData = authentication.recoveryCodes.get(correo);
 
         if (!storedData) {
             return res.status(400).json({ status: 'error', message: 'No hay código para este correo' });
@@ -359,7 +359,7 @@ app.post('/api/reenvio-codigo', async (req, res) => {
 
         // Generar nuevo código
         const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
-        recoveryCodes.set(correo, { 
+        authentication.recoveryCodes.set(correo, { 
             codigo: nuevoCodigo, 
             expiracion: Date.now() + 5 * 60 * 1000, 
             reintentos: storedData.reintentos + 1, 
@@ -392,7 +392,6 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
     }
 });
-
 
 
 
