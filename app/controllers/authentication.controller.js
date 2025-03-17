@@ -303,7 +303,8 @@ export const resetPassword = async (req, res) => {
     }
 };
 */
-const recoveryCodes = new Map(); // Almacén temporal de códigos (correo -> código)
+export const recoveryCodes = new Map(); // Almacén temporal de códigos (correo -> código)
+
 
 export const forgotPassword = async (req, res) => {
     const { correo } = req.body;
