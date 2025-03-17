@@ -83,7 +83,7 @@ app.post("/api/login", authentication.login);
 app.post("/api/forgot-password", authentication.forgotPassword);
 app.post("/api/codigo-contra", authentication.verificaCodigo);
 app.post("/api/reset-password", authentication.resetPassword);
-app.post("/api/codigo-contra", authentication.verificaCodigo);
+
 
 // Generar una IP aleatoria
 function generarIPAleatoria() {

@@ -355,29 +355,50 @@ export const forgotPassword = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error durante forgotPassword" });
     }
 };
-
 export const verificaCodigo = async (req, res) => {
     const { correo, codigo } = req.body;
 
+    console.log("Recibiendo solicitud de verificación...");
+    console.log("Correo recibido:", correo);
+    console.log("Código recibido:", codigo);
+
     if (!correo || !codigo) {
+        console.log("Faltan datos en la solicitud.");
         return res.status(400).send({ status: "Error", message: "Faltan datos" });
     }
 
-    // Verificar que el código sea un número
+    // Verificar que el código sea un número de 6 dígitos
     if (!/^\d{6}$/.test(codigo)) {
+        console.log("Código inválido:", codigo);
         return res.status(400).send({ status: "Error", message: "El código debe ser un número de 6 dígitos" });
     }
 
-    const storedCode = recoveryCodes.get(correo);
-    console.log(recoveryCodes);
+    const storedData = recoveryCodes.get(correo);
+    console.log("Datos almacenados en recoveryCodes:", storedData);
 
-    if (!storedCode || storedCode.toString() !== codigo.toString()) {
+    if (!storedData) {
+        console.log("Código no encontrado o expirado.");
         return res.status(400).send({ status: "Error", message: "Código incorrecto o expirado" });
     }
 
-    recoveryCodes.delete(correo); // Eliminar el código después de usarlo
+    if (Date.now() > storedData.expiracion) {
+        console.log("Código expirado. Eliminando...");
+        recoveryCodes.delete(correo);
+        return res.status(400).send({ status: "Error", message: "Código expirado" });
+    }
+
+    console.log(`Código esperado: ${storedData.codigo}, Código recibido: ${codigo}`);
+    
+    if (parseInt(storedData.codigo) !== parseInt(codigo)) {
+        console.log("🚨 Código incorrecto.");
+        return res.status(400).send({ status: "Error", message: "Código incorrecto" });
+    }
+
+    console.log("Código válido. Redirigiendo...");
+    recoveryCodes.delete(correo);
     return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/resetpass" });
 };
+
 
 export const resetPassword = async (req, res) => {
     const { correo, password, confpass } = req.body;
