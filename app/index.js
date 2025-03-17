@@ -354,7 +354,7 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         }
 
         if (storedData.bloqueo && Date.now() < storedData.bloqueo) {
-            return res.status(400).json({ status: 'error', message: 'Debes esperar antes de reenviar el código' });
+            return res.status(400).json({ status: 'error', message: 'Debes esperar 1 min. antes de reenviar  nuevamente el código' });
         }
 
         // Generar nuevo código

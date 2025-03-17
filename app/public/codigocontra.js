@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        console.log("🔄 Reenviando código a:", correo);
+        console.log("Reenviando código a:", correo);
 
         try {
             const response = await fetch('/api/reenvio-codigo', {
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log("📩 Respuesta del servidor:", result);
+            console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
                 alert('Código reenviado a tu correo.');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(result.message || 'Error al reenviar el código');
             }
         } catch (error) {
-            console.error("🚨 Error en la solicitud:", error);
+            console.error("Error en la solicitud:", error);
             alert('Error al intentar reenviar el código.');
         }
     });
@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const codigo = document.getElementById('codigo').value;
         const correo = localStorage.getItem('resetEmail');
 
-        console.log("📩 Enviando código:", codigo);
-        console.log("📩 Correo asociado:", correo);
+        console.log("Enviando código:", codigo);
+        console.log("Correo asociado:", correo);
 
         if (!correo || !codigo) {
             alert("Faltan datos: Código o correo");
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log("📩 Respuesta del servidor:", result);
+            console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
                 window.location.href = result.redirect;
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(result.message || 'Error al validar el código');
             }
         } catch (error) {
-            console.error("🚨 Error en la solicitud:", error);
+            console.error("Error en la solicitud:", error);
             alert('Error al intentar validar el código.');
         }
     });
