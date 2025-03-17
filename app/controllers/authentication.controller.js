@@ -414,5 +414,6 @@ export const methods = {
     registro,
     forgotPassword,
     verificaCodigo,
-    resetPassword
+    resetPassword,
+    recoveryCodes
 };

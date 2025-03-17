@@ -11,7 +11,6 @@ import { methods as authentication } from "./controllers/authentication.controll
 import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
-import { recoveryCodes } from "./app/controllers/authentication.js";
 
 dotenv.config();
 
