@@ -64,6 +64,8 @@ app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(_
 app.get("/registro", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registro.html"));
 app.get("/forgotpass", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/forgotpass.html"));
 app.get("/codigocontra", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/codigocontra.html"));
+app.get("/verificacorreo1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_verificacorreo1.html"));
+app.get("/verificacorreo2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_verificacorreo2.html"));
 app.get("/resetpass", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/resetpass.html"));
 app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/dispositivos.html"));
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
@@ -77,11 +79,12 @@ app.get("/dispositivosadmin", authorization.verificarRolAdmin, (req, res) => res
 app.get("/clientesadmin", authorization.verificarRolAdmin, (req, res) => res.sendFile(__dirname + "/pages/clientesadmin.html"));
 app.get("/trabajadoresadmin", authorization.verificarRolAdmin, (req, res) => res.sendFile(__dirname + "/pages/trabajadoresadmin.html"));
 
-
 app.post("/api/registro", authentication.registro);
 app.post("/api/login", authentication.login);
 app.post("/api/forgot-password", authentication.forgotPassword);
 app.post("/api/codigo-contra", authentication.verificaCodigo);
+app.post("/api/verifica-contra", authentication.verificaCorreo);
+app.post("/api/enviar-correo", authentication.enviaCorreo);
 app.post("/api/reset-password", authentication.resetPassword);
 
 
