@@ -33,7 +33,6 @@ export const usuarios = [{
     correo: "a@a.com",
     password: "$2a$05$lar7vRY9OSa1d4cQzWxy9OFix5j.JoRFH44lQXgXOEsCvwti98y2u"
 }];
-
 async function login(req, res) {
     console.log('Request Body:', req.body);
 
@@ -44,9 +43,7 @@ async function login(req, res) {
     }
 
     try {
-        const connection = await pool.getConnection(); // Obtener conexión del pool
-        const [rows] = await connection.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
-        connection.release(); // Liberar conexión
+        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
 
         if (rows.length === 0) {
             console.log('Usuario no encontrado');
@@ -55,6 +52,7 @@ async function login(req, res) {
 
         const usuarioARevisar = rows[0];
         const loginCorrecto = await bcryptjs.compare(password, usuarioARevisar.contra_empre);
+
         if (!loginCorrecto) {
             console.log('Contraseña incorrecta');
             return res.status(400).send({ status: "Error", message: "Correo o contraseña incorrectos" });
