@@ -27,6 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Código reenviado a tu correo.');
             } else {
                 alert(result.message || 'Error al reenviar el código');
+
+                // Si el mensaje es sobre el bloqueo, mostrar temporizador en el botón
+                if (result.message.includes('Inténtalo nuevamente en 1 hora')) {
+                    reenviarBtn.disabled = true;
+                    let tiempoRestante = 3600; // 1 hora en segundos
+
+                    const intervalo = setInterval(() => {
+                        reenviarBtn.textContent = `Reintentar en ${tiempoRestante} s`;
+                        tiempoRestante--;
+
+                        if (tiempoRestante <= 0) {
+                            clearInterval(intervalo);
+                            reenviarBtn.disabled = false;
+                            reenviarBtn.textContent = 'Reenviar código';
+                        }
+                    }, 1000);
+                }
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);

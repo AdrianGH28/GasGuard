@@ -71,6 +71,7 @@ app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
 app.get("/historial", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/historial.html"));
 app.get("/principal", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/principal.html"));
+app.get("/principalprueba", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/paginaprincipalprueba.html"));
 app.get("/vincular", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/vincular.html"));
 app.get("/inicio", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/inicio.html"));
 app.get("/inicioadmin", authorization.verificarRolAdmin, (req, res) => res.sendFile(__dirname + "/pages/inicioadmin.html"));
@@ -337,7 +338,6 @@ app.post('/api/forgot-password', async (req, res) => {
 
 
 
-// Ruta para reenviar el código con límite de intentos y bloqueo de 1 minuto
 app.post('/api/reenvio-codigo', async (req, res) => {
     const { correo } = req.body;
 
@@ -352,21 +352,38 @@ app.post('/api/reenvio-codigo', async (req, res) => {
             return res.status(400).json({ status: 'error', message: 'No hay código para este correo' });
         }
 
-        if (storedData.reintentos >= 3) {
-            return res.status(400).json({ status: 'error', message: 'Límite de reenvíos alcanzado' });
+        const ahora = Date.now();
+
+        // Verificar si el usuario está bloqueado y si ya pasó 1 hora
+        if (storedData.bloqueo && ahora < storedData.bloqueo) {
+            return res.status(400).json({ status: 'error', message: 'Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.' });
+        } else if (storedData.bloqueo && ahora >= storedData.bloqueo) {
+            // Restablecer intentos después de 1 hora
+            storedData.reintentos = 0;
+            storedData.bloqueo = null;
         }
 
-        if (storedData.bloqueo && Date.now() < storedData.bloqueo) {
-            return res.status(400).json({ status: 'error', message: 'Debes esperar 1 min. antes de reenviar  nuevamente el código' });
+        // Si el usuario ha alcanzado el límite de intentos, bloquear por 1 hora
+        if (storedData.reintentos >= 3) {
+            authentication.recoveryCodes.set(correo, {
+                ...storedData,
+                bloqueo: ahora + 60 * 60 * 1000 // Bloqueo de 1 hora
+            });
+            return res.status(400).json({ status: 'error', message: 'Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.' });
+        }
+
+        // Verificar si el usuario debe esperar 1 minuto antes de reenviar
+        if (storedData.ultimoIntento && ahora - storedData.ultimoIntento < 60 * 1000) {
+            return res.status(400).json({ status: 'error', message: 'Debes esperar 1 minuto antes de reenviar el código nuevamente.' });
         }
 
         // Generar nuevo código
         const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
         authentication.recoveryCodes.set(correo, { 
             codigo: nuevoCodigo, 
-            expiracion: Date.now() + 5 * 60 * 1000, 
+            expiracion: ahora + 5 * 60 * 1000, 
             reintentos: storedData.reintentos + 1, 
-            bloqueo: Date.now() + 60 * 1000 
+            ultimoIntento: ahora 
         });
 
         console.log(`Código ${nuevoCodigo} generado para ${correo}`);
