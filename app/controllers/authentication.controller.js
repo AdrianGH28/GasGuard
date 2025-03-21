@@ -33,6 +33,7 @@ export const usuarios = [{
     correo: "a@a.com",
     password: "$2a$05$lar7vRY9OSa1d4cQzWxy9OFix5j.JoRFH44lQXgXOEsCvwti98y2u"
 }];
+/*
 async function login(req, res) {
     console.log('Request Body:', req.body);
 
@@ -78,9 +79,9 @@ async function login(req, res) {
         return res.status(500).send({ status: "Error", message: "Error durante login" });
     }
 };
+*/
 
 
-/*
 async function login(req, res) {
     console.log('Request Body:', req.body);
 
@@ -126,7 +127,7 @@ async function login(req, res) {
         return res.status(500).send({ status: "Error", message: "Error durante login" });
     }
 }
-*/
+
 //Login que segun yo es el nuevo pero aun no se si ya integrarlo que segun yo si pero esperaremos a tener la pagina principal donde entraremos una
 //vez finalice todo
 /*
