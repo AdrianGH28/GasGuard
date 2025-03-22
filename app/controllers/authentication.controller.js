@@ -450,10 +450,10 @@ export const verificaCodigo = async (req, res) => {
 
 export const verificaCorreo = async (req, res) => {
     console.log("Recibiendo solicitud de verificación...");
+    
+    const { correo, codigo } = req.body;
     console.log("Correo recibido:", correo);
     console.log("Código recibido:", codigo);
-    const { correo, codigo } = req.body;
-
     if (!correo || !codigo) {
         return res.status(400).send({ status: "Error", message: "Faltan datos" });
     }
