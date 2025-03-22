@@ -4,16 +4,12 @@ window.addEventListener('load', () => {
 });
 document.addEventListener('DOMContentLoaded', () => {
     const reenviarBtn = document.getElementById('reenviar-codigo');
-    const codigoForm = document.getElementById('verifica-contraseña-form');
+    const codigoForm = document.getElementById('codigo-contraseña-form');
 
     reenviarBtn.addEventListener('click', async (e) => {
         e.preventDefault();
 
         const correo = localStorage.getItem('resetEmail');
-        if (!correo) {
-            alert("No se pudo obtener el correo. Intenta de nuevo.");
-            return;
-        }
 
         console.log("Reenviando código a:", correo);
 
