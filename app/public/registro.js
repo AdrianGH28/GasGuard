@@ -13,7 +13,7 @@ document.getElementById('login-link').addEventListener('click', function(event) 
     }, 500); // Tiempo suficiente para la transición
 });
 
-document.getElementById("form").addEventListener("submit", async (e) => {
+document.getElementById("enviar-correov-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const nombre = document.querySelector('#nombre').value;
@@ -235,7 +235,7 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
     event.preventDefault();
     const correo = document.getElementById('correo').value;
 
-    const response =  await fetch('https://gasguard-production.up.railway.app/api/enviar-correo', {
+    const response =  await fetch('/api/enviar-correo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

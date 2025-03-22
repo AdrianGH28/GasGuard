@@ -229,6 +229,7 @@ async function registro(req, res) {
         );
 
         return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado`, redirect: "/verificacorreo1" });
+
     } catch (error) {
         console.error('Error al registrar usuario:', error);
         return res.status(500).send({ status: "Error", message: "Error al registrar usuario." });
