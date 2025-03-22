@@ -1,7 +1,8 @@
 window.addEventListener('load', () => {
     const body = document.body;
-    body.style.opacity='1';
+    body.style.opacity = '1';
 });
+
 document.addEventListener('DOMContentLoaded', () => {
     const reenviarBtn = document.getElementById('reenviar-codigo');
     const codigoForm = document.getElementById('codigo-contraseña-form');
@@ -10,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const correo = localStorage.getItem('resetEmail');
-
         console.log("Reenviando código a:", correo);
 
         try {
@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
-                mostraralerta("error",'Código reenviado a tu correo.');
+                mostraralerta("success", 'Código reenviado a tu correo.');
             } else {
                 mostraralerta("error", 'Error al reenviar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            mostraralerta("error",'Error al intentar reenviar el código.');
+            mostraralerta("error", 'Error al intentar reenviar el código.');
         }
     });
 
@@ -39,12 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const codigo = document.getElementById('codigo').value;
         const correo = localStorage.getItem('resetEmail');
-
         console.log("Enviando código:", codigo);
         console.log("Correo asociado:", correo);
 
         if (!correo || !codigo) {
-            mostraralerta("info","Todos los campos son obligatorios");
+            mostraralerta("info", "Todos los campos son obligatorios");
             return;
         }
 
@@ -61,11 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && result.status === 'ok') {
                 window.location.href = result.redirect;
             } else {
-                mostraralerta("error",'Error al validar el código');
+                mostraralerta("error", 'Error al validar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            mostraralerta("error",'Error al intentar validar el código.');
+            mostraralerta("error", 'Error al intentar validar el código.');
         }
     });
 });

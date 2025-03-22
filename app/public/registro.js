@@ -234,7 +234,8 @@ window.addEventListener('load', () => {
 document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const correo = document.getElementById('correo').value;
-
+    
+    console.log("Correo enviado:", correo);
     const response =  await fetch('/api/enviar-correo', {
         method: 'POST',
         headers: {

@@ -362,13 +362,14 @@ export const forgotPassword = async (req, res) => {
 
 export const enviaCorreo = async (req, res) => {
     const { correo } = req.body;
-
+    console.log("Correo recibido en el backend:", correo);
     if (!correo) {
         return res.status(400).send({ status: "Error", message: "El campo de correo está vacío" });
     }
 
     try {
         const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        console.log("Resultado de la consulta:", rows);
 
         const codigo = Math.floor(100000 + Math.random() * 900000);
 
