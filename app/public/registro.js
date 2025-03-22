@@ -75,6 +75,8 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         if (resJson.redirect) {
             window.location.href = resJson.redirect;
         } else {
+            window.location.href='/';
+
             mostraralerta('success', resJson.message || "Se ha completado el paso 1 exitosamente");
         }
     } catch (error) {
@@ -224,3 +226,38 @@ function cerraralerta(callback) {
         if (callback) callback();
     }, 300);
 }
+
+window.addEventListener('load', () => {
+    const body = document.body;
+    body.style.opacity='1';
+});
+document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const correo = document.getElementById('correo').value;
+
+    const response = await fetch('/api/enviar-correo', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ correo })
+    });
+
+    const result = await response.json();
+
+    // Validación: evitar campos vacíos
+    if (!correo) {
+        mostraralerta('error', 'El campo de correo no puede estar vacío.');
+        correoInput.focus();
+        return;
+    }
+
+    if (result.status === "ok") {
+        // Almacenar el correo en el almacenamiento local para usarlo en la siguiente página
+        localStorage.setItem('resetEmail', correo);
+        window.location.href = result.redirect;
+    } else {
+        document.querySelector('.error').classList.remove('escondido');
+        document.querySelector('.error').textContent = result.message;
+    }
+});

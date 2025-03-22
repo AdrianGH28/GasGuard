@@ -372,9 +372,7 @@ export const enviaCorreo = async (req, res) => {
 
     try {
         const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
-        if (rows.length === 0) {
-            return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
-        }
+        
 
         // Generar código de verificación
         const codigo = Math.floor(100000 + Math.random() * 900000);
@@ -403,7 +401,7 @@ export const enviaCorreo = async (req, res) => {
         // Eliminar código después de 5 minutos
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
 
-        return res.status(200).send({ status: "ok", message: "Código enviado", redirect: "/verificacorreo2" });
+        
 
     } catch (error) {
         console.error('Error durante forgotPassword:', error);
