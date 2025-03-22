@@ -321,7 +321,7 @@ export const forgotPassword = async (req, res) => {
 
     try {
         const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
-        console.log(`Consulta SQL: SELECT * FROM mempresa WHERE correo_empr = '${correo}'`);
+        
 
         if (rows.length === 0) {
             return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
@@ -361,34 +361,35 @@ export const forgotPassword = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error durante forgotPassword" });
     }
 };
+const esperarCorreoEnDB = async (correo, intentos = 5, delay = 1000) => {
+    for (let i = 0; i < intentos; i++) {
+        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        if (rows.length > 0) return rows; // Si ya existe, regresamos la información
+        console.log(`Intento ${i + 1}: Correo aún no en BD, esperando...`);
+        await new Promise(resolve => setTimeout(resolve, delay)); // Esperar antes de volver a intentar
+    }
+    return null; // Si después de varios intentos no aparece, regresamos null
+};
 
 export const enviaCorreo = async (req, res) => {
     console.log("Solicitud recibida en /api/enviar-correo");
     console.log("Cuerpo de la petición:", req.body);
     const { correo } = req.body;
-    console.log("Correo recibido en el backend:", correo);
+
     if (!correo) {
         return res.status(400).send({ status: "Error", message: "El campo de correo está vacío" });
     }
 
     try {
-        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
-        
-
-
-        console.log("Resultado de la consulta:", rows);
-
-if (rows.length === 0) {
-    return res.status(404).send({ status: "Error", message: "Correo no encontrado en la base de datos" });
-}
+        const rows = await esperarCorreoEnDB(correo);
+        if (!rows) {
+            return res.status(404).send({ status: "Error", message: "Correo no encontrado en la base de datos después de varios intentos" });
+        }
 
         const codigo = Math.floor(100000 + Math.random() * 900000);
-
         recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000 });
+
         console.log("Códigos almacenados:", recoveryCodes);
-        console.log("Intentando recuperar código para:", correo);
-
-
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -406,14 +407,16 @@ if (rows.length === 0) {
         };
 
         await transporter.sendMail(mailOptions);
-
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
+        
+        res.status(200).send({ status: "ok", message: "Correo enviado correctamente" });
 
     } catch (error) {
-        console.error('Error durante forgotPassword:', error);
-        return res.status(500).send({ status: "Error", message: "Error durante el envio de correo" });
+        console.error('Error durante el envío de correo:', error);
+        return res.status(500).send({ status: "Error", message: "Error durante el envío de correo" });
     }
 };
+
 
 export const verificaCodigo = async (req, res) => {
     const { correo, codigo } = req.body;
