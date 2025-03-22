@@ -371,9 +371,7 @@ export const enviaCorreo = async (req, res) => {
 
     try {
         const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
-        if (rows.length === 0) {
-            return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
-        }
+        
         console.log("Resultado de la consulta:", rows);
 
         const codigo = Math.floor(100000 + Math.random() * 900000);
