@@ -360,11 +360,7 @@ export const forgotPassword = async (req, res) => {
     }
 };
 
-
 export const enviaCorreo = async (req, res) => {
-    console.log("Solicitud recibida en /api/enviar-correo");
-    console.log("Cuerpo de la petición:", req.body);
-
     const { correo } = req.body;
 
     if (!correo) {
@@ -373,15 +369,11 @@ export const enviaCorreo = async (req, res) => {
 
     try {
         const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
-        
 
-        // Generar código de verificación
         const codigo = Math.floor(100000 + Math.random() * 900000);
 
-        // Guardar código con expiración y reintentos
-        recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000, reintentos: 0, bloqueo: null });
+        recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000 });
 
-        // Configurar transporte de correo
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -399,10 +391,7 @@ export const enviaCorreo = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        // Eliminar código después de 5 minutos
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
-
-        
 
     } catch (error) {
         console.error('Error durante forgotPassword:', error);
@@ -454,50 +443,36 @@ export const verificaCodigo = async (req, res) => {
     return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/resetpass" });
 };
 
-
 export const verificaCorreo = async (req, res) => {
     const { correo, codigo } = req.body;
 
-    console.log("Recibiendo solicitud de verificación...");
-    console.log("Correo recibido:", correo);
-    console.log("Código recibido:", codigo);
-
     if (!correo || !codigo) {
-        console.log("Faltan datos en la solicitud.");
         return res.status(400).send({ status: "Error", message: "Faltan datos" });
     }
 
-    // Verificar que el código sea un número de 6 dígitos
     if (!/^\d{6}$/.test(codigo)) {
-        console.log("Código inválido:", codigo);
         return res.status(400).send({ status: "Error", message: "El código debe ser un número de 6 dígitos" });
     }
 
     const storedData = recoveryCodes.get(correo);
-    console.log("Datos almacenados en recoveryCodes:", storedData);
 
     if (!storedData) {
-        console.log("Código no encontrado o expirado.");
         return res.status(400).send({ status: "Error", message: "Código incorrecto o expirado" });
     }
 
     if (Date.now() > storedData.expiracion) {
-        console.log("Código expirado. Eliminando...");
         recoveryCodes.delete(correo);
         return res.status(400).send({ status: "Error", message: "Código expirado" });
     }
 
-    console.log(`Código esperado: ${storedData.codigo}, Código recibido: ${codigo}`);
-
     if (parseInt(storedData.codigo) !== parseInt(codigo)) {
-        console.log("🚨 Código incorrecto.");
         return res.status(400).send({ status: "Error", message: "Código incorrecto" });
     }
 
-    console.log("Código válido. Redirigiendo...");
     recoveryCodes.delete(correo);
     return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/" });
 };
+
 //falta que te redirija a la seccion de pagos pero hasta que este hecho
 
 export const resetPassword = async (req, res) => {
