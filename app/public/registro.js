@@ -256,6 +256,8 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
     if (result.status === "ok") {
         // Almacenar el correo en el almacenamiento local para usarlo en la siguiente página
         localStorage.setItem('resetEmail', correo);
+        console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
+
         window.location.href = result.redirect;
     } else {
         document.querySelector('.error').classList.remove('escondido');

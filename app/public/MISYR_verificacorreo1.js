@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const correo = localStorage.getItem('resetEmail');
         console.log("Enviando código:", codigo);
         console.log("Correo asociado:", correo);
+        console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
 
         if (!correo || !codigo) {
             mostraralerta("info", "Todos los campos son obligatorios");
