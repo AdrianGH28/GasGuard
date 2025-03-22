@@ -24,13 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
-                alert('Código reenviado a tu correo.');
+                mostraralerta("error",'Código reenviado a tu correo.');
             } else {
-                alert(result.message || 'Error al reenviar el código');
+                mostraralerta("error", 'Error al reenviar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            alert('Error al intentar reenviar el código.');
+            mostraralerta("error",'Error al intentar reenviar el código.');
         }
     });
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Correo asociado:", correo);
 
         if (!correo || !codigo) {
-            alert("Faltan datos: Código o correo");
+            mostraralerta("info","Todos los campos son obligatorios");
             return;
         }
 
@@ -61,11 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && result.status === 'ok') {
                 window.location.href = result.redirect;
             } else {
-                alert(result.message || 'Error al validar el código');
+                mostraralerta("error",'Error al validar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            alert('Error al intentar validar el código.');
+            mostraralerta("error",'Error al intentar validar el código.');
         }
     });
 });
