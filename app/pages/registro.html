@@ -6,20 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
     <link rel="stylesheet" href="/css/registro.css">
+    <link rel="stylesheet" href="/css/backgroundvideo.css">
+    <link rel="stylesheet" href="/css/headersencillo.css">
+    <link rel="stylesheet" href="/css/alertas.css">
     <script src="registro.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
 </head>
 
 <body>
+    <div id="alertamodal" class="custom-alert">
+        <div class="alerticon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="alertcontent">
+            <div class="alertheadingcont">
+                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+            </div>
+            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+            <div class="alertactionscont">
+                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+            </div>
+        </div>
+        <div class="alertclosebtn">
+        <button class="closebtn" onclick="cerraralerta()">
+            <i class="fa fa-x"></i>
+        </button>
+        </div>
+    </div>
     <div class="video-background">
         <video autoplay muted loop id="video-background">
             <source src="/images/video2.mp4" type="video/mp4">
             Tu navegador no soporta el formato de video.
         </video>
     </div>
-    <nav class="navbar">
-        <div class="container">
+    <nav class="navbar-container">
+        <div class="logo-container">
             <a class="navbar-brand" href="#">
-                <img src="/images/logotipo.png" alt="Logo"> GasGuard
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="javascript:void(0);" onclick='mostraralerta("warning","¿Estás seguro de que deseas regresar sin guardar cambios?")' class="back-link">
+                <i class="fa fa-arrow-left"></i> Regresar
             </a>
         </div>
     </nav>
@@ -29,7 +61,7 @@
                 <div class="contenedor-pa">
 
                     <div class="txt">
-                        <h1>PASO 1</h1>
+                        <h1>Paso 1</h1>
                         <p>Crea una cuenta</p>
                     </div>
                 </div>
@@ -40,9 +72,8 @@
                             <div class="contenedor1">
                                 <div class="input-entero">
                                     <div class="grupo">
-                                        <input type="text" name="nombre" id="nombre" required>
+                                        <input type="text" name="nombre" id="nombre" placeholder="Nombre">
                                         <span class="barra"></span>
-                                        <label for="nombre">Nombre</label>
                                     </div>
                                     
 
@@ -50,22 +81,19 @@
                                 <div class="input-entero">
                                     
                                     <div class="grupo">
-                                        <input type="email" name="correo" id="correo" required>
+                                        <input type="email" name="correo" id="correo" placeholder="Correo electrónico">
                                         <span class="barra"></span>
-                                        <label for="correo">Correo</label>
                                     </div>
                                 </div>
                                 <p>* La contraseña debe ser entre 8 a 12 caractéres</p>
                                 <div class="input-mitad">
                                     <div class="grupo">
-                                        <input type="password" name="password" id="password" required>
+                                        <input type="password" name="password" id="password" placeholder="Contraseña">
                                         <span class="barra"></span>
-                                        <label for="password">Elige una contraseña</label>
                                     </div>
                                     <div class="grupo">
-                                        <input type="password" name="conf-pass" id="conf-pass" required>
+                                        <input type="password" name="conf-pass" id="conf-pass" placeholder="Confirmar contraseña">
                                         <span class="barra"></span>
-                                        <label for="conf-pass">Confirmar contraseña</label>
                                     </div>
                                 </div>
                             </div>
@@ -77,47 +105,40 @@
                             <div class="contenedor3">
                                 <div class="input-triples1">
                                     <div class="grupo">
-                                        <input type="text" name="calle" id="calle" required>
+                                        <input type="text" name="calle" id="calle" placeholder="Calle">
                                         <span class="barra"></span>
-                                        <label for="calle">Calle</label>
                                     </div>
                                     <div class="grupo">
-                                        <input type="text" name="numero" id="numero" required>
+                                        <input type="text" name="numero" id="numero" placeholder="Número">
                                         <span class="barra"></span>
-                                        <label for="numero">Núm</label>
                                     </div>
                                     <div class="grupo">
-                                        <input type="text" name="colonia" id="colonia" required>
+                                        <input type="text" name="colonia" id="colonia" placeholder="Colonia">
                                         <span class="barra"></span>
-                                        <label for="colonia">Colonia</label>
                                     </div>
                                 </div>
                                 <div class="input-triples2">
                                     <div class="grupo">
-                                        <input type="text" name="ciudad" id="ciudad" required>
+                                        <input type="text" name="ciudad" id="ciudad" placeholder="Ciudad/Alc">
                                         <span class="barra"></span>
-                                        <label for="ciudad">Ciudad</label>
                                     </div>
                                     <div class="grupo">
-                                        <input type="text" name="cp" id="cp" required>
+                                        <input type="text" name="cp" id="cp" placeholder="C.P">
                                         <span class="barra"></span>
-                                        <label for="cp">C.P</label>
                                     </div>
                                     <div class="columna">
                                         <div class="grupo">
-                                            <input type="text" name="estado" id="estado" required>
+                                            <input type="text" name="estado" id="estado" placeholder="Estado">
                                             <span class="barra"></span>
-                                            <label for="estado">Estado</label>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-                        <button type="submit">Siguiente</button>
+                        <button id="submitbtn" type="submit">Siguiente</button>
                         <p class="error escondido">Error al registrarse</p>
                     </div>
-                    <p>¿Ya tienes una cuenta? <a href="/"> Inicia sesión</a></p>
+                    <p>¿Ya tienes una cuenta? <a href="/" id="login-link"> Inicia sesión</a></p>
                 </form>
             </div>
         </div>

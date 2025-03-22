@@ -5,38 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restablecer Contraseña</title>
     <link rel="stylesheet" href="/css/resetpass.css">
+    <link rel="stylesheet" href="/css/backgroundvideo.css">
+    <link rel="stylesheet" href="/css/headersencillo.css">
+    <link rel="stylesheet" href="/css/alertas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
     <script src="resetpass.js" defer></script>
+    <link rel="icon" href="images/logotipo.png" type="image/png">
 </head>
 <body>
+    <div id="alertamodal" class="custom-alert">
+        <div class="alerticon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="alertcontent">
+            <div class="alertheadingcont">
+                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+            </div>
+            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+            <div class="alertactionscont">
+                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+            </div>
+        </div>
+        <div class="alertclosebtn">
+        <button class="closebtn" onclick="cerraralerta()">
+            <i class="fa fa-x"></i>
+        </button>
+        </div>
+    </div>
+    <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="/images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+    <nav class="navbar-container">
+        <div class="logo-container">
+            <a class="navbar-brand" href="#">
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="javascript:void(0);" onclick='mostraralerta("warning","¿Estás seguro de que deseas regresar sin guardar cambios?")' class="back-link">
+                <i class="fa fa-arrow-left"></i> Regresar
+            </a>
+        </div>
+    </nav>
     <main>
         <div class="contenedor-general">
             <div class="contenedor-p">
-                <div class="contenedor-pa">
-                    <div class="img"><img src="/images/WhatsApp_Image_2024-05-19_at_11.12.33_PM-removebg-preview.png" alt="Imagen de WhatsApp"></div>
-                    <div class="txt">
-                        <h1>Restablecer Contraseña</h1>
+                <div class="contenedor-p">
+                    <div class="contenedor-pa">
+                        <div class="txt">
+                            <h1>Restablecer Contraseña</h1>
+                            <p>Recupera tu cuenta</p>
+                        </div>
                     </div>
+                    <form id="reset-password-form" action="/reset-password" method="POST">
+                        <div class="form">
+                            <div class="contenedor">
+                                <div class="contenedor1">
+                                    <p>Crea una nueva contraseña de 8 a 12 caractéres</p>
+                                    <input type="hidden" id="correo" name="correo" value="">
+                                    <div class="input-entero">
+                                        <div class="grupo">
+                                            <input type="password" name="password" id="password" placeholder="Elige una contraseña ">
+                                            <span class="barra"></span>
+                                        </div>
+                                    </div>
+                                    <div class="input-entero">
+                                        <div class="grupo">
+                                            <input type="password" name="confpass" id="confpass" placeholder="Confirmar contraseña ">
+                                            <span class="barra"></span>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="submitbtn">Restablecer</button>
+                                    <p class="error escondido">Error al restablecer la contraseña</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <form id="reset-password-form" action="/reset-password" method="POST">
-                    <div class="form">
-                        <h1>Restablece tu contraseña</h1>
-                        <input type="hidden" id="correo" name="correo" value="">
-                        <div class="grupo">
-                            <input type="password" name="password" id="password" required>
-                            <span class="barra"></span>
-                            <label for="password">Nueva Contraseña</label>
-                        </div>
-                        <div class="grupo">
-                            <input type="password" name="confpass" id="confpass" required>
-                            <span class="barra"></span>
-                            <label for="confpass">Confirmar Nueva Contraseña</label>
-                        </div>
-                        <button type="submit">Restablecer</button>
-                        <p class="error escondido">Error al restablecer la contraseña</p>
-                    </div>
-                </form>
             </div>
-        </div>
     </main>
 </body>
 </html>

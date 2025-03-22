@@ -1,5 +1,5 @@
 :root {
-    --colorTextos: #665b5b;
+    --colorTextos: #a1a3a1;
 }
 
 *,
@@ -9,16 +9,32 @@
     padding: 0;
     box-sizing: border-box;
 }
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Montserrat', sans-serif; /* Aplica la fuente Montserrat */
 
+}
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background-image: url(/images/vector-JUL-2021-61\ \(2\).jpg);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background-repeat: no-repeat;
-    background-size:cover;
+    background-size: cover;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 2s ease-in-out; 
+}
+
+main {
+    height: 100%;
+    display: flex;
+
+    padding-top: 135px;
+    flex: 1;
 }
 
 h1 {
@@ -27,31 +43,156 @@ h1 {
 }
 
 .txt h1 {
-    color: white;
-    margin: 0;
+    color: red;
 }
 
-img {
-    width: 120px;
-    height: 120px;
+.txt p {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.42);
+    font-weight: 500;
+    line-height: 200%;
+    
 }
+
+
+img {
+    width: 30px;
+    height: 40px;
+}
+
 
 .form h1 {
     color: #ff0000;
-    margin-bottom: -30px;
+    margin-bottom: -20px;
+}
+
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    width: 500px; /* Respetar el ancho de 500px */
+    
+}
+.contenedor-p{
+    filter: drop-shadow(9px 9px 4px rgba(0, 0, 0, 0.25));
+}
+
+.contenedor1,
+.contenedor2,
+.contenedor3 {
+    width: 100%;
+    
+}
+
+.contenedor1 p{
+    font-size: 20px;
+    color: #797979;
+    padding: 10px 0 0 10px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.contenedor1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    
+}
+
+
+.input-mitad {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%; /* Cambiado a 100% */
+    padding: 10px 10px 0px 5px;
+    
+}
+
+.input-mitad .grupo {
+    
+    margin-right: 10px;
+}
+
+.input-mitad .grupo:last-child {
+    margin-right: 0;
+}
+
+.input-entero {
+    padding: 10px 5px 0px 5px;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+
+}
+
+.input-triples1,
+.input-triples2 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Cambiado a 100% */
+    padding: 10px 10px 0px 5px;
+}
+
+.input-triples1 .grupo,
+.input-triples2 .grupo {
+    
+    margin-right: 10px;
+    max-width: 100%; /* Para asegurarse de que no sobresalgan */
+}
+
+.input-triples1 .grupo:last-child,
+.input-triples2 .grupo:last-child {
+    margin-right: 0;
+}
+
+
+
+.division {
+    text-align: center;
+    width: 100%;
+    font-size: 14px;
+    color: #8f8c8c;
+    margin: 10px 0;
+    position: relative;
+}
+
+.division::before,
+.division::after {
+    content: "";
+    width: 40%;
+    height: 1px;
+    background-color: #b8b7b7;
+    position: absolute;
+    top: 50%;
+}
+
+.division::before {
+    left: 0;
+}
+
+.division::after {
+    right: 0;
 }
 
 .contenedor-pa {
-    background-image: url(/images/vecteezy_abstract-red-fluid-wave-background_\ \(2\).jpg);
+    margin-top: 5px; 
+    margin-bottom: -15px; /* Ajustado para que esté más cerca del contenedor */
+    background-color: white;
     padding: 40px;
     box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 150px;
+    height: 100px;
 }
 
-.img, .txt {
+.img {
+    margin-left: -300px;
+}
+
+.img,
+.txt {
     display: flex;
     align-items: center;
 }
@@ -60,106 +201,118 @@ img {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    
+    flex-direction: column;
 }
 
 form {
     background: white;
-    padding: 40px 0;
+    padding: 0;
     box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
+    border-top: 1px solid #8f8c8c; /* Borde gris agregado entre contenedor-pa y form */
 }
 
-.reset-password-form {
-    width: 550px;
+.form {
+    width: 100%;
     margin: auto;
-}
-
-.error{
-    padding: 10px  0px;
-    color: red;
-}
-
-.escondido{
-    display: none;
 }
 
 form .grupo {
     position: relative;
-    margin: 45px;
+    margin: 5px 5px;
 }
 
+form p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #E00000;
+    font-size: 18px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
 
+form p a {
+    margin-left: 25px;
+    text-decoration: underline;
+    color: #E00000;
+}
+
+.error {
+    padding: 10px 0px;
+    color: red;
+}
+
+.escondido {
+    display: none;
+}
 
 input {
     background: none;
-    color: #c6c6c6;
-    font-size: 18px;
-    padding: 10px 10px 10px 5px;
+    color: #8f8c8c;
+    font-size: 15px;
+    padding: 10px 20px; /* Ajustar el padding para centrar verticalmente */
     display: block;
-    width: 100%;
-    border: none;
-    border-bottom: 1px solid var(--colorTextos);
+    width: 100%; /* Asegurando que todos los inputs ocupen el 100% del ancho */
+    border: 1px solid var(--colorTextos);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+::placeholder {
+    color: #8f8c8c; /* Color deseado */
+    opacity: 1; /* Asegura que el color se vea correctamente en Firefox */
 }
 
 input:focus {
     outline: none;
-    color: #5e5d5d;
+    color: #8f8c8c;
+    border-color: #ff0000;
+    background: rgba(255, 65, 65, 0.20);
 }
-
-label {
-    color: var(--colorTextos);
-    font-size: 16px;
-    position: absolute;
-    bottom: 0;
-    left: 5px;
-    top: 10px;
-    transition: 0.5s ease all;
-    pointer-events: none;
-}
-
-input:focus ~ label,
-input:valid ~ label {
-    top: -14px;
-    font-size: 12px;
-    color: #ff0000;
+input:not(:placeholder-shown) {
+    border: 1px solid rgba(0, 0, 0, 0.42);
+    background-color: rgba(0, 0, 0, 0.04);
 }
 
 .barra {
-    position: relative;
-    display: block;
-    width: 100%;
+    display: none; /* Eliminado porque ahora se usa el borde del input */
 }
 
-.barra::before {
-    content: "";
-    height: 2px;
-    width: 0%;
-    bottom: 0;
-    position: absolute;
-    background: linear-gradient(to right, #ff0000, #ff0000);
-    transition: 0.3s ease width;
-    left: 0;
-}
-
-input:focus ~ .barra::before {
-    width: 100%;
-}
-
-button {
+#submitbtn {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgb(196, 0, 0);
+    background-color: rgba(255, 0, 0, 0.74);
     border: none;
     display: block;
-    width: 80%;
+    width: 35%;
     margin: 10px auto;
     color: white;
     height: 40px;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
+    border-radius: 5px;
+    width: 167px;
+    height: 46px;
+    flex-shrink: 0;
 }
 
-button:hover {
+#submitbtn :hover {
     background-color: rgb(255, 0, 0);
+}
+
+footer {
+    background-color: #ff0000;
+    text-align: center;
+    padding: 10px 0;
+    color: white;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+
+footer p {
+    color: white;
+    text-align: right;
+    padding: 0 20px 0 0;
 }
 
 @media screen and (max-width: 500px) {
