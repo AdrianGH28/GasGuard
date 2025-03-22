@@ -115,7 +115,7 @@ async function login(req, res) {
             expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
             path: "/"
         };
-        
+
         res.cookie("jwt", token, cookieOption);
         console.log('Usuario loggeado correctamente');
 

@@ -1,37 +1,79 @@
-
 window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity='1';
-});document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const correo = document.getElementById('correo').value;
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const reenviarBtn = document.getElementById('reenviar-codigo');
+    const codigoForm = document.getElementById('verifica-contraseña-form');
 
-    const response = await fetch('/api/enviar-correo', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ correo })
+    reenviarBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const correo = localStorage.getItem('resetEmail');
+        if (!correo) {
+            alert("No se pudo obtener el correo. Intenta de nuevo.");
+            return;
+        }
+
+        console.log("Reenviando código a:", correo);
+
+        try {
+            const response = await fetch('/api/reenvio-codigo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ correo })
+            });
+
+            const result = await response.json();
+            console.log("Respuesta del servidor:", result);
+
+            if (response.ok && result.status === 'ok') {
+                alert('Código reenviado a tu correo.');
+            } else {
+                alert(result.message || 'Error al reenviar el código');
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            alert('Error al intentar reenviar el código.');
+        }
     });
 
-    const result = await response.json();
+    codigoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    // Validación: evitar campos vacíos
-    if (!correo) {
-        mostraralerta('error', 'El campo de correo no puede estar vacío.');
-        correoInput.focus();
-        return;
-    }
+        const codigo = document.getElementById('codigo').value;
+        const correo = localStorage.getItem('resetEmail');
 
-    if (result.status === "ok") {
-        // Almacenar el correo en el almacenamiento local para usarlo en la siguiente página
-        localStorage.setItem('resetEmail', correo);
-        window.location.href = result.redirect;
-    } else {
-        document.querySelector('.error').classList.remove('escondido');
-        document.querySelector('.error').textContent = result.message;
-    }
+        console.log("Enviando código:", codigo);
+        console.log("Correo asociado:", correo);
+
+        if (!correo || !codigo) {
+            alert("Faltan datos: Código o correo");
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/verifica-contra', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ correo, codigo })
+            });
+
+            const result = await response.json();
+            console.log("Respuesta del servidor:", result);
+
+            if (response.ok && result.status === 'ok') {
+                window.location.href = result.redirect;
+            } else {
+                alert(result.message || 'Error al validar el código');
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            alert('Error al intentar validar el código.');
+        }
+    });
 });
+
 
 let alertaTimeout;
 let alertaTipoActual = "";
