@@ -1,4 +1,8 @@
-document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
+
+window.addEventListener('load', () => {
+    const body = document.body;
+    body.style.opacity='1';
+});document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const correo = document.getElementById('correo').value;
 
