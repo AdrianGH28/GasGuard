@@ -361,6 +361,8 @@ export const forgotPassword = async (req, res) => {
 };
 
 export const enviaCorreo = async (req, res) => {
+    console.log("Solicitud recibida en /api/enviar-correo");
+    console.log("Cuerpo de la petición:", req.body);
     const { correo } = req.body;
     console.log("Correo recibido en el backend:", correo);
     if (!correo) {
@@ -369,6 +371,9 @@ export const enviaCorreo = async (req, res) => {
 
     try {
         const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        if (rows.length === 0) {
+            return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
+        }
         console.log("Resultado de la consulta:", rows);
 
         const codigo = Math.floor(100000 + Math.random() * 900000);
@@ -402,6 +407,7 @@ export const enviaCorreo = async (req, res) => {
 
 export const verificaCodigo = async (req, res) => {
     const { correo, codigo } = req.body;
+    console.log("Cuerpo de la petición:", req.body);
 
     console.log("Recibiendo solicitud de verificación...");
     console.log("Correo recibido:", correo);
@@ -445,6 +451,9 @@ export const verificaCodigo = async (req, res) => {
 };
 
 export const verificaCorreo = async (req, res) => {
+    console.log("Recibiendo solicitud de verificación...");
+    console.log("Correo recibido:", correo);
+    console.log("Código recibido:", codigo);
     const { correo, codigo } = req.body;
 
     if (!correo || !codigo) {
