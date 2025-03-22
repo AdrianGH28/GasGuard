@@ -235,7 +235,7 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
     event.preventDefault();
     const correo = document.getElementById('correo').value;
 
-    const response = await fetch('/api/enviar-correo', {
+    const response =  await fetch('https://gasguard-production.up.railway.app/api/enviar-correo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -248,7 +248,7 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
     // Validación: evitar campos vacíos
     if (!correo) {
         mostraralerta('error', 'El campo de correo no puede estar vacío.');
-        correoInput.focus();
+        document.getElementById('correo').focus();
         return;
     }
 
