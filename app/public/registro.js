@@ -233,18 +233,9 @@ window.addEventListener('load', () => {
 });
 document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
     event.preventDefault();
-    const correo = document.getElementById('correo').value;
     
-    console.log("Correo enviado:", correo);
-    const response =  await fetch('/api/enviar-correo', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ correo })
-    });
-
-    const result = await response.json();
+    const correo = document.getElementById('correo').value;
+    console.log("Correo ingresado:", correo);
 
     // Validación: evitar campos vacíos
     if (!correo) {
@@ -253,14 +244,29 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
         return;
     }
 
-    if (result.status === "ok") {
-        // Almacenar el correo en el almacenamiento local para usarlo en la siguiente página
-        localStorage.setItem('resetEmail', correo);
-        console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
+    try {
+        // Enviar el correo al backend
+        const response = await fetch('/api/enviar-correo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ correo })
+        });
 
-        window.location.href = result.redirect;
-    } else {
-        document.querySelector('.error').classList.remove('escondido');
-        document.querySelector('.error').textContent = result.message;
+        const result = await response.json();
+
+        if (result.status === "ok") {
+            // Guardar el correo en localStorage
+            localStorage.setItem('resetEmail', correo);
+            console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
+
+            // Redirigir a la página donde se verifica el código
+            window.location.href = "/verificarcorreo1";
+        } else {
+            document.querySelector('.error').classList.remove('escondido');
+            document.querySelector('.error').textContent = result.message;
+        }
+    } catch (error) {
+        console.error("Error al enviar correo:", error);
+        mostraralerta('error', 'Error en el servidor. Intenta nuevamente.');
     }
 });

@@ -370,10 +370,10 @@ const esperarCorreoEnDB = async (correo, intentos = 5, delay = 1000) => {
     }
     return null; // Si después de varios intentos no aparece, regresamos null
 };
-
 export const enviaCorreo = async (req, res) => {
     console.log("Solicitud recibida en /api/enviar-correo");
     console.log("Cuerpo de la petición:", req.body);
+
     const { correo } = req.body;
 
     if (!correo) {
@@ -381,11 +381,10 @@ export const enviaCorreo = async (req, res) => {
     }
 
     try {
-        const rows = await esperarCorreoEnDB(correo);
-        if (!rows) {
-            return res.status(404).send({ status: "Error", message: "Correo no encontrado en la base de datos después de varios intentos" });
-        }
+        // Verificar si el correo ya tenía un código generado y eliminarlo
+        recoveryCodes.delete(correo);
 
+        // Generar un nuevo código
         const codigo = Math.floor(100000 + Math.random() * 900000);
         recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000 });
 
@@ -407,15 +406,18 @@ export const enviaCorreo = async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
+
+        // Programar la eliminación del código después de 5 minutos
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
         
-        res.status(200).send({ status: "ok", message: "Correo enviado correctamente" });
+        res.status(200).send({ status: "ok", message: "Correo enviado correctamente", redirect: "/verificar-codigo" });
 
     } catch (error) {
         console.error('Error durante el envío de correo:', error);
         return res.status(500).send({ status: "Error", message: "Error durante el envío de correo" });
     }
 };
+
 
 
 export const verificaCodigo = async (req, res) => {
