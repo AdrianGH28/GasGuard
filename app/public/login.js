@@ -39,7 +39,7 @@ alertContainer.appendChild(alertIcon);
 alertContainer.appendChild(alertText);
 document.body.appendChild(alertContainer);
 
-document.getElementById("form").addEventListener("submit", async (e) => {
+document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const correo = document.querySelector("#correo").value;
     const password = document.querySelector("#password").value;
