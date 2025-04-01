@@ -52,7 +52,7 @@ async function login(req, res) {
         }
 
         const usuarioARevisar = rows[0];
-        const loginCorrecto = await bcryptjs.compare(password, usuarioARevisar.contra_empre);
+        const loginCorrecto = await bcryptjs.compare(password, usuarioARevisar.contra_user);
 
         if (!loginCorrecto) {
             console.log('Contraseña incorrecta');
@@ -60,7 +60,7 @@ async function login(req, res) {
         }
 
         const token = jsonwebtoken.sign(
-            { id_empr: usuarioARevisar.id_empr, correo: usuarioARevisar.correo_empr },
+            { id_user: usuarioARevisar.id_user, correo: usuarioARevisar.correo_user },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION }
         );
