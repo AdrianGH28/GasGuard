@@ -67,8 +67,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
             window.location.href = resJson.redirect;
         }
     } catch (error) {
-        console.error("Error:", error);
-        mostrarAlerta("Error al intentar iniciar sesión");
+        console.error("Error en login:", error);
     }
 });
 

@@ -34,12 +34,12 @@ export const usuarios = [{
     password: "$2a$05$lar7vRY9OSa1d4cQzWxy9OFix5j.JoRFH44lQXgXOEsCvwti98y2u"
 }];
 
-async function login(req, res) {
-    console.log('Request Body:', req.body);
 
+export async function login(req, res) {
+    console.log('Request Body:', req.body);
     const { correo, password } = req.body;
+    
     if (!correo || !password) {
-        console.log('Campos incompletos');
         return res.status(400).send({ status: "Error", message: "Los campos están incompletos" });
     }
 
@@ -47,38 +47,33 @@ async function login(req, res) {
         const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
 
         if (rows.length === 0) {
-            console.log('Usuario no encontrado');
             return res.status(400).send({ status: "Error", message: "Correo o contraseña incorrectos" });
         }
 
-        const usuarioARevisar = rows[0];
-        const loginCorrecto = await bcryptjs.compare(password, usuarioARevisar.contra_user);
+        const usuario = rows[0];
+        const loginCorrecto = await bcryptjs.compare(password, usuario.contra_user);
 
         if (!loginCorrecto) {
-            console.log('Contraseña incorrecta');
             return res.status(400).send({ status: "Error", message: "Correo o contraseña incorrectos" });
         }
 
-        const token = jsonwebtoken.sign(
-            { id_user: usuarioARevisar.id_user, correo: usuarioARevisar.correo_user },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRATION }
-        );
-
-        const cookieOption = {
-            expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
-            path: "/"
-        };
-
-        res.cookie("jwt", token, cookieOption);
-        console.log('Usuario loggeado correctamente');
-
-        res.send({ status: "ok", message: "Usuario loggeado", redirect: '/principalprueba' });
+        if (usuario.verif_user === 1) {
+            const token = jsonwebtoken.sign(
+                { id_user: usuario.id_user, correo: usuario.correo_user },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRATION }
+            );
+            
+            res.cookie("jwt", token, { expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000), path: "/" });
+            return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/principalprueba' });
+        } else {
+            return res.send({ status: "pending", message: "Verificación requerida", redirect: '/verificalogin' });
+        }
     } catch (error) {
         console.error('Error durante login:', error);
         return res.status(500).send({ status: "Error", message: "Error durante login" });
     }
-};
+}
 
 
 /*
@@ -419,10 +414,7 @@ export const enviaCorreo = async (req, res) => {
 };
 
 
-export const enviaCorreoLogin = async (req, res) => {
-    console.log("Solicitud recibida en /api/enviar-correo");
-    console.log("Cuerpo de la petición:", req.body);
-
+export async function enviaCorreoLogin(req, res) {
     const { correo } = req.body;
 
     if (!correo) {
@@ -430,42 +422,28 @@ export const enviaCorreoLogin = async (req, res) => {
     }
 
     try {
-        // Verificar si el correo ya tenía un código generado y eliminarlo
-        recoveryCodes.delete(correo);
+        const [rows] = await pool.execute('SELECT verif_user FROM musuario WHERE correo_user = ?', [correo]);
+        if (rows.length === 0 || rows[0].verif_user === 1) {
+            return res.status(400).send({ status: "Error", message: "Correo no encontrado o ya verificado" });
+        }
 
-        // Generar un nuevo código
         const codigo = Math.floor(100000 + Math.random() * 900000);
         recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000 });
 
-        console.log("Códigos almacenados:", recoveryCodes);
-
         const transporter = nodemailer.createTransport({
             service: 'gmail',
-            auth: {
-                user: 'gasguardad1@gmail.com',
-                pass: 'jxqgehljwskmzfju'
-            }
+            auth: { user: 'gasguardad1@gmail.com', pass: 'jxqgehljwskmzfju' }
         });
 
-        const mailOptions = {
-            from: 'gasguardad1@gmail.com',
-            to: correo,
-            subject: 'Código de recuperación de contraseña',
-            text: `Tu código de recuperación es: ${codigo}`
-        };
+        await transporter.sendMail({ from: 'gasguardad1@gmail.com', to: correo, subject: 'Código de verificación', text: `Tu código es: ${codigo}` });
 
-        await transporter.sendMail(mailOptions);
-
-        // Programar la eliminación del código después de 5 minutos
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
-        
-        res.status(200).send({ status: "ok", message: "Correo enviado correctamente", redirect: "/verificalogin" });
-
+        return res.send({ status: "ok", message: "Correo enviado", redirect: "/verificalogin" });
     } catch (error) {
-        console.error('Error durante el envío de correo:', error);
-        return res.status(500).send({ status: "Error", message: "Error durante el envío de correo" });
+        return res.status(500).send({ status: "Error", message: "Error enviando correo" });
     }
-};
+}
+
 
 
 export const verificaCodigo = async (req, res) => {
@@ -555,6 +533,7 @@ export const verificaCorreoLogin = async (req, res) => {
     const { correo, codigo } = req.body;
     console.log("Correo recibido:", correo);
     console.log("Código recibido:", codigo);
+
     if (!correo || !codigo) {
         return res.status(400).send({ status: "Error", message: "Faltan datos" });
     }
@@ -578,9 +557,17 @@ export const verificaCorreoLogin = async (req, res) => {
         return res.status(400).send({ status: "Error", message: "Código incorrecto" });
     }
 
-    recoveryCodes.delete(correo);
-    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/" });
+    // El código es válido, se actualiza en la base de datos
+    try {
+        await pool.execute('UPDATE musuario SET verif_user = 1 WHERE correo_user = ?', [correo]);
+        recoveryCodes.delete(correo);
+        return res.status(200).send({ status: "ok", message: "Verificación exitosa", redirect: "/principalprueba" });
+    } catch (error) {
+        console.error("Error al actualizar la base de datos:", error);
+        return res.status(500).send({ status: "Error", message: "Error interno del servidor" });
+    }
 };
+
 
 
 export const resetPassword = async (req, res) => {
