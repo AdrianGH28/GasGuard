@@ -224,7 +224,7 @@ async function registro(req, res) {
         const direccionId = direccionResult.insertId;
 
         await pool.execute(
-            'INSERT INTO mempresa (nom_user, correo_user, contra_user, id_direccion) VALUES (?, ?, ?, ?)',
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, id_direccion) VALUES (?, ?, ?, ?)',
             [nombre, correo, hashPassword, direccionId]
         );
 

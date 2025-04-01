@@ -259,8 +259,7 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
             localStorage.setItem('resetEmail', correo);
             console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
 
-            // Redirigir a la página donde se verifica el código
-            window.location.href = "/verificacorreo1";
+            
         } else {
             document.querySelector('.error').classList.remove('escondido');
             document.querySelector('.error').textContent = result.message;
