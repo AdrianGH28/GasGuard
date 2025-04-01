@@ -520,8 +520,15 @@ export const verificaCorreo = async (req, res) => {
         return res.status(400).send({ status: "Error", message: "Código incorrecto" });
     }
 
-    recoveryCodes.delete(correo);
-    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/" });
+    
+    try {
+        await pool.execute('UPDATE musuario SET verif_user = 1 WHERE correo_user = ?', [correo]);
+        recoveryCodes.delete(correo);
+        return res.status(200).send({ status: "ok", message: "Verificación exitosa", redirect: "/" });
+    } catch (error) {
+        console.error("Error al actualizar la base de datos:", error);
+        return res.status(500).send({ status: "Error", message: "Error interno del servidor" });
+    }
 };
 
 //falta que te redirija a la seccion de pagos pero hasta que este hecho
