@@ -44,7 +44,7 @@ async function login(req, res) {
     }
 
     try {
-        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
 
         if (rows.length === 0) {
             console.log('Usuario no encontrado');
@@ -152,7 +152,7 @@ async function registro(req, res) {
     }
 
     try {
-        const [rows] = await pool.execute('SELECT correo_empr FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT correo_user FROM musuario WHERE correo_user = ?', [correo]);
         if (rows.length > 0) {
             return res.status(400).send({ status: "Error", message: "Este usuario ya existe" });
         }
@@ -224,7 +224,7 @@ async function registro(req, res) {
         const direccionId = direccionResult.insertId;
 
         await pool.execute(
-            'INSERT INTO mempresa (nom_empr, correo_empr, contra_empre, id_direccion) VALUES (?, ?, ?, ?)',
+            'INSERT INTO mempresa (nom_user, correo_user, contra_user, id_direccion) VALUES (?, ?, ?, ?)',
             [nombre, correo, hashPassword, direccionId]
         );
 
@@ -320,7 +320,7 @@ export const forgotPassword = async (req, res) => {
     }
 
     try {
-        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
         
 
         if (rows.length === 0) {
@@ -363,7 +363,7 @@ export const forgotPassword = async (req, res) => {
 };
 const esperarCorreoEnDB = async (correo, intentos = 5, delay = 1000) => {
     for (let i = 0; i < intentos; i++) {
-        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
         if (rows.length > 0) return rows; // Si ya existe, regresamos la información
         console.log(`Intento ${i + 1}: Correo aún no en BD, esperando...`);
         await new Promise(resolve => setTimeout(resolve, delay)); // Esperar antes de volver a intentar
@@ -419,6 +419,54 @@ export const enviaCorreo = async (req, res) => {
 };
 
 
+export const enviaCorreoLogin = async (req, res) => {
+    console.log("Solicitud recibida en /api/enviar-correo");
+    console.log("Cuerpo de la petición:", req.body);
+
+    const { correo } = req.body;
+
+    if (!correo) {
+        return res.status(400).send({ status: "Error", message: "El campo de correo está vacío" });
+    }
+
+    try {
+        // Verificar si el correo ya tenía un código generado y eliminarlo
+        recoveryCodes.delete(correo);
+
+        // Generar un nuevo código
+        const codigo = Math.floor(100000 + Math.random() * 900000);
+        recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000 });
+
+        console.log("Códigos almacenados:", recoveryCodes);
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
+
+        const mailOptions = {
+            from: 'gasguardad1@gmail.com',
+            to: correo,
+            subject: 'Código de recuperación de contraseña',
+            text: `Tu código de recuperación es: ${codigo}`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        // Programar la eliminación del código después de 5 minutos
+        setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
+        
+        res.status(200).send({ status: "ok", message: "Correo enviado correctamente", redirect: "/verificalogin" });
+
+    } catch (error) {
+        console.error('Error durante el envío de correo:', error);
+        return res.status(500).send({ status: "Error", message: "Error durante el envío de correo" });
+    }
+};
+
 
 export const verificaCodigo = async (req, res) => {
     const { correo, codigo } = req.body;
@@ -456,7 +504,7 @@ export const verificaCodigo = async (req, res) => {
     console.log(`Código esperado: ${storedData.codigo}, Código recibido: ${codigo}`);
 
     if (parseInt(storedData.codigo) !== parseInt(codigo)) {
-        console.log("🚨 Código incorrecto.");
+        console.log("Código incorrecto.");
         return res.status(400).send({ status: "Error", message: "Código incorrecto" });
     }
 
@@ -500,6 +548,41 @@ export const verificaCorreo = async (req, res) => {
 
 //falta que te redirija a la seccion de pagos pero hasta que este hecho
 
+
+export const verificaCorreoLogin = async (req, res) => {
+    console.log("Recibiendo solicitud de verificación...");
+    
+    const { correo, codigo } = req.body;
+    console.log("Correo recibido:", correo);
+    console.log("Código recibido:", codigo);
+    if (!correo || !codigo) {
+        return res.status(400).send({ status: "Error", message: "Faltan datos" });
+    }
+
+    if (!/^\d{6}$/.test(codigo)) {
+        return res.status(400).send({ status: "Error", message: "El código debe ser un número de 6 dígitos" });
+    }
+
+    const storedData = recoveryCodes.get(correo);
+
+    if (!storedData) {
+        return res.status(400).send({ status: "Error", message: "Código incorrecto o expirado" });
+    }
+
+    if (Date.now() > storedData.expiracion) {
+        recoveryCodes.delete(correo);
+        return res.status(400).send({ status: "Error", message: "Código expirado" });
+    }
+
+    if (parseInt(storedData.codigo) !== parseInt(codigo)) {
+        return res.status(400).send({ status: "Error", message: "Código incorrecto" });
+    }
+
+    recoveryCodes.delete(correo);
+    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/" });
+};
+
+
 export const resetPassword = async (req, res) => {
     const { correo, password, confpass } = req.body;
 
@@ -512,7 +595,7 @@ export const resetPassword = async (req, res) => {
     }
 
     try {
-        const [rows] = await pool.execute('SELECT * FROM mempresa WHERE correo_empr = ?', [correo]);
+        const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
         if (rows.length === 0) {
             return res.status(400).send({ status: "Error", message: "Correo no encontrado" });
         }
@@ -520,7 +603,7 @@ export const resetPassword = async (req, res) => {
         const salt = await bcryptjs.genSalt(5);
         const hashPassword = await bcryptjs.hash(password, salt);
 
-        await pool.execute('UPDATE mempresa SET contra_empre = ? WHERE correo_empr = ?', [hashPassword, correo]);
+        await pool.execute('UPDATE musuario SET contra_user = ? WHERE correo_user = ?', [hashPassword, correo]);
 
         return res.status(200).send({ status: "ok", message: "Contraseña restablecida correctamente", redirect: "/" });
     } catch (error) {
@@ -537,6 +620,8 @@ export const methods = {
     verificaCodigo,
     verificaCorreo,
     enviaCorreo,
+    verificaCorreoLogin,
+    enviaCorreoLogin,
     resetPassword,
     recoveryCodes
 };
