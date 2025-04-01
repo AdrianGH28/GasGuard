@@ -87,15 +87,17 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
     const correo = document.getElementById('correo').value;
     console.log("Correo ingresado:", correo);
 
-    // Validación: evitar campos vacíos
     if (!correo) {
         mostraralerta('error', 'El campo de correo no puede estar vacío.');
         document.getElementById('correo').focus();
         return;
     }
 
+    // Guardar el correo en localStorage ANTES de hacer la petición
+    localStorage.setItem('resetEmail', correo);
+    console.log("Correo guardado en localStorage:", localStorage.getItem('resetEmail'));
+
     try {
-        // Enviar el correo al backend
         const response = await fetch('/api/enviar-correo-login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -105,11 +107,7 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         const result = await response.json();
 
         if (result.status === "ok") {
-            // Guardar el correo en localStorage
-            localStorage.setItem('resetEmail', correo);
-            console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
-
-            
+            window.location.href = result.redirect;
         } else {
             document.querySelector('.error').classList.remove('escondido');
             document.querySelector('.error').textContent = result.message;
