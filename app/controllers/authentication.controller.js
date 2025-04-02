@@ -685,6 +685,33 @@ export const resetPassword = async (req, res) => {
     }
 };
 
+export async function getUserInfo(req, res) {
+    try {
+        // Obtener el token desde las cookies
+        const token = req.cookies.jwt;
+
+        if (!token) {
+            return res.status(401).send({ status: "Error", message: "No autenticado" });
+        }
+
+        // Verificar el token
+        const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+
+        // Consultar la información del usuario en la base de datos
+        const [rows] = await pool.execute('SELECT nombre_user, correo_user, calle, num, colonia, ciudad, cp, estado FROM musuario WHERE id_user = ?', [decoded.id_user]);
+
+        if (rows.length === 0) {
+            return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
+        }
+
+        return res.send({ status: "ok", user: rows[0] });
+
+    } catch (error) {
+        console.error('Error al obtener información del usuario:', error);
+        return res.status(500).send({ status: "Error", message: "Error en el servidor" });
+    }
+}
+
 
 export const methods = {
     login,

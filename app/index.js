@@ -8,6 +8,7 @@ import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
+import { getUserInfo } from './controllers/authentication.controller.js';
 import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
@@ -93,6 +94,8 @@ app.post("/api/verifica-contra-login", authentication.verificaCorreoLogin);
 app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registro-afiliados", authentication.registroAfiliados);
+
+app.get('/api/user-info', getUserInfo);
 
 
 // Generar una IP aleatoria

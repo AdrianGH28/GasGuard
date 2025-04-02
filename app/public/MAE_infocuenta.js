@@ -83,3 +83,24 @@ document.querySelectorAll('nav a').forEach(link => {
     nav.classList.remove('active');
   });
 });
+document.addEventListener("DOMContentLoaded", async function () {
+    try {
+        const response = await fetch('/api/user-info');
+        const data = await response.json();
+
+        if (data.status === "ok") {
+            document.getElementById("nombre").value = data.user.nombre_user;
+            document.getElementById("correo").value = data.user.correo_user;
+            document.getElementById("calle").value = data.user.calle || "";
+            document.getElementById("num").value = data.user.num || "";
+            document.getElementById("colonia").value = data.user.colonia || "";
+            document.getElementById("ciudad").value = data.user.ciudad || "";
+            document.getElementById("cp").value = data.user.cp || "";
+            document.getElementById("estado").value = data.user.estado || "";
+        } else {
+            console.error("Error al obtener datos del usuario:", data.message);
+        }
+    } catch (error) {
+        console.error("Error en la solicitud:", error);
+    }
+});
