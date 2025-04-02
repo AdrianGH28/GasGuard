@@ -45,6 +45,7 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
     }
     if (cp.length !== 5) {
         mostraralerta('error', "El código postal debe contener 5 caracteres");
+        cp.value = "";
         return;
     }
     
@@ -86,11 +87,19 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
         } else {
             submitBtn.disabled = true;
             mostraralerta('success', resJson.message || "Se ha completado el paso 1 exitosamente");
+
             // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
             await esperar(4000); // Espera 4 segundos
+
+            // Hacer la animación de desvanezca del body
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+
+            // Esperar a que la animación termine antes de redirigir
+            await esperar(500); // Esperar el tiempo de la animación (500 ms)
+
             cerraralerta();
-            document.body.style.opacity = '0'; // Opcional: puedes agregar animaciones si deseas
-            window.location.href = '/';
+            window.location.href = '/'; // Redirigir
         }
     } catch (error) {
         mostraralerta('error', "Error de conexión con el servidor.");
