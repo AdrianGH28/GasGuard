@@ -85,7 +85,11 @@ document.querySelectorAll('nav a').forEach(link => {
 });
 document.addEventListener("DOMContentLoaded", async function () {
     try {
-        const response = await fetch('/api/user-info');
+        const response = await fetch('/api/user-info', {
+            method: "GET",
+            credentials: "include" 
+        });
+
         const data = await response.json();
 
         if (data.status === "ok") {

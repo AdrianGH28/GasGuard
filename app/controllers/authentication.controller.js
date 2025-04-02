@@ -64,7 +64,13 @@ export async function login(req, res) {
                 { expiresIn: process.env.JWT_EXPIRATION }
             );
             
-            res.cookie("jwt", token, { expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000), path: "/" });
+            res.cookie("jwt", token, {
+                httpOnly: true,  // Evita que sea accesible desde JS en el navegador
+                secure: false,   // En producción debe ser `true` si usas HTTPS
+                sameSite: "lax", // Controla cómo se envían las cookies
+                expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
+                path: "/"
+            });
             return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/maeinfocuenta' });
         } else {
             return res.send({ status: "pending", message: "Verificación requerida", redirect: '/paso4' });
