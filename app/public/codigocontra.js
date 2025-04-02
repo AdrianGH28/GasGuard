@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.body;
         body.style.opacity = '1';
     });
-    
+    function esperar(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     const reenviarBtn = document.getElementById('reenviar-codigo');
     const codigoForm = document.getElementById('codigo-contraseña-form');
     const inputCodigo = document.getElementById("codigo");
@@ -46,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const codigo = inputCodigo.value;
         const correo = localStorage.getItem('resetEmail');
+        const submitBtn = document.querySelector('button[type="submit"]');
 
         console.log("Enviando código:", codigo);
         console.log("Correo asociado:", correo);
@@ -54,10 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
             mostraralerta("info", "Campos faltantes");
             return;
         }
-
+        const regexnums = /^[1234567890\s]+$/;
+        if (!regexnums.test(codigo)) {
+            mostraralerta('error', "El código solo debe contener caracteres numéricos.");
+            return;
+        }
         if (codigo.length !== 6) {
             errorMensaje.classList.remove("escondido");
-            errorMensaje.textContent = "El código debe tener exactamente 6 números";
+            errorMensaje.textContent = "El código debe contener 6 dígitos";
             inputCodigo.value = "";
             return;
         } else {
@@ -75,12 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
+                submitBtn.disabled = true;
                 mostraralerta("success", "El código ha sido validado correctamente.");
-                setTimeout(() => {
-                    cerraralerta();
-                    document.body.style.opacity = '0';
-                    window.location.href = result.redirect;
-                }, 4000); // 3000 ms = 3 segundos de espera
+                await esperar(4000); // Espera 4 segundos
+
+                document.body.style.transition = 'opacity 0.5s';
+                document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+
+                await esperar(500); // Esperar el tiempo de la animación (500 ms)
+    
+                cerraralerta();
+                window.location.href=result.redirect;
             } else {
                 mostraralerta("error", result.message || 'Error al validar el código');
                 inputCodigo.value = "";

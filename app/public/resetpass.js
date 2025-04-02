@@ -2,6 +2,9 @@ window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity='1';
 });
+function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 document.addEventListener('DOMContentLoaded', () => {
     const correo = localStorage.getItem('resetEmail');
     if (!correo) {
@@ -17,6 +20,7 @@ document.getElementById('reset-password-form').addEventListener('submit', async 
     const correo = document.getElementById('correo').value;
     const password = document.getElementById('password').value;
     const confpass = document.getElementById('confpass').value;
+    const submitBtn = document.querySelector('button[type="submit"]');
 
     if (!correo || !password || !confpass) {
         mostraralerta("error", "Todos los campos son obligatorios");
@@ -46,14 +50,18 @@ document.getElementById('reset-password-form').addEventListener('submit', async 
 
         if (result.status === "ok") {
             // Mostrar alerta de éxito
+            submitBtn.disabled = true;
             mostraralerta("success", "Contraseña restablecida correctamente.");
 
-            // Después de 3 segundos, cerrar la alerta y redirigir
-            setTimeout(() => {
-                cerraralerta();
-                localStorage.removeItem('resetEmail');
-                window.location.href = result.redirect;
-            }, 3000); // Esperar 3 segundos
+            await esperar(4000); // Espera 4 segundos
+
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+            await esperar(500); // Esperar el tiempo de la animación (500 ms)
+            cerraralerta();
+            localStorage.removeItem('resetEmail');
+            window.location.href=result.redirect;
+
         } else {
             // Mostrar alerta de error
             mostraralerta("error", result.message || "Error al restablecer la contraseña.");

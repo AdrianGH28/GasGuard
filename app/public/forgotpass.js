@@ -2,6 +2,9 @@ window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity = '1';
 });
+function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 document.getElementById('login-link').addEventListener('click', function(event) {
     event.preventDefault(); // Prevenir la redirección inmediata
     document.body.style.opacity = '0'; // Hacer que la página se desvanezca
@@ -16,6 +19,7 @@ document.getElementById('forgot-password-form').addEventListener('submit', async
     event.preventDefault();
     const correo = document.getElementById('correo').value;
     const mensajeError = document.getElementsByClassName("error")[0];
+    const submitBtn = document.querySelector('button[type="submit"]');
     if (!correo) {
         mostraralerta('info', 'Todos los campos son obligatorios');
         return;
@@ -37,13 +41,18 @@ document.getElementById('forgot-password-form').addEventListener('submit', async
         if (result.status === "ok") {
             // Almacenar el correo en el almacenamiento local para usarlo en la siguiente página
             localStorage.setItem('resetEmail', correo);
+            submitBtn.disabled = true;
             mostraralerta('success', 'Correo enviado correctamente. Revisa tu bandeja de entrada.');
 
-            setTimeout(() => {
+            await esperar(4000); // Espera 4 segundos
+
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+
+                await esperar(500); // Esperar el tiempo de la animación (500 ms)
+    
                 cerraralerta();
-                document.body.style.opacity = '0';
-                window.location.href = result.redirect;
-            }, 4000); // 3000 ms = 3 segundos de espera
+                window.location.href=result.redirect;
         } else {
             mostraralerta('error', result.message || 'Hubo un problema al enviar el correo. Intenta de nuevo.');
         }
