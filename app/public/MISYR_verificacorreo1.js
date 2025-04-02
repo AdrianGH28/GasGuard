@@ -90,7 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href=result.redirect;
 
             } else {
-                mostraralerta("error", 'Error al validar el código');
+                //mostraralerta("error", 'Error al validar el código');
+                mostraralerta("error", result.message);
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
