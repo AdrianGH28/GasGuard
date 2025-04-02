@@ -12,7 +12,9 @@ document.getElementById('login-link').addEventListener('click', function(event) 
         window.location.href = this.href; // Redirigir después de la animación
     }, 500); // Tiempo suficiente para la transición
 });
-
+function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 document.getElementById("enviar-correov-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -84,11 +86,11 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
         } else {
             submitBtn.disabled = true;
             mostraralerta('success', resJson.message || "Se ha completado el paso 1 exitosamente");
-            setTimeout(() => {
-                cerraralerta();
-                document.body.style.opacity = '0';
-                window.location.href = '/';
-            }, 4000); // 3000 ms = 3 segundos de espera
+            // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
+            await esperar(4000); // Espera 4 segundos
+            cerraralerta();
+            document.body.style.opacity = '0'; // Opcional: puedes agregar animaciones si deseas
+            window.location.href = '/';
         }
     } catch (error) {
         mostraralerta('error', "Error de conexión con el servidor.");
