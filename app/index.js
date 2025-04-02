@@ -72,6 +72,7 @@ app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
 app.get("/historial", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/historial.html"));
 app.get("/principal", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/principal.html"));
+app.get("/seleccioninfo", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/seleccion_info.html"));
 app.get("/principalprueba", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/paginaprincipalprueba.html"));
 app.get("/vincular", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/vincular.html"));
 app.get("/inicio", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/inicio.html"));
@@ -90,6 +91,7 @@ app.post("/api/enviar-correo", authentication.enviaCorreo);
 app.post("/api/verifica-contra-login", authentication.verificaCorreoLogin);
 app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
+app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 
 // Generar una IP aleatoria

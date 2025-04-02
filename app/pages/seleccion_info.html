@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Seleccion Info</title>
+    <link rel="stylesheet" href="sleccion_info.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
+</head>
+
+<body>
+    <nav>
+        <div class="navbar-container">
+            <!-- Contenedor logo y texto -->
+            <div class="logo-container">
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </div>
+            <!-- Contenedor de los items (ya centrado) -->
+            <div class="container-items">
+                <!-- Página 1: Dirección (index.html) -->
+                <a class="nav-link" href="" data-page="index">
+                    <i class="fa fa-address-book"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 2: Historial (page2.html) -->
+                <a class="nav-link" href="" data-page="page2">
+                    <i class="fa fa-history"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 3: Estadísticas (page3.html) -->
+                <a class="nav-link" href="" data-page="page3">
+                    <i class="fa fa-chart-column"></i>
+                    <div class="animation"></div>
+                </a>
+            </div>
+            <div class="user-container" id="user-container">
+                <span class="user-text">Usuario</span>
+                <i class="fa fa-user-circle user-icon"></i>
+                <div class="animacion"></div>
+            </div>     
+        </div>
+    </nav>
+    
+
+   <!-- Contenedor principal de la página -->
+   <div class="page-container">
+        <!-- Encabezado con "CUENTA" y "Atrás" -->
+        <div class="header-top">
+            <h1 class="page-title">CUENTA</h1>
+            <a class="nav-link" href="" data-page="atras">
+            <button class="back-button">
+                Atrás <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+            </button>            
+    </div>
+
+
+    <div class="container">
+        
+        <a class="nav-link" href="" data-page="infocuenta">
+            <div class="box" id="box1">
+            
+                <div class="animation"></div>
+                    <button class="edit-info" id="edit-btn">
+                        <i class="fa fa-user-circle" aria-hidden="true"></i>
+                    </button>
+                        <h2>Información</h2>
+                        <p>Visualiza y edita tu información personal</p>
+            </div>
+        </a>
+        
+        <a class="nav-link" href="" data-page="suscripción">
+            <div class="box" id="box2">
+                <button class="edit-info" id="edit-btn">
+                    <i class="fa fa-credit-card-alt" aria-hidden="true"></i>
+                </button>
+                    <h2>Suscripción</h2>
+                    <p>Visualiza y administra tu suscripción</p>
+            </div>
+        </a>
+
+    </div>
+
+      
+    <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+
+    <script src="seleccion_info.js"></script>
+    
+</body>
+</html>

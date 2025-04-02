@@ -65,7 +65,7 @@ export async function login(req, res) {
             );
             
             res.cookie("jwt", token, { expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000), path: "/" });
-            return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/principalprueba' });
+            return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/seleccioninfo' });
         } else {
             return res.send({ status: "pending", message: "Verificación requerida", redirect: '/verificalogin' });
         }
@@ -230,6 +230,85 @@ async function registro(req, res) {
         return res.status(500).send({ status: "Error", message: "Error al registrar usuario." });
     }
 }
+
+/*--------CUENTAS AFILIADAS */
+async function registroAfiliados(req, res) {
+    const { nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass } = req.body;
+
+    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
+        return res.status(400).send({ status: "Error", message: "Los campos están incompletos" });
+    }
+
+    if (password.length < 8 || password.length > 12) {
+        return res.status(400).send({ status: "Error", message: "La contraseña debe tener entre 8 y 12 caracteres." });
+    }
+
+    if (password !== confpass) {
+        return res.status(400).send({ status: "Error", message: "Las contraseñas no coinciden" });
+    }
+
+    try {
+        const [rows] = await pool.execute('SELECT correo_user FROM musuario WHERE correo_user = ?', [correo]);
+        if (rows.length > 0) {
+            return res.status(400).send({ status: "Error", message: "Este usuario ya existe" });
+        }
+
+        const apiKey = process.env.HUNTER_API_KEY;
+        const apiURL = `https://api.hunter.io/v2/email-verifier?email=${correo}&api_key=${apiKey}`;
+
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        console.log('Hunter API response:', data);
+
+        if (!data || !data.data || data.data.status !== 'valid') {
+            return res.status(400).send({ status: "Error", message: "El correo no es válido." });
+        }
+
+        const salt = await bcryptjs.genSalt(5);
+        const hashPassword = await bcryptjs.hash(password, salt);
+
+        // Obtener o insertar colonia
+        const [coloniaResult] = await pool.execute('SELECT id_colonia FROM ccolonia WHERE nom_col = ?', [colonia]);
+        let id_colonia = coloniaResult.length > 0 ? coloniaResult[0].id_colonia : (await pool.execute('INSERT INTO ccolonia (nom_col) VALUES (?)', [colonia]))[0].insertId;
+
+        // Obtener o insertar calle
+        const [calleResult] = await pool.execute('SELECT id_calle FROM dcalle WHERE nom_calle = ?', [calle]);
+        let id_calle = calleResult.length > 0 ? calleResult[0].id_calle : (await pool.execute('INSERT INTO dcalle (nom_calle) VALUES (?)', [calle]))[0].insertId;
+
+        // Obtener o insertar ciudad
+        const [ciudadResult] = await pool.execute('SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ?', [ciudad]);
+        let id_ciudad = ciudadResult.length > 0 ? ciudadResult[0].id_ciudad : (await pool.execute('INSERT INTO cciudad (nom_ciudad) VALUES (?)', [ciudad]))[0].insertId;
+
+        // Obtener o insertar estado
+        const [estadoResult] = await pool.execute('SELECT id_estado FROM cestado WHERE nom_estado = ?', [estado]);
+        let id_estado = estadoResult.length > 0 ? estadoResult[0].id_estado : (await pool.execute('INSERT INTO cestado (nom_estado) VALUES (?)', [estado]))[0].insertId;
+
+        // Obtener o insertar código postal
+        const [copostResult] = await pool.execute('SELECT id_copost FROM ccpostal WHERE cp_copost = ?', [cp]);
+        let id_copost = copostResult.length > 0 ? copostResult[0].id_copost : (await pool.execute('INSERT INTO ccpostal (cp_copost) VALUES (?)', [cp]))[0].insertId;
+
+        // Insertar dirección
+        const [direccionResult] = await pool.execute(
+            'INSERT INTO ddireccion (numero_direc, id_colonia, id_calle, id_ciudad, id_estado, id_copost) VALUES (?, ?, ?, ?, ?, ?)',
+            [numero, id_colonia, id_calle, id_ciudad, id_estado, id_copost]
+        );
+        const direccionId = direccionResult.insertId;
+
+        // Insertar usuario con rol "afiliado"
+        await pool.execute(
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion) VALUES (?, ?, ?, ?, ?)',
+            [nombre, correo, hashPassword, 'afiliado', direccionId]
+        );
+        //esto debe de cambiar pq no te debe redigir como tal solo inserta y cierra el modal
+        return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado con rol afiliado`, redirect: "/verificacorreo1" });
+
+    } catch (error) {
+        console.error('Error al registrar usuario:', error);
+        return res.status(500).send({ status: "Error", message: "Error al registrar usuario." });
+    }
+}
+
 /*
 
 
@@ -617,5 +696,6 @@ export const methods = {
     verificaCorreoLogin,
     enviaCorreoLogin,
     resetPassword,
+    registroAfiliados,
     recoveryCodes
 };
