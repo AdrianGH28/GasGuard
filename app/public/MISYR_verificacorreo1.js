@@ -51,7 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
             mostraralerta("info", "Todos los campos son obligatorios");
             return;
         }
-
+        const regexnums = /^[1234567890\s]+$/;
+        if (!regexnums.test(codigo)) {
+            mostraralerta('error', "El código solo debe contener caracteres numéricos.");
+            return;
+        }
+        if (correo.length !== 6) {
+            mostraralerta('error', "El código solo debe contener 6 dígitos");
+            return;
+        }
+        
         try {
             const response = await fetch('/api/verifica-contra', {
                 method: 'POST',
