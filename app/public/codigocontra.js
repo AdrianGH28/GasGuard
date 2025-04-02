@@ -63,14 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (codigo.length !== 6) {
-            errorMensaje.classList.remove("escondido");
-            errorMensaje.textContent = "El código debe contener 6 dígitos";
+            mostraralerta('error', "El código solo debe contener 6 dígitos.");
             inputCodigo.value = "";
             return;
-        } else {
-            errorMensaje.classList.add("escondido");
-        }
-
+        } 
         try {
             const response = await fetch('/api/codigo-contra', {
                 method: 'POST',
@@ -104,9 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    inputCodigo.addEventListener("input", function () {
+    /*inputCodigo.addEventListener("input", function () {
         this.value = this.value.replace(/\D/g, "").slice(0, 6);
-    });
+    });*/
 });
 let alertaTimeout;
 let alertaTipoActual = "";
