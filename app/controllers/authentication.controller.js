@@ -475,8 +475,8 @@ export const enviaCorreo = async (req, res) => {
         const mailOptions = {
             from: 'gasguardad1@gmail.com',
             to: correo,
-            subject: 'Código de recuperación de contraseña',
-            text: `Tu código de recuperación es: ${codigo}`
+            subject: 'Código de verificación de contraseña',
+            text: `Tu código de verificación es: ${codigo}`
         };
 
         await transporter.sendMail(mailOptions);

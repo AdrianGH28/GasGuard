@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Reenviando código a:", correo);
 
         try {
-            const response = await fetch('/api/reenvio-codigo', {
+            const response = await fetch('/api/reenvio-codigo-paso4', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ correo })

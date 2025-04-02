@@ -418,7 +418,155 @@ app.post('/api/reenvio-codigo', async (req, res) => {
     }
 });
 
+app.post('/api/reenvio-codigo-paso2', async (req, res) => {
+    const { correo } = req.body;
 
+    if (!correo) {
+        return res.status(400).json({ status: 'error', message: 'Correo no proporcionado' });
+    }
+
+    try {
+        const storedData = authentication.recoveryCodes.get(correo);
+
+        if (!storedData) {
+            return res.status(400).json({ status: 'error', message: 'No hay código para este correo' });
+        }
+
+        const ahora = Date.now();
+
+        // Verificar si el usuario está bloqueado y si ya pasó 1 hora
+        if (storedData.bloqueo && ahora < storedData.bloqueo) {
+            return res.status(400).json({ status: 'error', message: 'Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.' });
+        } else if (storedData.bloqueo && ahora >= storedData.bloqueo) {
+            // Restablecer intentos después de 1 hora
+            storedData.reintentos = 0;
+            storedData.bloqueo = null;
+        }
+
+        // Si el usuario ha alcanzado el límite de intentos, bloquear por 1 hora
+        if (storedData.reintentos >= 3) {
+            authentication.recoveryCodes.set(correo, {
+                ...storedData,
+                bloqueo: ahora + 60 * 60 * 1000 // Bloqueo de 1 hora
+            });
+            return res.status(400).json({ status: 'error', message: 'Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.' });
+        }
+
+        // Verificar si el usuario debe esperar 1 minuto antes de reenviar
+        if (storedData.ultimoIntento && ahora - storedData.ultimoIntento < 60 * 1000) {
+            return res.status(400).json({ status: 'error', message: 'Debes esperar 1 minuto antes de reenviar el código nuevamente.' });
+        }
+
+        // Generar nuevo código
+        const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
+        authentication.recoveryCodes.set(correo, { 
+            codigo: nuevoCodigo, 
+            expiracion: ahora + 5 * 60 * 1000, 
+            reintentos: storedData.reintentos + 1, 
+            ultimoIntento: ahora 
+        });
+
+        console.log(`Código ${nuevoCodigo} generado para ${correo}`);
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
+
+        const mailOptions = {
+            from: 'gasguardad1@gmail.com',
+            to: correo,
+            subject: 'Código de verificación de cuenta',
+            text: `Tu código de verificación es: ${nuevoCodigo}`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`Código ${nuevoCodigo} enviado correctamente a ${correo}`);
+
+        res.json({ status: 'ok', message: 'Código reenviado con éxito' });
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+        res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
+    }
+});
+
+app.post('/api/reenvio-codigo-paso4', async (req, res) => {
+    const { correo } = req.body;
+
+    if (!correo) {
+        return res.status(400).json({ status: 'error', message: 'Correo no proporcionado' });
+    }
+
+    try {
+        const storedData = authentication.recoveryCodes.get(correo);
+
+        if (!storedData) {
+            return res.status(400).json({ status: 'error', message: 'No hay código para este correo' });
+        }
+
+        const ahora = Date.now();
+
+        // Verificar si el usuario está bloqueado y si ya pasó 1 hora
+        if (storedData.bloqueo && ahora < storedData.bloqueo) {
+            return res.status(400).json({ status: 'error', message: 'Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.' });
+        } else if (storedData.bloqueo && ahora >= storedData.bloqueo) {
+            // Restablecer intentos después de 1 hora
+            storedData.reintentos = 0;
+            storedData.bloqueo = null;
+        }
+
+        // Si el usuario ha alcanzado el límite de intentos, bloquear por 1 hora
+        if (storedData.reintentos >= 3) {
+            authentication.recoveryCodes.set(correo, {
+                ...storedData,
+                bloqueo: ahora + 60 * 60 * 1000 // Bloqueo de 1 hora
+            });
+            return res.status(400).json({ status: 'error', message: 'Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.' });
+        }
+
+        // Verificar si el usuario debe esperar 1 minuto antes de reenviar
+        if (storedData.ultimoIntento && ahora - storedData.ultimoIntento < 60 * 1000) {
+            return res.status(400).json({ status: 'error', message: 'Debes esperar 1 minuto antes de reenviar el código nuevamente.' });
+        }
+
+        // Generar nuevo código
+        const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
+        authentication.recoveryCodes.set(correo, { 
+            codigo: nuevoCodigo, 
+            expiracion: ahora + 5 * 60 * 1000, 
+            reintentos: storedData.reintentos + 1, 
+            ultimoIntento: ahora 
+        });
+
+        console.log(`Código ${nuevoCodigo} generado para ${correo}`);
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
+
+        const mailOptions = {
+            from: 'gasguardad1@gmail.com',
+            to: correo,
+            subject: 'Código de verificación de cuenta',
+            text: `Tu código de verificación es: ${nuevoCodigo}`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`Código ${nuevoCodigo} enviado correctamente a ${correo}`);
+
+        res.json({ status: 'ok', message: 'Código reenviado con éxito' });
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+        res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
+    }
+});
 
 export const verificaCodigo = async (req, res) => {
     const { correo, codigo } = req.body; // Asegúrate de que se envíen ambos datos
