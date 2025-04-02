@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de sesion</title>
-    <script src="login.js" defer></script>
-    <link rel="stylesheet" href="/css/inicio.css">
+    <script src="MISYR_login.js" defer></script>
+    <link rel="stylesheet" href="/css/MISYR_login.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
     <link rel="icon" href="images/logotipo.png" type="image/png">
@@ -38,7 +38,7 @@
             <div class="welcome-section">
                 <h1>BIENVENIDO A GASGUARD!</h1>
                 <p>Aún no tienes una cuenta?</p>
-                <button class="register-btn" onclick="window.location.href='/registro';">Regístrate</button>
+                <button class="register-btn" onclick="window.location.href='/paso1';">Regístrate</button>
             </div>
         </div>
 
@@ -48,7 +48,7 @@
                 <form id="login-form" action="/enviar-correo-login" method="POST">
                     <input type="email" id="correo" class="input-field" placeholder="Correo electrónico" required>
                     <input type="password" id="password" class="input-field" placeholder="Contraseña" required>
-                    <a href="/forgotpass" class="forgot-password">Olvidaste tu contraseña? <span class="underline">Recupérala</span></a>
+                    <a href="/recuperacion1" class="forgot-password">Olvidaste tu contraseña? <span class="underline">Recupérala</span></a>
                     <button type="submit" class="login-btn">Iniciar Sesión</button>
                 </form>
             </div>

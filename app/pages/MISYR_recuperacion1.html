@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificación de Correo</title>
-    <script src="MISYR_verificacorreo1.js" defer></script>
-    <link rel="stylesheet" href="/css/codigocontra.css">
-    <link rel="stylesheet" href="/css/headersencillo.css">
+    <title>Recuperar Contraseña</title>
+    <link rel="stylesheet" href="/css/MISYR_recuperacion1.css">
     <link rel="stylesheet" href="/css/backgroundvideo.css">
+    <link rel="stylesheet" href="/css/headersencillo.css">
     <link rel="stylesheet" href="/css/alertas.css">
-    <link rel="icon" href="images/logotipo.png" type="image/png">
+    <script src="MISYR_recuperacion1.js" defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
 </head>
-
 <body>
     <div id="alertamodal" class="custom-alert">
         <div class="alerticon">
@@ -60,32 +58,28 @@
             <div class="contenedor-p">
                 <div class="contenedor-pa">
                     <div class="txt">
-                        <h1>Paso 2</h1>
-                        <p>Verifica tu correo</p>
+                        <h1>Recuperación</h1>
+                        <p>Recupera tu cuenta</p>
                     </div>
                 </div>
-                <form id="codigo-contraseña-form" action="/api/verifica-contra" method="POST">
+                <form id="forgot-password-form" action="/forgot-password" method="POST">
                     <div class="form">
                         <div class="contenedor">
                             <div class="contenedor1">
-                                <p>Se ha enviado un código al correo electrónico</p>
-                                <div class="input-entero">
-                                    <div class="grupo">
-                                        <input type="text" name="codigo" id="codigo" placeholder="Ingresa el código"">
-                                        <span class="barra"></span>
-                                    </div>
-                                </div>
+                                <p>Ingresa tu correo electrónico para buscar tu correo</p>
+                        <div class="grupo">
+                            <input type="email" name="correo" id="correo" placeholder="Correo electrónico">
+                            <span class="barra"></span>
+                        </div>
+                        <button type="submit" id="submitbtn">Enviar</button>
+                        <p class="error escondido">Error al enviar el correo de recuperación</p>
                             </div>
                         </div>
-                        <button id="submitbtn" type="submit">Validar</button>
-                        <p class="error escondido">Error al validar el codigo</p>
                     </div>
-                    <p>¿Aún no ha sido recibido? <a id="reenviar-codigo">Reenviar</a></p>
+                    <p>¿Recordaste tu contraseña?<a href="/" id="login-link">Inicia Sesión</a></p>
                 </form>
             </div>
         </div>
     </main>
-    
 </body>
-
 </html>

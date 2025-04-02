@@ -67,7 +67,7 @@ export async function login(req, res) {
             res.cookie("jwt", token, { expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000), path: "/" });
             return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/seleccioninfo' });
         } else {
-            return res.send({ status: "pending", message: "Verificación requerida", redirect: '/verificalogin' });
+            return res.send({ status: "pending", message: "Verificación requerida", redirect: '/paso4' });
         }
     } catch (error) {
         console.error('Error durante login:', error);
@@ -223,7 +223,7 @@ async function registro(req, res) {
             [nombre, correo, hashPassword, direccionId]
         );
 
-        return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado`, redirect: "/verificacorreo1" });
+        return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado`, redirect: "/paso2" });
 
     } catch (error) {
         console.error('Error al registrar usuario:', error);
@@ -428,7 +428,7 @@ export const forgotPassword = async (req, res) => {
         // Eliminar código después de 5 minutos
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
 
-        return res.status(200).send({ status: "ok", message: "Código enviado", redirect: "/codigocontra" });
+        return res.status(200).send({ status: "ok", message: "Código enviado", redirect: "/recuperacion2" });
 
     } catch (error) {
         console.error('Error durante forgotPassword:', error);
@@ -484,7 +484,7 @@ export const enviaCorreo = async (req, res) => {
         // Programar la eliminación del código después de 5 minutos
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
         
-        res.status(200).send({ status: "ok", message: "Correo enviado correctamente", redirect: "/verificar-codigo" });
+        res.status(200).send({ status: "ok", message: "Correo enviado correctamente", redirect: "/paso2" });
 
     } catch (error) {
         console.error('Error durante el envío de correo:', error);
@@ -517,7 +517,7 @@ export async function enviaCorreoLogin(req, res) {
         await transporter.sendMail({ from: 'gasguardad1@gmail.com', to: correo, subject: 'Código de verificación', text: `Tu código es: ${codigo}` });
 
         setTimeout(() => recoveryCodes.delete(correo), 5 * 60 * 1000);
-        return res.send({ status: "ok", message: "Correo enviado", redirect: "/verificalogin" });
+        return res.send({ status: "ok", message: "Correo enviado", redirect: "/paso4" });
     } catch (error) {
         return res.status(500).send({ status: "Error", message: "Error enviando correo" });
     }
@@ -567,7 +567,7 @@ export const verificaCodigo = async (req, res) => {
 
     console.log("Código válido. Redirigiendo...");
     recoveryCodes.delete(correo);
-    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/resetpass" });
+    return res.status(200).send({ status: "ok", message: "Código válido", redirect: "/recuperacion3" });
 };
 
 export const verificaCorreo = async (req, res) => {

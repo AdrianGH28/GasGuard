@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-    <script src="codigocontra.js" defer></script>
-    <link rel="stylesheet" href="/css/codigocontra.css">
+    <title>Verificación de Correo</title>
+    <script src="MISYR_paso4.js" defer></script>
+    <link rel="stylesheet" href="/css/MISYR_recuperacion2.css">
     <link rel="stylesheet" href="/css/headersencillo.css">
     <link rel="stylesheet" href="/css/backgroundvideo.css">
     <link rel="stylesheet" href="/css/alertas.css">
@@ -60,11 +60,11 @@
             <div class="contenedor-p">
                 <div class="contenedor-pa">
                     <div class="txt">
-                        <h1>Recuperación</h1>
-                        <p>Recupera tu cuenta</p>
+                        <h1>Verificación</h1>
+                        <p>Verifica tu correo</p>
                     </div>
                 </div>
-                <form id="codigo-contraseña-form" action="/api/codigo-contra" method="POST">
+                <form id="codigo-contraseña-form" action="/api/verifica-contra-login" method="POST">
                     <div class="form">
                         <div class="contenedor">
                             <div class="contenedor1">
@@ -81,7 +81,6 @@
                         <p class="error escondido">Error al validar el codigo</p>
                     </div>
                     <p>¿Aún no ha sido recibido? <a id="reenviar-codigo">Reenviar</a></p>
-
                 </form>
             </div>
         </div>

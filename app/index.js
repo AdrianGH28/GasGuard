@@ -59,15 +59,15 @@ app.listen(app.get("port"), () => {
 
 
 // Rutas
-app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/login.html"));
+app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_login.html"));
 app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registropago.html"));
-app.get("/registro", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registro.html"));
-app.get("/forgotpass", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/forgotpass.html"));
-app.get("/codigocontra", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/codigocontra.html"));
-app.get("/verificacorreo1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_verificacorreo1.html"));
+app.get("/paso1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso1.html"));
+app.get("/paso2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso2.html"));
+app.get("/paso4", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso4.html"));
+app.get("/recuperacion1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion1.html"));
+app.get("/recuperacion2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion2.html"));
+app.get("/recuperacion3", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion3.html"));
 app.get("/verificacorreo2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_verificacorreo2.html"));
-app.get("/verificalogin", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/verificacionlogin.html"));
-app.get("/resetpass", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/resetpass.html"));
 app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/dispositivos.html"));
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
 app.get("/historial", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/historial.html"));
