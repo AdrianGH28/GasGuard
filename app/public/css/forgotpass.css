@@ -210,6 +210,7 @@ form {
     padding: 0;
     box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
     border-top: 1px solid #8f8c8c; /* Borde gris agregado entre contenedor-pa y form */
+    border-radius: 0 0 10px 10px;
 }
 
 .form {

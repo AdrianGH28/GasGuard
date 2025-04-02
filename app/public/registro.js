@@ -99,7 +99,6 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
             await esperar(500); // Esperar el tiempo de la animación (500 ms)
 
             cerraralerta();
-            window.location.href = '/'; // Redirigir
         }
     } catch (error) {
         mostraralerta('error', "Error de conexión con el servidor.");
