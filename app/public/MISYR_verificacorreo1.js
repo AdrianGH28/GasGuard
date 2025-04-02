@@ -64,7 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok && result.status === 'ok') {
                 submitBtn.disabled = true;
-            mostraralerta('success',"Correo verificado exitosamente");
+            mostraralerta('success',result.message);
+            //mostraralerta('success',"Correo verificado exitosamente");
 
             // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
             await esperar(4000); // Espera 4 segundos
@@ -77,7 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await esperar(500); // Esperar el tiempo de la animación (500 ms)
 
             cerraralerta();
-            window.location.href = resJson.redirect;
+            window.location.href=result.redirect;
+
             } else {
                 mostraralerta("error", 'Error al validar el código');
             }
