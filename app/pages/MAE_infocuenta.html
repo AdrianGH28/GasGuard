@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>GasGuard</title>
+    <link rel="stylesheet" href="MAE_infocuenta.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <l<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
+</head>
+<body>
+    <nav>
+        <div class="navbar-container">
+            <!-- Contenedor logo y texto -->
+            <div class="logo-container">
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </div>
+            <!-- Contenedor de los items (ya centrado) -->
+            <div class="container-items">
+                <!-- Página 1: Dirección (index.html) -->
+                <a class="nav-link" href="index.html" data-page="index">
+                    <i class="fa fa-address-book"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 2: Historial (page2.html) -->
+                <a class="nav-link" href="page2.html" data-page="page2">
+                    <i class="fa fa-history"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 3: Estadísticas (page3.html) -->
+                <a class="nav-link" href="page3.html" data-page="page3">
+                    <i class="fa fa-chart-column"></i>
+                    <div class="animation"></div>
+                </a>
+            </div>
+            <div class="user-container" id="user-container">
+                <span class="user-text">Usuario</span>
+                <i class="fa fa-user-circle user-icon"></i>
+                <div class="animacion"></div>
+            </div>     
+        </div>
+    </nav>
+
+    <!-- Contenedor principal de la página -->
+    <div class="page-container">
+        <!-- Encabezado con "CUENTA" y "Atrás" -->
+        <div class="header-top">
+            <h1 class="page-title">CUENTA</h1>
+            <a class="nav-link" href="page4.html" data-page="suscripción">
+            <button class="back-button">
+                Atrás <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+            </button>  
+        </a>          
+        </div>
+
+        <!-- Contenedor de Información -->
+        <div class="container">
+            <div class="header">
+                <h2 class="info-title">Información</h2>
+            
+                <!-- Contenedor de los botones -->
+                <div class="edit-container">
+                    <!-- Botón "Editar información" -->
+                    <button class="edit-info" id="edit-btn">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span class="underline-text">Editar información</span>
+                    </button>
+                      
+                      
+            
+                    <!-- Contenedor de los botones "Guardar" y "Cancelar" -->
+                    <div class="edit-actions">
+                        <button class="save-info" id="save-btn" style="display: none;">
+                            <i class="fa fa-folder" aria-hidden="true"></i>
+                        </button>
+                        <button class="cancel-info" id="cancel-btn" style="display: none;">
+                            <i class="fa-solid fa-delete-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+
+            <input type="text" class="full-field" id="nombre" placeholder="Nombre" disabled>
+            <input type="email" class="full-field" id="correo" placeholder="Correo electrónico" disabled>
+            <small class="note">* La contraseña debe contener de 8 a 12 caracteres</small>
+            <!-- Campo original de "Contraseña" -->
+            <input type="password" class="full-field" id="password" placeholder="Contraseña" disabled>
+
+            <!-- Nuevos campos de contraseña (inicialmente ocultos) -->
+            <div class="password-container" style="display: none;">
+                <input type="password" class="half-field" id="new-password" placeholder="Elige una contraseña">
+                <input type="password" class="half-field" id="confirm-password" placeholder="Confirma contraseña">
+            </div>
+
+
+            <h3 class="section-title">Dirección</h3>
+            <div class="address-row">
+                <input type="text" class="address-field address-large" id="calle" placeholder="Calle" disabled>
+                <input type="text" class="address-field address-small" id="num" placeholder="Núm" disabled>
+                <input type="text" class="address-field address-medium" id="colonia" placeholder="Colonia" disabled>
+            </div>
+            <div class="address-row">
+                <input type="text" class="address-field address-large" id="ciudad" placeholder="Ciudad" disabled>
+                <input type="text" class="address-field address-small" id="cp" placeholder="C.P" disabled>
+                <input type="text" class="address-field address-medium" id="estado" placeholder="Estado" disabled>
+            </div>
+        </div>
+    </div>
+
+    <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+
+    
+
+    <script src="MAE_infocuenta.js"></script> <!-- Asegúrate de agregar tu archivo JS -->
+</body>
+</html>

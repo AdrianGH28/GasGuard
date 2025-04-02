@@ -68,6 +68,7 @@ app.get("/recuperacion1", authorization.soloPublico, (req, res) => res.sendFile(
 app.get("/recuperacion2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion2.html"));
 app.get("/recuperacion3", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion3.html"));
 app.get("/verificacorreo2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_verificacorreo2.html"));
+app.get("/maeinfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAE_infocuenta.html"));
 app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/dispositivos.html"));
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
 app.get("/historial", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/historial.html"));
