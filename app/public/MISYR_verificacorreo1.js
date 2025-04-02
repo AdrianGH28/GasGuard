@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok && result.status === 'ok') {
                 submitBtn.disabled = true;
-            mostraralerta('success',resJson.message);
+            mostraralerta('success',"Correo verificado exitosamente");
 
             // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
             await esperar(4000); // Espera 4 segundos
