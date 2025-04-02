@@ -56,11 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
             mostraralerta('error', "El código solo debe contener caracteres numéricos.");
             return;
         }
-        if (correo.length !== 6) {
-            mostraralerta('error', "El código solo debe contener 6 dígitos");
+        if (codigo.length !== 6) {
+            mostraralerta('error', "El código debe contener 6 dígitos");
             return;
         }
-        
+
         try {
             const response = await fetch('/api/verifica-contra', {
                 method: 'POST',
