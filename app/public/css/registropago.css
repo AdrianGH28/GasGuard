@@ -82,6 +82,7 @@ img {
     justify-content: space-between;
     height: 100px;
     background-size: cover;
+    border-radius: 10px;
 }
 
 .img, .txt {

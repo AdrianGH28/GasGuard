@@ -26,6 +26,7 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
     const correo = document.querySelector('#correo').value;
     const password = document.querySelector('#password').value;
     const confpass = document.querySelector('#conf-pass').value;
+    const submitBtn = document.querySelector('button[type="submit"]');
 
     if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
         mostraralerta('info', "Todos los campos son obligatorios.");
@@ -36,6 +37,12 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
 
     if (password.length < 8 || password.length > 12) {
         mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
+        password.value = ""; // Limpiar el campo de contraseña
+        confpass.value = ""; // Limpiar el campo de confirmación de contraseña
+        return;
+    }
+    if (cp.length !== 5) {
+        mostraralerta('error', "El código postal debe contener 5 caracteres");
         return;
     }
     
@@ -75,9 +82,13 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
         if (resJson.redirect) {
             window.location.href = resJson.redirect;
         } else {
-            window.location.href='/';
-
+            submitBtn.disabled = true;
             mostraralerta('success', resJson.message || "Se ha completado el paso 1 exitosamente");
+            setTimeout(() => {
+                cerraralerta();
+                document.body.style.opacity = '0';
+                window.location.href = '/';
+            }, 4000); // 3000 ms = 3 segundos de espera
         }
     } catch (error) {
         mostraralerta('error', "Error de conexión con el servidor.");

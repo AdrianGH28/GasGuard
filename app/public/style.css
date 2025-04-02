@@ -49,6 +49,7 @@ img {
     align-items: center;
     justify-content: space-between;
     height: 150px;
+    border-radius: 10px;
 }
 
 .img, .txt {
