@@ -84,7 +84,7 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
     
         if (resJson.redirect) {
             submitBtn.disabled = true;
-            mostraralerta('success', resJson.message || "Se ha completado el paso 1 exitosamente");
+            mostraralerta('success',"Se ha completado el paso 1 exitosamente");
 
             // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
             await esperar(4000); // Espera 4 segundos
