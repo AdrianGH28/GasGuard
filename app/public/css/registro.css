@@ -255,10 +255,14 @@ input {
 
 input:focus {
     outline: none;
-    color: #8f8c8c;
-    border-color: #ff0000;
-    background: rgba(255, 65, 65, 0.20);
+    color: #7d838c; /* Más oscuro para mayor contraste */
+    border-color: #7d838c;
+    background-color: rgba(205, 207, 210, 0.486); /* Opacidad reducida */
 }
+input:focus::placeholder{
+    color: #7d838c; /* Más oscuro para mayor contraste */
+}
+
 input:not(:placeholder-shown) {
     border: 1px solid rgba(0, 0, 0, 0.42);
     background-color: rgba(0, 0, 0, 0.04);
