@@ -83,6 +83,20 @@ document.getElementById("enviar-correov-form").addEventListener("submit", async 
         }
     
         if (resJson.redirect) {
+            submitBtn.disabled = true;
+            mostraralerta('success', resJson.message || "Se ha completado el paso 1 exitosamente");
+
+            // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
+            await esperar(4000); // Espera 4 segundos
+
+            // Hacer la animación de desvanezca del body
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+
+            // Esperar a que la animación termine antes de redirigir
+            await esperar(500); // Esperar el tiempo de la animación (500 ms)
+
+            cerraralerta();
             window.location.href = resJson.redirect;
         } else {
             submitBtn.disabled = true;
