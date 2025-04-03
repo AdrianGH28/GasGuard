@@ -87,16 +87,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
         const response = await fetch('/api/user-info', {
             method: "GET",
-            credentials: "include" 
+            credentials: "include"  // ⚠️ Importante para incluir la cookie
         });
 
-        const data = await response.json();
-        console.log("Datos recibidos:", data); // 🔥 Verificar la respuesta
+        const text = await response.text(); // 🔥 Capturar respuesta en texto
+        console.log("Respuesta completa:", text); 
+
+        const data = JSON.parse(text); // Convertir a JSON después de imprimir
 
         if (data.status === "ok") {
+            console.log("Datos del usuario:", data.user); // 🔥 Verificar datos
+
             document.getElementById("nombre").value = data.user.nom_user;
             document.getElementById("correo").value = data.user.correo_user;
-            document.getElementById("password").value = data.user.contra_user;  // Asegurar que haya un campo con este ID
+            document.getElementById("password").value = data.user.contra_user; 
             document.getElementById("calle").value = data.user.calle || "";
             document.getElementById("num").value = data.user.num || "";
             document.getElementById("colonia").value = data.user.colonia || "";

@@ -690,15 +690,20 @@ export const resetPassword = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error durante resetPassword" });
     }
 };
-
 export async function getUserInfo(req, res) {
     try {
+        console.log("Headers de la solicitud:", req.headers);
+        console.log("Cookies recibidas:", req.cookies); 
+        
+
         const token = req.cookies.jwt;
+
         if (!token) {
-            return res.status(401).send({ status: "Error", message: "No autenticado" });
+            return res.status(401).send({ status: "Error", message: "No autenticado, no hay token" });
         }
 
         const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+        console.log("Token decodificado:", decoded); // 🔥 Verifica el contenido del token
 
         const [rows] = await pool.execute(`
             SELECT 
@@ -720,6 +725,8 @@ export async function getUserInfo(req, res) {
             LEFT JOIN ccpostal cp ON d.id_copost = cp.id_copost
             WHERE u.id_user = ?`, [decoded.id_user]);
 
+        console.log("Datos del usuario:", rows); // 🔥 Verifica qué devuelve la consulta
+
         if (rows.length === 0) {
             return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
         }
@@ -731,6 +738,7 @@ export async function getUserInfo(req, res) {
         return res.status(500).send({ status: "Error", message: "Error en el servidor" });
     }
 }
+
 
 
 
