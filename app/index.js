@@ -97,7 +97,7 @@ app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
-app.get('/api/user-info', getUserInfo);
+app.get("/api/user-info", authentication.getUserInfo);
 
 
 // Generar una IP aleatoria

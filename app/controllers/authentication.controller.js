@@ -753,5 +753,6 @@ export const methods = {
     enviaCorreoLogin,
     resetPassword,
     registroAfiliados,
-    recoveryCodes
+    recoveryCodes,
+    getUserInfo
 };
