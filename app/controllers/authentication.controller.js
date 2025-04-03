@@ -693,18 +693,32 @@ export const resetPassword = async (req, res) => {
 
 export async function getUserInfo(req, res) {
     try {
-        // Obtener el token desde las cookies
         const token = req.cookies.jwt;
-
         if (!token) {
             return res.status(401).send({ status: "Error", message: "No autenticado" });
         }
 
-        // Verificar el token
         const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
 
-        // Consultar la información del usuario en la base de datos
-        const [rows] = await pool.execute('SELECT nombre_user, correo_user, calle, num, colonia, ciudad, cp, estado FROM musuario WHERE id_user = ?', [decoded.id_user]);
+        const [rows] = await pool.execute(`
+            SELECT 
+                u.nom_user, 
+                u.correo_user, 
+                u.contra_user, 
+                d.numero_direc AS num,
+                calle.nom_calle AS calle,
+                colonia.nom_col AS colonia,
+                ciudad.nom_ciudad AS ciudad,
+                estado.nom_estado AS estado,
+                cp.cp_copost AS cp
+            FROM musuario u
+            LEFT JOIN ddireccion d ON u.id_direccion = d.id_direccion
+            LEFT JOIN dcalle calle ON d.id_calle = calle.id_calle
+            LEFT JOIN ccolonia colonia ON d.id_colonia = colonia.id_colonia
+            LEFT JOIN cciudad ciudad ON d.id_ciudad = ciudad.id_ciudad
+            LEFT JOIN cestado estado ON d.id_estado = estado.id_estado
+            LEFT JOIN ccpostal cp ON d.id_copost = cp.id_copost
+            WHERE u.id_user = ?`, [decoded.id_user]);
 
         if (rows.length === 0) {
             return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
@@ -717,6 +731,7 @@ export async function getUserInfo(req, res) {
         return res.status(500).send({ status: "Error", message: "Error en el servidor" });
     }
 }
+
 
 
 export const methods = {

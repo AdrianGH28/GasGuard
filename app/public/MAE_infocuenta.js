@@ -91,10 +91,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
 
         const data = await response.json();
+        console.log("Datos recibidos:", data); // 🔥 Verificar la respuesta
 
         if (data.status === "ok") {
-            document.getElementById("nombre").value = data.user.nombre_user;
+            document.getElementById("nombre").value = data.user.nom_user;
             document.getElementById("correo").value = data.user.correo_user;
+            document.getElementById("password").value = data.user.contra_user;  // Asegurar que haya un campo con este ID
             document.getElementById("calle").value = data.user.calle || "";
             document.getElementById("num").value = data.user.num || "";
             document.getElementById("colonia").value = data.user.colonia || "";

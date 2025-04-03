@@ -44,6 +44,12 @@ app.use(session({
 
 const router = express.Router();
 
+import cors from "cors";
+app.use(cors({
+    origin: "https://gasguard-production.up.railway.app", // Cambia esto si usas otro dominio
+    credentials: true 
+}));
+
 // Conexion con la base de datos
 
 
