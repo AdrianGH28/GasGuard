@@ -33,8 +33,42 @@ document.addEventListener("DOMContentLoaded", async function () {
     const confirmPassword = document.getElementById("confirm-password");
     const inputs = document.querySelectorAll("input");
 
+    // Obtener los datos del usuario
+    let data; // Variable que almacenará los datos del usuario
+
+    try {
+        const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
+            method: "GET",
+            credentials: "include"  // ⚠️ Importante para que las cookies se envíen
+        });
+        if (!response.ok) {
+            throw new Error("Error al obtener la información del usuario");
+        }
+        const text = await response.text(); // 🔥 Capturar respuesta en texto
+        data = JSON.parse(text); // Convierte a JSON después de imprimir
+
+        if (data.status === "ok") {
+            console.log("✅ Datos del usuario recibidos:", data.user);
+
+            // Llenar los campos con los datos del usuario
+            document.getElementById("nombre").value = data.user.nom_user || "VACIO";
+            document.getElementById("correo").value = data.user.correo_user || "VACIO";
+            document.getElementById("password").value = data.user.contra_user || "VACIO";
+            document.getElementById("calle").value = data.user.calle || "VACIO";
+            document.getElementById("num").value = data.user.num || "VACIO";
+            document.getElementById("colonia").value = data.user.colonia || "VACIO";
+            document.getElementById("ciudad").value = data.user.ciudad || "VACIO";
+            document.getElementById("cp").value = data.user.cp || "VACIO";
+            document.getElementById("estado").value = data.user.estado || "VACIO";
+        } else {
+            console.error("⚠️ Error en la respuesta:", data.message);
+        }
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+    }
+
+    // Funcionalidad de edición de cuenta
     editBtn.addEventListener("click", async function () {
-        // Obtener los valores de los campos
         const nombre = document.getElementById("nombre").value;
         const correo = document.getElementById("correo").value;
         const calle = document.getElementById("calle").value;
@@ -71,11 +105,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 })
             });
 
-            const data = await response.json();
-            if (data.status === "ok") {
+            const responseData = await response.json();
+            if (responseData.status === "ok") {
                 console.log("✅ Datos actualizados correctamente");
             } else {
-                console.error("⚠️ Error al actualizar los datos:", data.message);
+                console.error("⚠️ Error al actualizar los datos:", responseData.message);
             }
         } catch (error) {
             console.error("❌ Error al enviar la actualización:", error);
@@ -115,44 +149,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     console.log("¡La página ha cargado!");
-    try {
-        const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
-            method: "GET",
-            credentials: "include"  // ⚠️ Importante para que las cookies se envíen
-        });
-        console.log(response);
-        if (!response.ok) {
-            throw new Error("Error al obtener la información del usuario");
-        }
-        const text = await response.text(); // 🔥 Capturar respuesta en texto
-        console.log("🔥 Respuesta del servidor:", text); // Muestra qué está devolviendo la API
-
-        const data = JSON.parse(text); // Convierte a JSON después de imprimir
-        console.log(data);  // Imprime los datos completos para ver qué contiene
-
-        if (data.status === "ok") {
-            console.log("✅ Datos del usuario recibidos:", data.user);
-        }
-        if (data.status === "ok") {
-            console.log("✅ Datos del usuario recibidos:", data.user);
-
-            document.getElementById("nombre").value = data.user.nom_user || "VACIO";
-            document.getElementById("correo").value = data.user.correo_user || "VACIO";
-            document.getElementById("password").value = data.user.contra_user || "VACIO";
-            document.getElementById("calle").value = data.user.calle || "VACIO";
-            document.getElementById("num").value = data.user.num || "VACIO";
-            document.getElementById("colonia").value = data.user.colonia || "VACIO";
-            document.getElementById("ciudad").value = data.user.ciudad || "VACIO";
-            document.getElementById("cp").value = data.user.cp || "VACIO";
-            document.getElementById("estado").value = data.user.estado || "VACIO";
-        } else {
-            console.error("⚠️ Error en la respuesta:", data.message);
-        }
-    } catch (error) {
-        console.error("❌ Error en la solicitud:", error);
-    }
 });
-
 
 
 const toggleBtn = document.getElementById('toggleNav');
