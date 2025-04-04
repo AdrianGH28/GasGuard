@@ -1,28 +1,51 @@
-document.addEventListener('DOMContentLoaded', () => {
-    window.addEventListener('load', () => {
-        const body = document.body;
-        body.style.opacity = '1';
-    });
-    function esperar(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+document.addEventListener('DOMContentLoaded', async () => {
     const reenviarBtn = document.getElementById('reenviar-codigo');
     const codigoForm = document.getElementById('codigo-contraseña-form');
-    const inputCodigo = document.getElementById("codigo");
-    const errorMensaje = document.querySelector(".error");
+    const correo = localStorage.getItem('resetEmail');
+
+    if (!correo) {
+        alert("No se pudo obtener el correo. Intenta de nuevo.");
+        return;
+    }
+
+    // Verificar si el usuario está bloqueado al cargar la página
+    try {
+        const response = await fetch(`/api/verificar-bloqueo?correo=${correo}`);
+        const result = await response.json();
+
+        if (result.bloqueado) {
+            reenviarBtn.disabled = true;
+            reenviarBtn.textContent = `Reintentar en ${Math.ceil(result.tiempoRestante / 1000)} s`;
+            let tiempoRestante = Math.ceil(result.tiempoRestante / 1000);
+
+            const intervalo = setInterval(() => {
+                tiempoRestante--;
+                reenviarBtn.textContent = `Reintentar en ${tiempoRestante} s`;
+                if (tiempoRestante <= 0) {
+                    clearInterval(intervalo);
+                    reenviarBtn.disabled = false;
+                    reenviarBtn.textContent = 'Reenviar código';
+                }
+            }, 1000);
+        }
+    } catch (error) {
+        console.error("Error al verificar bloqueo:", error);
+    }
 
     reenviarBtn.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        const correo = localStorage.getItem('resetEmail');
-        if (!correo) {
-            mostraralerta("error", "No se pudo obtener el correo. Intenta de nuevo.");
-            return;
-        }
-
-        console.log("Reenviando código a:", correo);
-
         try {
+            const checkResponse = await fetch(`/api/verificar-bloqueo?correo=${correo}`);
+            const checkResult = await checkResponse.json();
+
+            if (checkResult.bloqueado) {
+                alert("Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.");
+                return;
+            }
+
+            console.log("Reenviando código a:", correo);
+
             const response = await fetch('/api/reenvio-codigo', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -33,40 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
-                mostraralerta("success", "Código reenviado a tu correo.");
+                alert('Código reenviado a tu correo.');
             } else {
-                mostraralerta("error", result.message || 'Error al reenviar el código');
+                alert(result.message || 'Error al reenviar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            mostraralerta("error", 'Error al intentar reenviar el código.');
+            alert('Error al intentar reenviar el código.');
         }
     });
 
     codigoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const codigo = inputCodigo.value;
-        const correo = localStorage.getItem('resetEmail');
-        const submitBtn = document.querySelector('button[type="submit"]');
-
+        const codigo = document.getElementById('codigo').value;
         console.log("Enviando código:", codigo);
         console.log("Correo asociado:", correo);
 
         if (!correo || !codigo) {
-            mostraralerta("info", "Campos faltantes");
+            alert("Faltan datos: Código o correo");
             return;
         }
-        const regexnums = /^[1234567890\s]+$/;
-        if (!regexnums.test(codigo)) {
-            mostraralerta('error', "El código solo debe contener caracteres numéricos.");
-            return;
-        }
-        if (codigo.length !== 6) {
-            mostraralerta('error', "El código solo debe contener 6 dígitos.");
-            inputCodigo.value = "";
-            return;
-        } 
+
         try {
             const response = await fetch('/api/codigo-contra', {
                 method: 'POST',
@@ -78,32 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
-                submitBtn.disabled = true;
-                mostraralerta("success", "El código ha sido validado correctamente.");
-                await esperar(4000); // Espera 4 segundos
-
-                document.body.style.transition = 'opacity 0.5s';
-                document.body.style.opacity = '0'; // Opcional: transición de desvanezca
-
-                await esperar(500); // Esperar el tiempo de la animación (500 ms)
-    
-                cerraralerta();
-                window.location.href=result.redirect;
+                window.location.href = result.redirect;
             } else {
-                mostraralerta("error", result.message || 'Error al validar el código');
-                inputCodigo.value = "";
+                alert(result.message || 'Error al validar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            mostraralerta("error", 'Error al intentar validar el código.');
-            inputCodigo.value = "";
+            alert('Error al intentar validar el código.');
         }
     });
-
-    /*inputCodigo.addEventListener("input", function () {
-        this.value = this.value.replace(/\D/g, "").slice(0, 6);
-    });*/
 });
+
 let alertaTimeout;
 let alertaTipoActual = "";
 

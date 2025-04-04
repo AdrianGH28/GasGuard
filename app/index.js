@@ -66,7 +66,8 @@ app.listen(app.get("port"), () => {
 
 
 // Rutas
-app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_login.html"));
+app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/landing.html"));
+app.get("/login", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_login.html"));
 app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registropago.html"));
 app.get("/paso1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso1.html"));
 app.get("/paso2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso2.html"));
@@ -486,6 +487,29 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
     }
 });
+
+app.get('/api/verificar-bloqueo', (req, res) => {
+    const correo = req.query.correo;
+
+    if (!correo) {
+        return res.status(400).json({ status: 'error', message: 'Correo no proporcionado' });
+    }
+
+    const storedData = authentication.recoveryCodes.get(correo);
+
+    if (!storedData) {
+        return res.json({ bloqueado: false });
+    }
+
+    const ahora = Date.now();
+
+    if (storedData.bloqueo && ahora < storedData.bloqueo) {
+        return res.json({ bloqueado: true, tiempoRestante: storedData.bloqueo - ahora });
+    }
+
+    return res.json({ bloqueado: false });
+});
+
 
 app.post('/api/reenvio-codigo-paso2', async (req, res) => {
     const { correo } = req.body;

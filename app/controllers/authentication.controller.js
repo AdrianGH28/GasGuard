@@ -609,7 +609,7 @@ export const verificaCorreo = async (req, res) => {
     try {
         await pool.execute('UPDATE musuario SET verif_user = 1 WHERE correo_user = ?', [correo]);
         recoveryCodes.delete(correo);
-        return res.status(200).send({ status: "ok", message: "Verificación exitosa", redirect: "/" });
+        return res.status(200).send({ status: "ok", message: "Verificación exitosa", redirect: "/login" });
     } catch (error) {
         console.error("Error al actualizar la base de datos:", error);
         return res.status(500).send({ status: "Error", message: "Error interno del servidor" });
@@ -653,7 +653,7 @@ export const verificaCorreoLogin = async (req, res) => {
     try {
         await pool.execute('UPDATE musuario SET verif_user = 1 WHERE correo_user = ?', [correo]);
         recoveryCodes.delete(correo);
-        return res.status(200).send({ status: "ok", message: "Verificación exitosa", redirect: "/" });
+        return res.status(200).send({ status: "ok", message: "Verificación exitosa", redirect: "/login" });
     } catch (error) {
         console.error("Error al actualizar la base de datos:", error);
         return res.status(500).send({ status: "Error", message: "Error interno del servidor" });
@@ -684,7 +684,7 @@ export const resetPassword = async (req, res) => {
 
         await pool.execute('UPDATE musuario SET contra_user = ? WHERE correo_user = ?', [hashPassword, correo]);
 
-        return res.status(200).send({ status: "ok", message: "Contraseña restablecida correctamente", redirect: "/" });
+        return res.status(200).send({ status: "ok", message: "Contraseña restablecida correctamente", redirect: "/login" });
     } catch (error) {
         console.error('Error durante resetPassword:', error);
         return res.status(500).send({ status: "Error", message: "Error durante resetPassword" });

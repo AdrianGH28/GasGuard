@@ -68,7 +68,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Funcionalidad de edición de cuenta
-    editBtn.addEventListener("click", async function () {
+    editBtn.addEventListener("click", function () {
+        // Habilitar los campos para edición
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach(input => input.removeAttribute("disabled"));
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-flex";
+        cancelBtn.style.display = "inline-flex";
+        passwordContainer.classList.add("active");
+    });
+
+    // Funcionalidad de guardar cambios
+    saveBtn.addEventListener("click", async function () {
+        // Obtener los valores de los campos
         const nombre = document.getElementById("nombre").value;
         const correo = document.getElementById("correo").value;
         const calle = document.getElementById("calle").value;
@@ -115,38 +127,34 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("❌ Error al enviar la actualización:", error);
         }
 
-        inputs.forEach(input => input.removeAttribute("disabled"));
-        editBtn.style.display = "none";
-        saveBtn.style.display = "inline-flex";
-        cancelBtn.style.display = "inline-flex";
-
-        // Mostrar los campos nuevos
-        passwordContainer.classList.add("active");
-    });
-
-    saveBtn.addEventListener("click", function () {
+        // Deshabilitar los campos nuevamente
+        const inputs = document.querySelectorAll("input");
         inputs.forEach(input => input.setAttribute("disabled", "true"));
         editBtn.style.display = "flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
 
-        // Ocultar los campos nuevos
+        // Ocultar los campos de contraseña
         passwordContainer.classList.remove("active");
     });
 
+    // Funcionalidad de cancelar cambios
     cancelBtn.addEventListener("click", function () {
+        // Deshabilitar los campos nuevamente
+        const inputs = document.querySelectorAll("input");
         inputs.forEach(input => input.setAttribute("disabled", "true"));
         editBtn.style.display = "flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
 
-        // Ocultar los campos nuevos
+        // Ocultar los campos de contraseña
         passwordContainer.classList.remove("active");
 
-        // Limpiar campos nuevos
+        // Limpiar los campos de contraseña
         newPassword.value = "";
         confirmPassword.value = "";
     });
+
 
     console.log("¡La página ha cargado!");
 });
