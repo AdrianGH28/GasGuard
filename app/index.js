@@ -105,9 +105,16 @@ app.post("/api/registro-afiliados", authentication.registroAfiliados);
 app.get("/api/user-info", authentication.getUserInfo);
 
 app.put('/api/update-user', async (req, res) => {
+
+    console.log("Datos recibidos:", req.body);
+    console.log("Usuario en sesión:", req.user);
     const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
     const correoOriginal = req.user.correo_user;
 
+
+    if (!correoOriginal) {
+        return res.status(400).send({ status: "error", message: "Usuario no autenticado o no encontrado" });
+    }
     try {
         let hashPassword = null;
 
