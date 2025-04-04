@@ -98,15 +98,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (data.status === "ok") {
             console.log("Datos del usuario:", data.user); // 🔥 Verificar datos
 
-            document.getElementById("nombre").value = data.user.nom_user;
-            document.getElementById("correo").value = data.user.correo_user;
-            document.getElementById("password").value = data.user.contra_user; 
-            document.getElementById("calle").value = data.user.calle || "";
-            document.getElementById("num").value = data.user.num || "";
-            document.getElementById("colonia").value = data.user.colonia || "";
-            document.getElementById("ciudad").value = data.user.ciudad || "";
-            document.getElementById("cp").value = data.user.cp || "";
-            document.getElementById("estado").value = data.user.estado || "";
+            document.getElementById("nombre").value = data.user.nom_user || "VACIO";
+            document.getElementById("correo").value = data.user.correo_user || "VACIO";
+            document.getElementById("password").value = data.user.contra_user || "VACIO"; 
+            document.getElementById("calle").value = data.user.calle || "VACIO";
+            document.getElementById("num").value = data.user.num || "VACIO";
+            document.getElementById("colonia").value = data.user.colonia || "VACIO";
+            document.getElementById("ciudad").value = data.user.ciudad || "VACIO";
+            document.getElementById("cp").value = data.user.cp || "VACIO";
+            document.getElementById("estado").value = data.user.estado || "VACIO";
         } else {
             console.error("Error al obtener datos del usuario:", data.message);
         }
