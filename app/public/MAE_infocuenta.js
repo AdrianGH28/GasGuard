@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     // Navegación del usuario
     const userContainer = document.getElementById("user-container");
 
@@ -66,24 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
         newPassword.value = "";
         confirmPassword.value = "";
     });
-});
 
-
-
-const toggleBtn = document.getElementById('toggleNav');
-const nav = document.querySelector('nav');
-
-toggleBtn.addEventListener('click', () => {
-    nav.classList.toggle('active');
-});
-
-// Opcional: cerrar panel al hacer clic en un enlace
-document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', () => {
-        nav.classList.remove('active');
-    });
-});
-document.addEventListener("DOMContentLoaded", async function () {
     console.log("¡La página ha cargado!");
     try {
         const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
@@ -122,3 +105,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.error("❌ Error en la solicitud:", error);
     }
 });
+
+
+
+const toggleBtn = document.getElementById('toggleNav');
+const nav = document.querySelector('nav');
+
+toggleBtn.addEventListener('click', () => {
+    nav.classList.toggle('active');
+});
+
+// Opcional: cerrar panel al hacer clic en un enlace
+document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        nav.classList.remove('active');
+    });
+});
+
