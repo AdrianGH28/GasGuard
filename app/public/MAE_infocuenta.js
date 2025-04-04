@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const ciudad = document.getElementById("ciudad").value;
         const cp = document.getElementById("cp").value;
         const estado = document.getElementById("estado").value;
-        let password = passwordField.value;  // Obtengo la contraseña actual
+        let password = document.getElementById("password").value;
 
         // Si la contraseña fue cambiada, la hasheamos
         if (password !== data.user.contra_user && password !== "") {
