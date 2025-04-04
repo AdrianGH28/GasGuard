@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
-    if (currentPage === "page4.html") {
+    if (currentPage === "MAE_infocuenta.html") {
         userContainer.classList.add("active");
     } else {
         userContainer.classList.remove("active");
