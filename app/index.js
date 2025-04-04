@@ -12,6 +12,7 @@ import { getUserInfo } from './controllers/authentication.controller.js';
 import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
+import cors from 'cors';
 
 console.log("Métodos de autenticación:", authentication);
 console.log("Mapa de códigos:", authentication.recoveryCodes);
@@ -44,7 +45,10 @@ app.use(session({
 
 const router = express.Router();
 
-
+app.use(cors({
+    origin: 'https://gasguard-production.up.railway.app',  // Reemplaza con tu dominio o usa '*' para permitir todos los orígenes
+    credentials: true  // Importante para permitir el envío de cookies (si las usas)
+}));
 
 // Conexion con la base de datos
 
@@ -62,7 +66,8 @@ app.listen(app.get("port"), () => {
 
 
 // Rutas
-app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_login.html"));
+app.get("/", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/landing.html"));
+app.get("/login", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_login.html"));
 app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registropago.html"));
 app.get("/paso1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso1.html"));
 app.get("/paso2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso2.html"));
@@ -98,6 +103,72 @@ app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 app.get("/api/user-info", authentication.getUserInfo);
+
+app.put('/api/update-user', async (req, res) => {
+
+    console.log("Datos recibidos:", req.body);
+    console.log("Usuario en sesión:", req.user);
+    const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
+    const correoOriginal = req.user.correo_user;
+
+
+    if (!correoOriginal) {
+        return res.status(400).send({ status: "error", message: "Usuario no autenticado o no encontrado" });
+    }
+    try {
+        let hashPassword = null;
+
+        // Si la contraseña fue cambiada, la hasheamos
+        if (password && password !== req.user.contra_user) {
+            const salt = await bcryptjs.genSalt(5);
+            hashPassword = await bcryptjs.hash(password, salt);  // Hasheamos la nueva contraseña
+        }
+
+        // Actualizar los datos del usuario en musuario
+        let updateQuery = `
+            UPDATE musuario 
+            SET nom_user = ?, correo_user = ?, 
+                ${hashPassword ? 'contra_user = ?,' : ''} 
+                id_direccion = (SELECT id_direccion FROM ddireccion WHERE id_colonia = ? AND id_ciudad = ? AND id_estado = ?)
+            WHERE correo_user = ?`;
+
+        const params = hashPassword ? 
+            [nombre, correo, hashPassword, colonia, ciudad, estado, correoOriginal] :
+            [nombre, correo, colonia, ciudad, estado, correoOriginal];
+
+        const [result] = await pool.execute(updateQuery, params);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send({ status: "Error", message: "Usuario no encontrado o no se realizaron cambios" });
+        }
+
+        // Si el correo ha cambiado, actualizamos verif_user a 0
+        if (correo !== correoOriginal) {
+            await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
+        }
+
+        // Actualizamos la dirección si es necesario
+        await pool.execute(`
+            UPDATE ddireccion
+            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
+            JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
+            JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
+            JOIN ccpostal ON ddireccion.id_copost = ccpostal.id_copost
+            SET cestado.nom_estado = ?, cciudad.nom_ciudad = ?, ccolonia.nom_col = ?, dcalle.nom_calle = ?, ddireccion.numero_direc = ?, ccpostal.cp_copost = ?
+            WHERE ddireccion.id_direccion = ?
+        `, [estado, ciudad, colonia, calle, num, cp, req.user.id_direccion]);
+
+        res.json({ status: "ok" });
+
+    } catch (error) {
+        console.error('Error al actualizar los datos del usuario:', error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+
+
 
 
 // Generar una IP aleatoria
@@ -423,6 +494,29 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Error al reenviar el código' });
     }
 });
+
+app.get('/api/verificar-bloqueo', (req, res) => {
+    const correo = req.query.correo;
+
+    if (!correo) {
+        return res.status(400).json({ status: 'error', message: 'Correo no proporcionado' });
+    }
+
+    const storedData = authentication.recoveryCodes.get(correo);
+
+    if (!storedData) {
+        return res.json({ bloqueado: false });
+    }
+
+    const ahora = Date.now();
+
+    if (storedData.bloqueo && ahora < storedData.bloqueo) {
+        return res.json({ bloqueado: true, tiempoRestante: storedData.bloqueo - ahora });
+    }
+
+    return res.json({ bloqueado: false });
+});
+
 
 app.post('/api/reenvio-codigo-paso2', async (req, res) => {
     const { correo } = req.body;

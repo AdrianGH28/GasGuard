@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     // Navegación del usuario
     const userContainer = document.getElementById("user-container");
 
@@ -33,74 +33,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmPassword = document.getElementById("confirm-password");
     const inputs = document.querySelectorAll("input");
 
-    editBtn.addEventListener("click", function () {
-        inputs.forEach(input => input.removeAttribute("disabled"));
-        editBtn.style.display = "none";
-        saveBtn.style.display = "inline-flex";
-        cancelBtn.style.display = "inline-flex";
+    // Obtener los datos del usuario
+    let data; // Variable que almacenará los datos del usuario
 
-        // Mostrar los campos nuevos
-        passwordContainer.classList.add("active");
-    });
-
-    saveBtn.addEventListener("click", function () {
-        inputs.forEach(input => input.setAttribute("disabled", "true"));
-        editBtn.style.display = "flex";
-        saveBtn.style.display = "none";
-        cancelBtn.style.display = "none";
-
-        // Ocultar los campos nuevos
-        passwordContainer.classList.remove("active");
-    });
-
-    cancelBtn.addEventListener("click", function () {
-        inputs.forEach(input => input.setAttribute("disabled", "true"));
-        editBtn.style.display = "flex";
-        saveBtn.style.display = "none";
-        cancelBtn.style.display = "none";
-
-        // Ocultar los campos nuevos
-        passwordContainer.classList.remove("active");
-
-        // Limpiar campos nuevos
-        newPassword.value = "";
-        confirmPassword.value = "";
-    });
-});
-
-
-
-const toggleBtn = document.getElementById('toggleNav');
-const nav = document.querySelector('nav');
-
-toggleBtn.addEventListener('click', () => {
-  nav.classList.toggle('active');
-});
-
-// Opcional: cerrar panel al hacer clic en un enlace
-document.querySelectorAll('nav a').forEach(link => {
-  link.addEventListener('click', () => {
-    nav.classList.remove('active');
-  });
-});
-document.addEventListener("DOMContentLoaded", async function () {
     try {
-        const response = await fetch('/api/user-info', {
+        const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
             method: "GET",
-            credentials: "include"  // ⚠️ Importante para incluir la cookie
+            credentials: "include"  // ⚠️ Importante para que las cookies se envíen
         });
-
+        if (!response.ok) {
+            throw new Error("Error al obtener la información del usuario");
+        }
         const text = await response.text(); // 🔥 Capturar respuesta en texto
-        console.log("Respuesta completa:", text); 
-
-        const data = JSON.parse(text); // Convertir a JSON después de imprimir
+        data = JSON.parse(text); // Convierte a JSON después de imprimir
 
         if (data.status === "ok") {
-            console.log("Datos del usuario:", data.user); // 🔥 Verificar datos
+            console.log("✅ Datos del usuario recibidos:", data.user);
 
+            // Llenar los campos con los datos del usuario
             document.getElementById("nombre").value = data.user.nom_user || "VACIO";
             document.getElementById("correo").value = data.user.correo_user || "VACIO";
-            document.getElementById("password").value = data.user.contra_user || "VACIO"; 
+            document.getElementById("password").value = data.user.contra_user || "VACIO";
             document.getElementById("calle").value = data.user.calle || "VACIO";
             document.getElementById("num").value = data.user.num || "VACIO";
             document.getElementById("colonia").value = data.user.colonia || "VACIO";
@@ -108,9 +61,116 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("cp").value = data.user.cp || "VACIO";
             document.getElementById("estado").value = data.user.estado || "VACIO";
         } else {
-            console.error("Error al obtener datos del usuario:", data.message);
+            console.error("⚠️ Error en la respuesta:", data.message);
         }
     } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error("❌ Error en la solicitud:", error);
     }
+
+    // Funcionalidad de edición de cuenta
+    editBtn.addEventListener("click", function () {
+        // Habilitar los campos para edición
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach(input => input.removeAttribute("disabled"));
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-flex";
+        cancelBtn.style.display = "inline-flex";
+        passwordContainer.classList.add("active");
+    });
+
+    // Funcionalidad de guardar cambios
+    saveBtn.addEventListener("click", async function () {
+        // Obtener los valores de los campos
+        const nombre = document.getElementById("nombre").value;
+        const correo = document.getElementById("correo").value;
+        const calle = document.getElementById("calle").value;
+        const num = document.getElementById("num").value;
+        const colonia = document.getElementById("colonia").value;
+        const ciudad = document.getElementById("ciudad").value;
+        const cp = document.getElementById("cp").value;
+        const estado = document.getElementById("estado").value;
+        let password = document.getElementById("password").value;
+
+        // Si la contraseña fue cambiada, la hasheamos
+        if (password !== data.user.contra_user && password !== "") {
+            const salt = await bcryptjs.genSalt(5);
+            password = await bcryptjs.hash(password, salt);  // Hasheamos la nueva contraseña
+        }
+
+        // Realizamos la actualización en la base de datos
+        try {
+            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre,
+                    correo,
+                    password,
+                    calle,
+                    num,
+                    colonia,
+                    ciudad,
+                    cp,
+                    estado
+                })
+            });
+
+            const responseData = await response.json();
+            if (responseData.status === "ok") {
+                console.log("✅ Datos actualizados correctamente");
+            } else {
+                console.error("⚠️ Error al actualizar los datos:", responseData.message);
+            }
+        } catch (error) {
+            console.error("❌ Error al enviar la actualización:", error);
+        }
+
+        // Deshabilitar los campos nuevamente
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach(input => input.setAttribute("disabled", "true"));
+        editBtn.style.display = "flex";
+        saveBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+
+        // Ocultar los campos de contraseña
+        passwordContainer.classList.remove("active");
+    });
+
+    // Funcionalidad de cancelar cambios
+    cancelBtn.addEventListener("click", function () {
+        // Deshabilitar los campos nuevamente
+        const inputs = document.querySelectorAll("input");
+        inputs.forEach(input => input.setAttribute("disabled", "true"));
+        editBtn.style.display = "flex";
+        saveBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+
+        // Ocultar los campos de contraseña
+        passwordContainer.classList.remove("active");
+
+        // Limpiar los campos de contraseña
+        newPassword.value = "";
+        confirmPassword.value = "";
+    });
+
+
+    console.log("¡La página ha cargado!");
 });
+
+
+const toggleBtn = document.getElementById('toggleNav');
+const nav = document.querySelector('nav');
+
+toggleBtn.addEventListener('click', () => {
+    nav.classList.toggle('active');
+});
+
+// Opcional: cerrar panel al hacer clic en un enlace
+document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        nav.classList.remove('active');
+    });
+});
+
