@@ -1,0 +1,220 @@
+/* Importación de la fuente en el CSS */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+* {
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+body {
+    font-family: 'Montserrat', sans-serif;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    justify-content: center; /* Centra horizontalmente el nav */
+}
+
+
+nav {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    padding: 0;
+    border-left: 41px solid rgba(0, 0, 0, 0);
+    border-right: 41px solid rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 20px;
+    height: 100%;
+}
+
+.logo-container img {
+    width: 4%;
+    height: auto;
+    max-width: 100%;
+    margin-right: 10px;
+}
+
+.logo-text {
+    color: #FF0000;
+    font-size: 1.2em;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 0;
+}
+
+.container-items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 60px !important;
+}
+
+nav a {
+    font-size: 1em;
+    text-transform: uppercase;
+    color: #FF0000;
+    text-decoration: none;
+    line-height: 50px;
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    text-align: center;
+    padding: 0 20px;
+    margin-top: 3%;
+}
+
+nav a i {
+    font-size: 30px;
+    color: rgba(0, 0, 0, 0.42);
+    transition: color 0.3s ease;
+}
+nav a:hover i {
+    color: rgba(0, 0, 0, 0.47);
+}
+
+/* Definir la animación para los links */
+nav a .animation {
+    content: '';
+    position: absolute;
+    height: 5px;
+    width: 0;
+    bottom: 0;
+    background: red;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+nav a:nth-child(1) {
+    width: 100px;
+}
+
+nav a:nth-child(2) {
+    width: 110px;
+}
+
+nav a:nth-child(3) {
+    width: 100px;
+}
+
+/* Ajuste del hover para cada item y su animación */
+nav a:nth-child(1):hover .animation,
+nav a:nth-child(2):hover .animation,
+nav a:nth-child(3):hover .animation {
+    width: 75px;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+    background-color:rgba(0, 0, 0, 0.473);;
+}
+
+nav a .animation {
+    opacity: 0;
+    width: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+}
+
+/* Estilo para el contenedor de Usuario */
+.user-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 41px;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    width: auto;
+    color: #FF0000;
+    font-weight: 500;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+
+.user-container a {
+    display: flex;
+    align-items: center;
+}
+
+.user-container .mr-2 {
+    margin-right: 15px;
+}
+
+.user-container i {
+    color: #FF0000;
+    font-size: 30px;
+    padding-left: 15px;
+}
+
+/* Animación para el contenedor de Usuario */
+.user-container .animacion {
+    content: '';
+    position: absolute;
+    height: 5px;
+    width: 0;
+    bottom: 0;
+    background: red;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+.user-container:hover .animacion {
+    width: 100%;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
+
+.user-container .animacion {
+    opacity: 0;
+    width: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+}
+
+/* Cuando el enlace tiene la clase 'active', la animación permanece visible */
+nav a.active i {
+    color: red; /* El color del icono será rojo cuando esté activo */
+}
+
+nav a.active .animation {
+    width: 75px; /* Asegura que la barra de animación se muestre */
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Estilo para el contenedor de usuario activo */
+.user-container.active {
+    color: red; /* Cambia el color del texto a rojo */
+}
+
+.user-container.active i {
+    color: red; /* Cambia el color del ícono a rojo */
+}
+
+.user-container.active .animacion {
+    width: 100%;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
+nav a.active:hover .animation {
+    background-color: #FF0000;
+  }
