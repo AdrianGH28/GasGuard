@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Realizamos la actualización en la base de datos
         try {
             const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
