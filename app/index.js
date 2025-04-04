@@ -12,6 +12,7 @@ import { getUserInfo } from './controllers/authentication.controller.js';
 import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
+import cors from 'cors';
 
 console.log("Métodos de autenticación:", authentication);
 console.log("Mapa de códigos:", authentication.recoveryCodes);
@@ -44,7 +45,10 @@ app.use(session({
 
 const router = express.Router();
 
-
+app.use(cors({
+    origin: 'https://gasguard-production.up.railway.app',  // Reemplaza con tu dominio o usa '*' para permitir todos los orígenes
+    credentials: true  // Importante para permitir el envío de cookies (si las usas)
+}));
 
 // Conexion con la base de datos
 

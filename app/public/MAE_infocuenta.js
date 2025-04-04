@@ -74,33 +74,41 @@ const toggleBtn = document.getElementById('toggleNav');
 const nav = document.querySelector('nav');
 
 toggleBtn.addEventListener('click', () => {
-  nav.classList.toggle('active');
+    nav.classList.toggle('active');
 });
 
 // Opcional: cerrar panel al hacer clic en un enlace
 document.querySelectorAll('nav a').forEach(link => {
-  link.addEventListener('click', () => {
-    nav.classList.remove('active');
-  });
+    link.addEventListener('click', () => {
+        nav.classList.remove('active');
+    });
 });
 document.addEventListener("DOMContentLoaded", async function () {
+    console.log("¡La página ha cargado!");
     try {
         const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
             method: "GET",
             credentials: "include"  // ⚠️ Importante para que las cookies se envíen
         });
-
+        console.log(response);
+        if (!response.ok) {
+            throw new Error("Error al obtener la información del usuario");
+        }
         const text = await response.text(); // 🔥 Capturar respuesta en texto
         console.log("🔥 Respuesta del servidor:", text); // Muestra qué está devolviendo la API
 
         const data = JSON.parse(text); // Convierte a JSON después de imprimir
+        console.log(data);  // Imprime los datos completos para ver qué contiene
 
+        if (data.status === "ok") {
+            console.log("✅ Datos del usuario recibidos:", data.user);
+        }
         if (data.status === "ok") {
             console.log("✅ Datos del usuario recibidos:", data.user);
 
             document.getElementById("nombre").value = data.user.nom_user || "VACIO";
             document.getElementById("correo").value = data.user.correo_user || "VACIO";
-            document.getElementById("password").value = data.user.contra_user || "VACIO"; 
+            document.getElementById("password").value = data.user.contra_user || "VACIO";
             document.getElementById("calle").value = data.user.calle || "VACIO";
             document.getElementById("num").value = data.user.num || "VACIO";
             document.getElementById("colonia").value = data.user.colonia || "VACIO";
