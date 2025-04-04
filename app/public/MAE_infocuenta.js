@@ -33,7 +33,54 @@ document.addEventListener("DOMContentLoaded", async function () {
     const confirmPassword = document.getElementById("confirm-password");
     const inputs = document.querySelectorAll("input");
 
-    editBtn.addEventListener("click", function () {
+    editBtn.addEventListener("click", async function () {
+        // Obtener los valores de los campos
+        const nombre = document.getElementById("nombre").value;
+        const correo = document.getElementById("correo").value;
+        const calle = document.getElementById("calle").value;
+        const num = document.getElementById("num").value;
+        const colonia = document.getElementById("colonia").value;
+        const ciudad = document.getElementById("ciudad").value;
+        const cp = document.getElementById("cp").value;
+        const estado = document.getElementById("estado").value;
+        let password = passwordField.value;  // Obtengo la contraseña actual
+
+        // Si la contraseña fue cambiada, la hasheamos
+        if (password !== data.user.contra_user && password !== "") {
+            const salt = await bcryptjs.genSalt(5);
+            password = await bcryptjs.hash(password, salt);  // Hasheamos la nueva contraseña
+        }
+
+        // Realizamos la actualización en la base de datos
+        try {
+            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre,
+                    correo,
+                    password,
+                    calle,
+                    num,
+                    colonia,
+                    ciudad,
+                    cp,
+                    estado
+                })
+            });
+
+            const data = await response.json();
+            if (data.status === "ok") {
+                console.log("✅ Datos actualizados correctamente");
+            } else {
+                console.error("⚠️ Error al actualizar los datos:", data.message);
+            }
+        } catch (error) {
+            console.error("❌ Error al enviar la actualización:", error);
+        }
+
         inputs.forEach(input => input.removeAttribute("disabled"));
         editBtn.style.display = "none";
         saveBtn.style.display = "inline-flex";
