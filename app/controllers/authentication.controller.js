@@ -723,7 +723,7 @@ export async function getUserInfo(req, res) {
             LEFT JOIN cciudad ciudad ON d.id_ciudad = ciudad.id_ciudad
             LEFT JOIN cestado estado ON d.id_estado = estado.id_estado
             LEFT JOIN ccpostal cp ON d.id_copost = cp.id_copost
-            WHERE u.correo_user = ?`, [correo]);
+            WHERE u.id_user = ?`, [decoded.id_user]);
 
         console.log("Datos del usuario:", rows); // 🔥 Verifica qué devuelve la consulta
 
