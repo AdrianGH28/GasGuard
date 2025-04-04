@@ -85,18 +85,18 @@ document.querySelectorAll('nav a').forEach(link => {
 });
 document.addEventListener("DOMContentLoaded", async function () {
     try {
-        const response = await fetch('/api/user-info', {
+        const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
             method: "GET",
-            credentials: "include"  // ⚠️ Importante para incluir la cookie
+            credentials: "include"  // ⚠️ Importante para que las cookies se envíen
         });
 
         const text = await response.text(); // 🔥 Capturar respuesta en texto
-        console.log("Respuesta completa:", text); 
+        console.log("🔥 Respuesta del servidor:", text); // Muestra qué está devolviendo la API
 
-        const data = JSON.parse(text); // Convertir a JSON después de imprimir
+        const data = JSON.parse(text); // Convierte a JSON después de imprimir
 
         if (data.status === "ok") {
-            console.log("Datos del usuario:", data.user); // 🔥 Verificar datos
+            console.log("✅ Datos del usuario recibidos:", data.user);
 
             document.getElementById("nombre").value = data.user.nom_user || "VACIO";
             document.getElementById("correo").value = data.user.correo_user || "VACIO";
@@ -108,9 +108,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("cp").value = data.user.cp || "VACIO";
             document.getElementById("estado").value = data.user.estado || "VACIO";
         } else {
-            console.error("Error al obtener datos del usuario:", data.message);
+            console.error("⚠️ Error en la respuesta:", data.message);
         }
     } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error("❌ Error en la solicitud:", error);
     }
 });
