@@ -121,7 +121,18 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             hashPassword = await bcryptjs.hash(password, salt);  // Realiza el hash de la nueva contraseña
         }
 
-        // 2. Actualizar los datos del usuario en la tabla 'musuario'
+        // 2. Asegurarse de que los valores no sean undefined
+        // Si algún valor no está definido, lo reemplazamos por null
+        const updatedNombre = nombre || null;
+        const updatedCorreo = correo || null;
+        const updatedEstado = estado || null;
+        const updatedCiudad = ciudad || null;
+        const updatedColonia = colonia || null;
+        const updatedCalle = calle || null;
+        const updatedNumero = numero || null;
+        const updatedCp = cp || null;
+
+        // 3. Actualizar los datos del usuario en la tabla 'musuario'
         const [result] = await pool.execute(`
             UPDATE musuario 
             JOIN ddireccion ON musuario.id_direccion = ddireccion.id_direccion
@@ -142,15 +153,15 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
                 ccpostal.cp_copost = ?
             WHERE musuario.correo_user = ?
         `, hashPassword
-            ? [nombre, correo, hashPassword, estado, ciudad, colonia, calle, numero, cp, correoOriginal]
-            : [nombre, correo, estado, ciudad, colonia, calle, numero, cp, correoOriginal]
+            ? [updatedNombre, updatedCorreo, hashPassword, updatedEstado, updatedCiudad, updatedColonia, updatedCalle, updatedNumero, updatedCp, correoOriginal]
+            : [updatedNombre, updatedCorreo, updatedEstado, updatedCiudad, updatedColonia, updatedCalle, updatedNumero, updatedCp, correoOriginal]
         );
 
         if (result.affectedRows === 0) {
             return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
         }
 
-        // 3. Si el correo cambia, actualizamos verif_user a 0
+        // 4. Si el correo cambia, actualizamos verif_user a 0
         if (correo !== correoOriginal) {
             await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
         }
