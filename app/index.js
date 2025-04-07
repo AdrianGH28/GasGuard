@@ -110,7 +110,7 @@ app.get("/api/user-info", authentication.getUserInfo);
 
 app.put("/api/update-user", async (req, res) => {
     const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
-    const correoOriginal = req.user.correo;
+    const correoOriginal = req.user.correo_user;
 
     try {
         // 1. Buscar IDs de colonia, ciudad, estado a partir de los nombres
