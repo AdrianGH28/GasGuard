@@ -173,14 +173,18 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             [correoOriginal]
         );
 
-        // 3. Validar y preparar nueva contraseña
+        // 3. Validar y preparar nueva contraseña solo si se envió
         let hashPassword = null;
         if (password) {
             const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
+
             if (!mismaPassword) {
                 const salt = await bcryptjs.genSalt(5);
                 hashPassword = await bcryptjs.hash(password, salt);
             }
+        } else {
+            // Si no se proporcionó una nueva contraseña, no se cambia
+            hashPassword = userRow.contra_user; // Mantener la contraseña original
         }
 
         // 4. Actualización de usuario y dirección en una sola consulta
@@ -195,7 +199,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             SET 
                 musuario.nom_user = ?, 
                 musuario.correo_user = ?, 
-                ${hashPassword ? 'musuario.contra_user = ?, ' : ''}
+                musuario.contra_user = ?, 
                 cestado.nom_estado = ?, 
                 cciudad.nom_ciudad = ?, 
                 ccolonia.nom_col = ?, 
@@ -204,9 +208,9 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
                 ccpostal.cp_copost = ?
             WHERE musuario.correo_user = ?`;
 
-        const params = hashPassword
-            ? [nombre, correo, hashPassword, estado, ciudad, colonia, calle, num, cp, correoOriginal]
-            : [nombre, correo, estado, ciudad, colonia, calle, num, cp, correoOriginal];
+        const params = [
+            nombre, correo, hashPassword, estado, ciudad, colonia, calle, num, cp, correoOriginal
+        ];
 
         const [result] = await pool.execute(updateQuery, params);
 
@@ -227,6 +231,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos" });
     }
 });
+
 
 
 
