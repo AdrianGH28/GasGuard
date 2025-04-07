@@ -108,83 +108,55 @@ app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 app.get("/api/user-info", authentication.getUserInfo);
 app.put("/api/update-user", authorization.proteccion, async (req, res) => {
-    const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
-    const correoOriginal = req.user.correo;
+    const { nombre, correo, password, estado, cp, ciudad, colonia, calle, numero } = req.body;
+    const correoOriginal = req.user.correo_user; // Usamos 'correo_user' porque es el campo correcto en tu tabla 'musuario'
 
     try {
-        // 1. Verificar si la dirección cambia (colonia, ciudad, estado)
-        const [[coloniaRow]] = await pool.execute(
-            'SELECT id_colonia FROM ccolonia WHERE nom_col = ? LIMIT 1',
-            [colonia]
-        );
-        const [[ciudadRow]] = await pool.execute(
-            'SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ? LIMIT 1',
-            [ciudad]
-        );
-        const [[estadoRow]] = await pool.execute(
-            'SELECT id_estado FROM cestado WHERE nom_estado = ? LIMIT 1',
-            [estado]
-        );
-
-        // Verificar que la colonia, ciudad y estado existen
-        if (!coloniaRow || !ciudadRow || !estadoRow) {
-            return res.status(400).send({ status: "error", message: "Colonia, ciudad o estado no válidos" });
-        }
-
-        // 2. Actualizar la contraseña si es que la cambian
+        // 1. Verificar si se cambió la contraseña
         let hashPassword = null;
         if (password && password !== req.user.contra_user) {
-            const salt = await bcryptjs.genSalt(5);
-            hashPassword = await bcryptjs.hash(password, salt);
+            const salt = await bcryptjs.genSalt(10);  // Genera un 'salt' con mayor seguridad (10)
+            hashPassword = await bcryptjs.hash(password, salt);  // Realiza el hash de la nueva contraseña
         }
 
-        // 3. Preparar la consulta para actualizar los datos del usuario
-        let updateQuery = `UPDATE musuario 
-            SET nom_user = ?, correo_user = ?, 
-                ${hashPassword ? 'contra_user = ?,' : ''} 
-                id_direccion = (
-                    SELECT id_direccion 
-                    FROM ddireccion 
-                    WHERE id_colonia = ? AND id_ciudad = ? AND id_estado = ?
-                    LIMIT 1
-                )
-            WHERE correo_user = ?`;
-
-        const params = hashPassword
-            ? [nombre, correo, hashPassword, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal]
-            : [nombre, correo, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal];
-
-        // Ejecutar la actualización de datos del usuario
-        await pool.execute(updateQuery, params);
-
-        // 4. Si se cambió el correo, actualizar `verif_user` a 0
-        if (correo !== correoOriginal) {
-            await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
-        }
-
-        // 5. Actualizar la dirección del usuario si cambia
-        await pool.execute(`
-            UPDATE ddireccion
-            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
+        // 2. Actualizar los datos del usuario en la tabla 'musuario'
+        const [result] = await conexion.execute(`
+            UPDATE musuario 
+            JOIN ddireccion ON musuario.id_direccion = ddireccion.id_direccion
             JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
             JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
             JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
             JOIN ccpostal ON ddireccion.id_copost = ccpostal.id_copost
             SET 
+                musuario.nom_user = ?, 
+                musuario.correo_user = ?, 
+                ${hashPassword ? 'musuario.contra_user = ?, ' : ''}  // Solo incluye la contraseña si hay un cambio
                 cestado.nom_estado = ?, 
                 cciudad.nom_ciudad = ?, 
                 ccolonia.nom_col = ?, 
                 dcalle.nom_calle = ?, 
                 ddireccion.numero_direc = ?, 
                 ccpostal.cp_copost = ?
-            WHERE ddireccion.id_direccion = ?
-        `, [estado, ciudad, colonia, calle, num, cp, req.user.id_direccion]);
+            WHERE musuario.correo_user = ?
+        `, hashPassword
+            ? [nombre, correo, hashPassword, estado, ciudad, colonia, calle, numero, cp, correoOriginal]
+            : [nombre, correo, estado, ciudad, colonia, calle, numero, cp, correoOriginal]
+        );
 
-        res.send({ status: "ok", message: "Datos del usuario actualizados correctamente" });
+        if (result.affectedRows === 0) {
+            return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
+        }
 
+        // 3. Si el correo cambia, actualizamos verif_user a 0
+        if (correo !== correoOriginal) {
+            await conexion.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
+        }
+
+        res.send({ status: "ok", message: "Información actualizada exitosamente" });
     } catch (error) {
-        console.error("Error al actualizar los datos del usuario:", error);
-        res.status(500).send({ status: "error", message: "Error al actualizar los datos del usuario" });
+        console.error('Error al actualizar el usuario:', error);
+        return res.status(500).send({ status: "Error", message: "Error al actualizar el usuario" });
     }
 });
 
