@@ -107,6 +107,8 @@ app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 app.get("/api/user-info", authentication.getUserInfo);
+
+
 app.put("/api/update-user", authorization.proteccion, async (req, res) => {
     const { nombre, correo, password, estado, cp, ciudad, colonia, calle, numero } = req.body;
     const correoOriginal = req.user.correo_user; // Usamos 'correo_user' porque es el campo correcto en tu tabla 'musuario'
@@ -120,7 +122,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         }
 
         // 2. Actualizar los datos del usuario en la tabla 'musuario'
-        const [result] = await conexion.execute(`
+        const [result] = await pool.execute(`
             UPDATE musuario 
             JOIN ddireccion ON musuario.id_direccion = ddireccion.id_direccion
             JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
@@ -150,7 +152,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
 
         // 3. Si el correo cambia, actualizamos verif_user a 0
         if (correo !== correoOriginal) {
-            await conexion.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
+            await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
         }
 
         res.send({ status: "ok", message: "Información actualizada exitosamente" });
