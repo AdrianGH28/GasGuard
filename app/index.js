@@ -113,7 +113,7 @@ app.put('/api/update-user',authorization.proteccion, async (req, res) => {
     console.log("Datos recibidos:", req.body);
     console.log("Usuario en sesión:", req.user);
     const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
-    const correoOriginal = req.user.correo_user;
+    const correoOriginal = req.user.correo;
 
 
     if (!correoOriginal) {
