@@ -168,23 +168,37 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         }
 
         // 2. Obtener la contraseña actual del usuario desde la base de datos
-        const [[userRow]] = await pool.execute(
-            'SELECT contra_user FROM musuario WHERE correo_user = ? LIMIT 1',
-            [correoOriginal]
-        );
+const [[userRow]] = await pool.execute(
+    'SELECT contra_user FROM musuario WHERE correo_user = ? LIMIT 1',
+    [correoOriginal]
+);
 
-        // 3. Si la nueva contraseña no es null, la comparamos con la contraseña actual
-        let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
-        if (password) {
-            // Comparamos la contraseña actual con la nueva (si la nueva es diferente, la hashamos)
-            const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
+// Verificar si el usuario fue encontrado
+if (!userRow) {
+    return res.status(404).send({ status: "error", message: "Usuario no encontrado" });
+}
 
-            if (!mismaPassword) {
-                // Si la contraseña es diferente, la encriptamos
-                const salt = await bcryptjs.genSalt(5);
-                hashPassword = await bcryptjs.hash(password, salt);
-            }
-        }
+// 3. Si la nueva contraseña no es null, la comparamos con la contraseña actual
+let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
+
+if (password) {
+    console.log("🔐 Contraseña recibida del frontend:", password);
+    console.log("🔒 Contraseña actual de la base de datos (hash):", userRow.contra_user);
+
+    // Comparamos la contraseña actual con la nueva
+    const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
+    console.log("🟢 ¿La contraseña es la misma?:", mismaPassword);
+
+    if (!mismaPassword) {
+        // Si la contraseña es diferente, la encriptamos
+        const salt = await bcryptjs.genSalt(5);
+        hashPassword = await bcryptjs.hash(password, salt);
+        console.log("🔁 Nueva contraseña hasheada:", hashPassword);
+    } else {
+        console.log("✅ La contraseña no cambió, se mantiene el hash actual.");
+    }
+}
+
 
         // 4. Actualización de usuario y dirección en una sola consulta
         let updateQuery = ` 
