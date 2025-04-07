@@ -89,37 +89,39 @@ document.addEventListener("DOMContentLoaded", async function () {
         const ciudad = document.getElementById("ciudad").value;
         const cp = document.getElementById("cp").value;
         const estado = document.getElementById("estado").value;
-        const password = document.getElementById("password").value;  // Si se cambia, pasarlo como está
+        let password = document.getElementById("password").value;
 
-    // Realizamos la actualización en la base de datos
-    try {
-        const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre,
-                correo,
-                password,  // Ya se envía tal cual, sin hashear
-                calle,
-                num,
-                colonia,
-                ciudad,
-                cp,
-                estado
-            })
-        });
+        
 
-        const responseData = await response.json();
-        if (responseData.status === "ok") {
-            console.log("✅ Datos actualizados correctamente");
-        } else {
-            console.error("⚠️ Error al actualizar los datos:", responseData.message);
+        // Realizamos la actualización en la base de datos
+        try {
+            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre,
+                    correo,
+                    password,
+                    calle,
+                    num,
+                    colonia,
+                    ciudad,
+                    cp,
+                    estado
+                })
+            });
+
+            const responseData = await response.json();
+            if (responseData.status === "ok") {
+                console.log("✅ Datos actualizados correctamente");
+            } else {
+                console.error("⚠️ Error al actualizar los datos:", responseData.message);
+            }
+        } catch (error) {
+            console.error("❌ Error al enviar la actualización:", error);
         }
-    } catch (error) {
-        console.error("❌ Error al enviar la actualización:", error);
-    }
 
         // Deshabilitar los campos nuevamente
         const inputs = document.querySelectorAll("input");
