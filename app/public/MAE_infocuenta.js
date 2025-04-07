@@ -89,14 +89,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         const ciudad = document.getElementById("ciudad").value;
         const cp = document.getElementById("cp").value;
         const estado = document.getElementById("estado").value;
-        let password = document.getElementById("password").value;
-
-        // Si la contraseña fue cambiada, la hasheamos
-        if (password !== data.user.contra_user && password !== "") {
-            const salt = await bcryptjs.genSalt(5);
-            password = await bcryptjs.hash(password, salt);  // Hasheamos la nueva contraseña
-        }
-
+        const password = document.getElementById("password").value;  // Si se cambia, pasarlo como está
+    
         // Realizamos la actualización en la base de datos
         try {
             const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
@@ -107,7 +101,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 body: JSON.stringify({
                     nombre,
                     correo,
-                    password,
+                    password,  // Ya se envía tal cual, sin hashear
                     calle,
                     num,
                     colonia,
@@ -116,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     estado
                 })
             });
-
+    
             const responseData = await response.json();
             if (responseData.status === "ok") {
                 console.log("✅ Datos actualizados correctamente");
@@ -126,7 +120,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         } catch (error) {
             console.error("❌ Error al enviar la actualización:", error);
         }
-
+    
+    
         // Deshabilitar los campos nuevamente
         const inputs = document.querySelectorAll("input");
         inputs.forEach(input => input.setAttribute("disabled", "true"));
