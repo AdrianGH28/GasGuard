@@ -239,42 +239,95 @@ app.get("/api/usuario", authorization.proteccion, async (req, res) => {
 });
 
 // Ruta para actualizar los datos del usuario
-app.put("/api/usuario", authorization.proteccion, async (req, res) => {
-    const { nombre, appat, correo, estado, cp, ciudad, colonia, calle, numero } = req.body;
-    const correoOriginal = req.user.correo;
+app.put("/api/update-user", authorization.proteccion, async (req, res) => {
+    const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
+    const correoOriginal = req.user.correo; // El correo original del usuario
+
+    // Verificamos si los campos necesarios para la dirección están presentes
+    if (!num || !cp || !calle || !colonia || !ciudad || !estado) {
+        return res.status(400).send({ status: "error", message: "Faltan datos necesarios para actualizar la dirección." });
+    }
 
     try {
-        const [result] = await conexion.execute(`
-            UPDATE mcliente 
-            JOIN ddireccion ON mcliente.id_direccion = ddireccion.id_direccion
-            JOIN ccodigop ON ddireccion.id_codigop = ccodigop.id_codigop
-            JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
-            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
-            JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
-            JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
-            SET 
-                mcliente.nom_cli = ?,
-                mcliente.appat_cli = ?,
-                mcliente.correo_cli = ?,
-                cestado.nom_estado = ?,
-                ccodigop.codigop = ?,
-                cciudad.nom_ciudad = ?,
-                ccolonia.nom_col = ?,
-                dcalle.nom_calle = ?,
-                ddireccion.numero_direc = ?
-            WHERE mcliente.correo_cli = ?
-        `, [nombre, appat, correo, estado, cp, ciudad, colonia, calle, numero, correoOriginal]);
+        // 1. Verificamos que los valores de colonia, ciudad y estado sean válidos
+        const [[coloniaRow]] = await pool.execute(
+            'SELECT id_colonia FROM ccolonia WHERE nom_col = ? LIMIT 1',
+            [colonia]
+        );
+        const [[ciudadRow]] = await pool.execute(
+            'SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ? LIMIT 1',
+            [ciudad]
+        );
+        const [[estadoRow]] = await pool.execute(
+            'SELECT id_estado FROM cestado WHERE nom_estado = ? LIMIT 1',
+            [estado]
+        );
 
-        if (result.affectedRows === 0) {
-            return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
+        if (!coloniaRow || !ciudadRow || !estadoRow) {
+            return res.status(400).send({ status: "error", message: "Colonia, ciudad o estado no válidos" });
         }
 
-        res.send({ status: "ok", message: "Información actualizada exitosamente" });
+        // 2. Obtener la contraseña actual del usuario desde la base de datos
+        const [[userRow]] = await pool.execute(
+            'SELECT contra_user FROM musuario WHERE correo_user = ? LIMIT 1',
+            [correoOriginal]
+        );
+
+        // 3. Validar y preparar nueva contraseña
+        let hashPassword = null;
+        if (password) {
+            const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
+            if (!mismaPassword) {
+                const salt = await bcryptjs.genSalt(5);
+                hashPassword = await bcryptjs.hash(password, salt);
+            }
+        }
+
+        // 4. Actualización de usuario y dirección en una sola consulta
+        let updateQuery = `
+            UPDATE musuario
+            JOIN ddireccion ON musuario.id_direccion = ddireccion.id_direccion
+            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
+            JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
+            JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
+            JOIN ccpostal ON ddireccion.id_copost = ccpostal.id_copost
+            SET 
+                musuario.nom_user = ?, 
+                musuario.correo_user = ?, 
+                ${hashPassword ? 'musuario.contra_user = ?, ' : ''}
+                cestado.nom_estado = ?, 
+                cciudad.nom_ciudad = ?, 
+                ccolonia.nom_col = ?, 
+                dcalle.nom_calle = ?, 
+                ddireccion.numero_direc = ?, 
+                ccpostal.cp_copost = ?
+            WHERE musuario.correo_user = ?`;
+
+        const params = hashPassword
+            ? [nombre, correo, hashPassword, estado, ciudad, colonia, calle, num, cp, correoOriginal]
+            : [nombre, correo, estado, ciudad, colonia, calle, num, cp, correoOriginal];
+
+        const [result] = await pool.execute(updateQuery, params);
+
+        // Si el resultado de la actualización es 0, significa que no se encontró el usuario
+        if (result.affectedRows === 0) {
+            return res.status(404).send({ status: "error", message: "Usuario no encontrado" });
+        }
+
+        // 5. Si el correo cambió, actualizar el valor de verif_user a 0
+        if (correo !== correoOriginal) {
+            await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
+        }
+
+        res.send({ status: "ok", message: "Datos del usuario y dirección actualizados correctamente" });
+
     } catch (error) {
-        console.error('Error al actualizar el usuario:', error);
-        return res.status(500).send({ status: "Error", message: "Error al actualizar el usuario" });
+        console.error("Error al actualizar los datos:", error);
+        res.status(500).send({ status: "error", message: "Error al actualizar los datos" });
     }
 });
+
 
 
 // Ruta para obtener la lista de dispositivos
