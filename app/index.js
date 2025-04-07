@@ -108,50 +108,61 @@ app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 app.get("/api/user-info", authentication.getUserInfo);
 
-app.put('/api/update-user',authorization.proteccion, async (req, res) => {
-
-    console.log("Datos recibidos:", req.body);
-    console.log("Usuario en sesión:", req.user);
+app.put("/api/update-user", async (req, res) => {
     const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
-    const correoOriginal = req.user.correo;
+    const correoOriginal = req.user.correo_user;
 
-
-    if (!correoOriginal) {
-        return res.status(400).send({ status: "error", message: "Usuario no autenticado o no encontrado" });
-    }
     try {
-        let hashPassword = null;
+        // 1. Buscar IDs de colonia, ciudad, estado a partir de los nombres
+        const [[coloniaRow]] = await pool.execute(
+            'SELECT id_colonia FROM ccolonia WHERE nom_col = ? LIMIT 1',
+            [colonia]
+        );
+        const [[ciudadRow]] = await pool.execute(
+            'SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ? LIMIT 1',
+            [ciudad]
+        );
+        const [[estadoRow]] = await pool.execute(
+            'SELECT id_estado FROM cestado WHERE nom_estado = ? LIMIT 1',
+            [estado]
+        );
 
-        // Si la contraseña fue cambiada, la hasheamos
-        if (password && password !== req.user.contra_user) {
-            const salt = await bcryptjs.genSalt(5);
-            hashPassword = await bcryptjs.hash(password, salt);  // Hasheamos la nueva contraseña
+        // Validar que los datos existen
+        if (!coloniaRow || !ciudadRow || !estadoRow) {
+            return res.status(400).send({ status: "error", message: "Colonia, ciudad o estado no válidos" });
         }
 
-        // Actualizar los datos del usuario en musuario
+        // 2. Verificar si se cambió la contraseña
+        let hashPassword = null;
+        if (password && password !== req.user.contra_user) {
+            const salt = await bcryptjs.genSalt(5);
+            hashPassword = await bcryptjs.hash(password, salt);
+        }
+
+        // 3. Actualizar los datos en musuario
         let updateQuery = `
             UPDATE musuario 
             SET nom_user = ?, correo_user = ?, 
                 ${hashPassword ? 'contra_user = ?,' : ''} 
-                id_direccion = (SELECT id_direccion FROM ddireccion WHERE id_colonia = ? AND id_ciudad = ? AND id_estado = ?)
+                id_direccion = (
+                    SELECT id_direccion 
+                    FROM ddireccion 
+                    WHERE id_colonia = ? AND id_ciudad = ? AND id_estado = ?
+                )
             WHERE correo_user = ?`;
 
-        const params = hashPassword ? 
-            [nombre, correo, hashPassword, colonia, ciudad, estado, correoOriginal] :
-            [nombre, correo, colonia, ciudad, estado, correoOriginal];
+        const params = hashPassword
+            ? [nombre, correo, hashPassword, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal]
+            : [nombre, correo, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal];
 
-        const [result] = await pool.execute(updateQuery, params);
+        await pool.execute(updateQuery, params);
 
-        if (result.affectedRows === 0) {
-            return res.status(404).send({ status: "Error", message: "Usuario no encontrado o no se realizaron cambios" });
-        }
-
-        // Si el correo ha cambiado, actualizamos verif_user a 0
+        // 4. Si se cambió el correo, reiniciar verif_user a 0
         if (correo !== correoOriginal) {
             await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
         }
 
-        // Actualizamos la dirección si es necesario
+        // 5. Actualizar la dirección del usuario (campos de catálogos)
         await pool.execute(`
             UPDATE ddireccion
             JOIN cestado ON ddireccion.id_estado = cestado.id_estado
@@ -159,70 +170,21 @@ app.put('/api/update-user',authorization.proteccion, async (req, res) => {
             JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
             JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
             JOIN ccpostal ON ddireccion.id_copost = ccpostal.id_copost
-            SET cestado.nom_estado = ?, cciudad.nom_ciudad = ?, ccolonia.nom_col = ?, dcalle.nom_calle = ?, ddireccion.numero_direc = ?, ccpostal.cp_copost = ?
+            SET 
+                cestado.nom_estado = ?, 
+                cciudad.nom_ciudad = ?, 
+                ccolonia.nom_col = ?, 
+                dcalle.nom_calle = ?, 
+                ddireccion.numero_direc = ?, 
+                ccpostal.cp_copost = ?
             WHERE ddireccion.id_direccion = ?
         `, [estado, ciudad, colonia, calle, num, cp, req.user.id_direccion]);
 
-        res.json({ status: "ok" });
+        res.send({ status: "ok", message: "Datos del usuario actualizados correctamente" });
 
     } catch (error) {
-        console.error('Error al actualizar los datos del usuario:', error);
-        res.json({ status: "error", message: error.message });
-    }
-});
-
-
-
-
-
-// Generar una IP aleatoria
-function generarIPAleatoria() {
-    return `192.168.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`;
-}
-
-// Vincular dispositivo
-app.post("/api/vincular", authorization.proteccion, async (req, res) => {
-    const { ssid, password, ubicacion } = req.body;
-    const id_cliente = req.user.id_cliente; // Asegúrate de obtener el id_cliente del token de autorización
-
-    // Registros de depuración
-    console.log('Datos recibidos:', { ssid, password, ubicacion, id_cliente });
-
-    // Verificar que los campos obligatorios estén definidos
-    if (!ssid || !password || !ubicacion || !id_cliente) {
-        return res.status(400).send({ status: "Error", message: "Todos los campos son requeridos" });
-    }
-
-    const ipAleatoria = generarIPAleatoria();
-
-    try {
-        // Verificar si la ubicación ya existe
-        const [ubicacionRows] = await conexion.execute('SELECT id_ubi FROM dubicacion WHERE nom_ubi = ?', [ubicacion]);
-
-        let id_ubi;
-        if (ubicacionRows.length > 0) {
-            // La ubicación ya existe, obtener su id
-            id_ubi = ubicacionRows[0].id_ubi;
-        } else {
-            // La ubicación no existe, insertarla y obtener su id
-            const [ubicacionResult] = await conexion.execute('INSERT INTO dubicacion (nom_ubi) VALUES (?)', [ubicacion]);
-            id_ubi = ubicacionResult.insertId;
-        }
-
-        // Insertar el dispositivo con el id de la ubicación
-        const [result] = await conexion.execute(`
-            INSERT INTO mdispositivo (des_dis, id_cliente, id_ubi, wifi_dis, contraseña_dis, ip_dis) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        `, ['Dispositivo de Prueba', id_cliente, id_ubi, ssid, password, ipAleatoria]);
-
-        if (result.affectedRows === 0) {
-            return res.status(500).send({ status: "Error", message: "Error al vincular el dispositivo" });
-        }
-
-        res.send({ status: "ok", message: "Dispositivo vinculado exitosamente" });
-    } catch (error) {
-        console.error('Error al vincular el dispositivo:', error);
-        return res.status(500).send({ status: "Error", message: "Error al vincular el dispositivo" });
+        console.error("Error al actualizar los datos del usuario:", error);
+        res.status(500).send({ status: "error", message: "Error al actualizar los datos del usuario" });
     }
 });
 
