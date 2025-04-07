@@ -173,7 +173,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             [correoOriginal]
         );
 
-        // 3. Verificar si la nueva contraseña es diferente de la actual
+        // 3. Si la nueva contraseña no es null, la comparamos con la contraseña actual
         let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
         if (password) {
             const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
@@ -229,6 +229,8 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos" });
     }
 });
+
+
 
 
 
@@ -427,8 +429,8 @@ app.post('/api/reenvio-codigo', async (req, res) => {
         const mailOptions = {
             from: 'gasguardad1@gmail.com',
             to: correo,
-            subject: 'Código de recuperación de cuenta',
-            text: `Tu código de recuperación es: ${nuevoCodigo}`
+            subject: 'Código de verificación de cuenta',
+            text: `Tu código de verificación es: ${nuevoCodigo}`
         };
 
         await transporter.sendMail(mailOptions);

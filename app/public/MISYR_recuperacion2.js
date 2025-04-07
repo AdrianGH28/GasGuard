@@ -8,43 +8,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Verificar si el usuario está bloqueado al cargar la página
-    try {
-        const response = await fetch(`/api/verificar-bloqueo?correo=${correo}`);
-        const result = await response.json();
-
-        if (result.bloqueado) {
-            reenviarBtn.disabled = true;
-            reenviarBtn.textContent = `Reintentar en ${Math.ceil(result.tiempoRestante / 1000)} s`;
-            let tiempoRestante = Math.ceil(result.tiempoRestante / 1000);
-
-            const intervalo = setInterval(() => {
-                tiempoRestante--;
-                reenviarBtn.textContent = `Reintentar en ${tiempoRestante} s`;
-                if (tiempoRestante <= 0) {
-                    clearInterval(intervalo);
-                    reenviarBtn.disabled = false;
-                    reenviarBtn.textContent = 'Reenviar código';
-                }
-            }, 1000);
-        }
-    } catch (error) {
-        console.error("Error al verificar bloqueo:", error);
-    }
+    
 
     reenviarBtn.addEventListener('click', async (e) => {
         e.preventDefault();
 
+        const correo = localStorage.getItem('resetEmail');
+        console.log("Reenviando código a:", correo);
+
         try {
-            const checkResponse = await fetch(`/api/verificar-bloqueo?correo=${correo}`);
-            const checkResult = await checkResponse.json();
-
-            if (checkResult.bloqueado) {
-                alert("Has alcanzado el límite de intentos. Inténtalo nuevamente en 1 hora.");
-                return;
-            }
-
-            console.log("Reenviando código a:", correo);
 
             const response = await fetch('/api/reenvio-codigo', {
                 method: 'POST',
@@ -56,13 +28,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
-                alert('Código reenviado a tu correo.');
+                mostraralerta('Código reenviado a tu correo.');
             } else {
-                alert(result.message || 'Error al reenviar el código');
+                mostraralerta(result.message || 'Error al reenviar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            alert('Error al intentar reenviar el código.');
+            mostraralerta('Error al intentar reenviar el código.');
         }
     });
 
@@ -89,13 +61,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
+                submitBtn.disabled = true;
+            mostraralerta('success',result.message);
+            //mostraralerta('success',"Correo verificado exitosamente");
+
+            // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
+            await esperar(4000); // Espera 4 segundos
+
+            // Hacer la animación de desvanezca del body
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+
+            // Esperar a que la animación termine antes de redirigir
+            await esperar(500); // Esperar el tiempo de la animación (500 ms)
+
+            cerraralerta();
                 window.location.href = result.redirect;
             } else {
-                alert(result.message || 'Error al validar el código');
+                mostraralerta(result.message || 'Error al validar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            alert('Error al intentar validar el código.');
+            mostraralerta('Error al intentar validar el código.');
         }
     });
 });

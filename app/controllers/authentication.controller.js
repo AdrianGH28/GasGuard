@@ -400,19 +400,13 @@ export const forgotPassword = async (req, res) => {
     }
 
     try {
-        const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
-        
+        recoveryCodes.delete(correo);
 
-        if (rows.length === 0) {
-            return res.status(400).send({ status: "Error", message: "El correo no está registrado" });
-        }
-
-        // Generar código de verificación
+        // Generar un nuevo código
         const codigo = Math.floor(100000 + Math.random() * 900000);
+        recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000 });
 
-        // Guardar código con expiración y reintentos
-        recoveryCodes.set(correo, { codigo, expiracion: Date.now() + 5 * 60 * 1000, reintentos: 0, bloqueo: null });
-
+        console.log("Códigos almacenados:", recoveryCodes);
         // Configurar transporte de correo
         const transporter = nodemailer.createTransport({
             service: 'gmail',

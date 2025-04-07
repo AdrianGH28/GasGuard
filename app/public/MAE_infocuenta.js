@@ -81,62 +81,64 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Funcionalidad de guardar cambios
     saveBtn.addEventListener("click", async function () {
         // Obtener los valores de los campos
-    const nombre = document.getElementById("nombre").value;
-    const correo = document.getElementById("correo").value;
-    const calle = document.getElementById("calle").value;
-    const num = document.getElementById("num").value;
-    const colonia = document.getElementById("colonia").value;
-    const ciudad = document.getElementById("ciudad").value;
-    const cp = document.getElementById("cp").value;
-    const estado = document.getElementById("estado").value;
-    let password = document.getElementById("password").value;
-
-    // Si la contraseña está vacía, no la incluimos en la actualización
+        const nombre = document.getElementById("nombre").value;
+        const correo = document.getElementById("correo").value;
+        const calle = document.getElementById("calle").value;
+        const num = document.getElementById("num").value;
+        const colonia = document.getElementById("colonia").value;
+        const ciudad = document.getElementById("ciudad").value;
+        const cp = document.getElementById("cp").value;
+        const estado = document.getElementById("estado").value;
+        let password = document.getElementById("password").value;
+    
+       // Si la contraseña está vacía o no se cambió, no la incluimos en la actualización
     if (password.trim() === "") {
-        password = null; 
+        password = null; // O no se incluye en el cuerpo si es nulo
     }
-
-    try {
-        const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre,
-                correo,
-                password,
-                calle,
-                num,
-                colonia,
-                ciudad,
-                cp,
-                estado
-            })
-        });
-
-        const responseData = await response.json();
-        if (responseData.status === "ok") {
-            console.log("✅ Datos actualizados correctamente");
-            alert("Los datos se actualizaron correctamente.");
-        } else {
-            console.error("⚠️ Error al actualizar los datos:", responseData.message);
-            alert("Hubo un error al actualizar los datos.");
+    
+        try {
+            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre,
+                    correo,
+                    password,
+                    calle,
+                    num,
+                    colonia,
+                    ciudad,
+                    cp,
+                    estado
+                })
+            });
+    
+            const responseData = await response.json();
+            if (responseData.status === "ok") {
+                console.log("✅ Datos actualizados correctamente");
+                alert("Los datos se actualizaron correctamente.");
+            } else {
+                console.error("⚠️ Error al actualizar los datos:", responseData.message);
+                alert("Hubo un error al actualizar los datos.");
+            }
+        } catch (error) {
+            console.error("❌ Error al enviar la actualización:", error);
+            alert("Error al enviar los datos.");
         }
-    } catch (error) {
-        console.error("❌ Error al enviar la actualización:", error);
-        alert("Error al enviar los datos.");
-    }
+    
         // Deshabilitar los campos nuevamente
         const inputs = document.querySelectorAll("input");
         inputs.forEach(input => input.setAttribute("disabled", "true"));
         editBtn.style.display = "flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
-
+    
         // Ocultar los campos de contraseña
         passwordContainer.classList.remove("active");
     });
+    
 
     // Funcionalidad de cancelar cambios
     cancelBtn.addEventListener("click", function () {
