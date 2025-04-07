@@ -91,7 +91,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         const estado = document.getElementById("estado").value;
         let password = document.getElementById("password").value;
 
-        
+        if (password.trim() === "") {
+            password = null; // o simplemente no incluirlo en el body
+        }
 
         // Realizamos la actualización en la base de datos
         try {

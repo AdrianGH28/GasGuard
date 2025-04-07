@@ -128,19 +128,28 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             [estado]
         );
 
-        // Verificar que la colonia, ciudad y estado existen
         if (!coloniaRow || !ciudadRow || !estadoRow) {
             return res.status(400).send({ status: "error", message: "Colonia, ciudad o estado no válidos" });
         }
 
-        // 2. Actualizar la contraseña si es que la cambian
+        // 2. Obtener la contraseña actual del usuario desde la base de datos
+        const [[userRow]] = await pool.execute(
+            'SELECT contra_user FROM musuario WHERE correo_user = ? LIMIT 1',
+            [correoOriginal]
+        );
+
+        // 3. Validar y preparar nueva contraseña
         let hashPassword = null;
-        if (password && password !== req.user.contra_user) {
-            const salt = await bcryptjs.genSalt(5);
-            hashPassword = await bcryptjs.hash(password, salt);
+        if (password) {
+            const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
+
+            if (!mismaPassword) {
+                const salt = await bcryptjs.genSalt(5);
+                hashPassword = await bcryptjs.hash(password, salt);
+            }
         }
 
-        // 3. Preparar la consulta para actualizar los datos del usuario
+        // 4. Preparar y ejecutar actualización del usuario
         let updateQuery = `UPDATE musuario 
             SET nom_user = ?, correo_user = ?, 
                 ${hashPassword ? 'contra_user = ?,' : ''} 
@@ -156,15 +165,19 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             ? [nombre, correo, hashPassword, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal]
             : [nombre, correo, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal];
 
-        // Ejecutar la actualización de datos del usuario
         await pool.execute(updateQuery, params);
 
-        // 4. Si se cambió el correo, actualizar `verif_user` a 0
+        // 5. Si el correo cambió, marcar verificación como pendiente
         if (correo !== correoOriginal) {
             await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
         }
 
-        // 5. Actualizar la dirección del usuario si cambia
+        // 6. Validar que existan todos los datos de dirección
+        if (!req.user.id_direccion || !num || !cp || !calle) {
+            return res.status(400).send({ status: "error", message: "Faltan datos necesarios para actualizar la dirección." });
+        }
+
+        // 7. Actualizar datos de dirección
         await pool.execute(`
             UPDATE ddireccion
             JOIN cestado ON ddireccion.id_estado = cestado.id_estado
@@ -189,6 +202,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos del usuario" });
     }
 });
+
 
 
 
@@ -431,11 +445,11 @@ app.post('/api/reenvio-codigo', async (req, res) => {
 
         // Generar nuevo código
         const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
-        authentication.recoveryCodes.set(correo, { 
-            codigo: nuevoCodigo, 
-            expiracion: ahora + 5 * 60 * 1000, 
-            reintentos: storedData.reintentos + 1, 
-            ultimoIntento: ahora 
+        authentication.recoveryCodes.set(correo, {
+            codigo: nuevoCodigo,
+            expiracion: ahora + 5 * 60 * 1000,
+            reintentos: storedData.reintentos + 1,
+            ultimoIntento: ahora
         });
 
         console.log(`Código ${nuevoCodigo} generado para ${correo}`);
@@ -529,11 +543,11 @@ app.post('/api/reenvio-codigo-paso2', async (req, res) => {
 
         // Generar nuevo código
         const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
-        authentication.recoveryCodes.set(correo, { 
-            codigo: nuevoCodigo, 
-            expiracion: ahora + 5 * 60 * 1000, 
-            reintentos: storedData.reintentos + 1, 
-            ultimoIntento: ahora 
+        authentication.recoveryCodes.set(correo, {
+            codigo: nuevoCodigo,
+            expiracion: ahora + 5 * 60 * 1000,
+            reintentos: storedData.reintentos + 1,
+            ultimoIntento: ahora
         });
 
         console.log(`Código ${nuevoCodigo} generado para ${correo}`);
@@ -604,11 +618,11 @@ app.post('/api/reenvio-codigo-paso4', async (req, res) => {
 
         // Generar nuevo código
         const nuevoCodigo = Math.floor(100000 + Math.random() * 900000);
-        authentication.recoveryCodes.set(correo, { 
-            codigo: nuevoCodigo, 
-            expiracion: ahora + 5 * 60 * 1000, 
-            reintentos: storedData.reintentos + 1, 
-            ultimoIntento: ahora 
+        authentication.recoveryCodes.set(correo, {
+            codigo: nuevoCodigo,
+            expiracion: ahora + 5 * 60 * 1000,
+            reintentos: storedData.reintentos + 1,
+            ultimoIntento: ahora
         });
 
         console.log(`Código ${nuevoCodigo} generado para ${correo}`);
