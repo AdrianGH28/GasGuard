@@ -176,10 +176,11 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         // 3. Si la nueva contraseña no es null, la comparamos con la contraseña actual
         let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
         if (password) {
+            // Comparamos la contraseña actual con la nueva (si la nueva es diferente, la hashamos)
             const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
 
-            // Solo hacemos hash de la nueva contraseña si no es igual a la actual
             if (!mismaPassword) {
+                // Si la contraseña es diferente, la encriptamos
                 const salt = await bcryptjs.genSalt(5);
                 hashPassword = await bcryptjs.hash(password, salt);
             }
@@ -229,6 +230,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos" });
     }
 });
+
 
 
 
