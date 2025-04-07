@@ -108,7 +108,7 @@ app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 app.get("/api/user-info", authentication.getUserInfo);
 
-app.put('/api/update-user', async (req, res) => {
+app.put('/api/update-user',authorization.proteccion, async (req, res) => {
 
     console.log("Datos recibidos:", req.body);
     console.log("Usuario en sesión:", req.user);
