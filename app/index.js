@@ -196,8 +196,8 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
                 dcalle.nom_calle = ?, 
                 ddireccion.numero_direc = ?, 
                 ccpostal.cp_copost = ?
-            WHERE ddireccion.id_direccion = ?
-        `, [estado, ciudad, colonia, calle, num, cp, req.user.id_direccion]);
+            WHERE ddireccion.id_direccion = ?`, 
+            [estado, ciudad, colonia, calle, num, cp, req.user.id_direccion]);
 
         res.send({ status: "ok", message: "Datos del usuario actualizados correctamente" });
 
@@ -206,6 +206,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos del usuario" });
     }
 });
+
 
 
 

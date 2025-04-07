@@ -81,50 +81,52 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Funcionalidad de guardar cambios
     saveBtn.addEventListener("click", async function () {
         // Obtener los valores de los campos
-        const nombre = document.getElementById("nombre").value;
-        const correo = document.getElementById("correo").value;
-        const calle = document.getElementById("calle").value;
-        const num = document.getElementById("num").value;
-        const colonia = document.getElementById("colonia").value;
-        const ciudad = document.getElementById("ciudad").value;
-        const cp = document.getElementById("cp").value;
-        const estado = document.getElementById("estado").value;
-        let password = document.getElementById("password").value;
+    const nombre = document.getElementById("nombre").value;
+    const correo = document.getElementById("correo").value;
+    const calle = document.getElementById("calle").value;
+    const num = document.getElementById("num").value;
+    const colonia = document.getElementById("colonia").value;
+    const ciudad = document.getElementById("ciudad").value;
+    const cp = document.getElementById("cp").value;
+    const estado = document.getElementById("estado").value;
+    let password = document.getElementById("password").value;
 
-        if (password.trim() === "") {
-            password = null; // o simplemente no incluirlo en el body
+    // Si la contraseña está vacía, no la incluimos en la actualización
+    if (password.trim() === "") {
+        password = null; 
+    }
+
+    try {
+        const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre,
+                correo,
+                password,
+                calle,
+                num,
+                colonia,
+                ciudad,
+                cp,
+                estado
+            })
+        });
+
+        const responseData = await response.json();
+        if (responseData.status === "ok") {
+            console.log("✅ Datos actualizados correctamente");
+            alert("Los datos se actualizaron correctamente.");
+        } else {
+            console.error("⚠️ Error al actualizar los datos:", responseData.message);
+            alert("Hubo un error al actualizar los datos.");
         }
-
-        // Realizamos la actualización en la base de datos
-        try {
-            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nombre,
-                    correo,
-                    password,
-                    calle,
-                    num,
-                    colonia,
-                    ciudad,
-                    cp,
-                    estado
-                })
-            });
-
-            const responseData = await response.json();
-            if (responseData.status === "ok") {
-                console.log("✅ Datos actualizados correctamente");
-            } else {
-                console.error("⚠️ Error al actualizar los datos:", responseData.message);
-            }
-        } catch (error) {
-            console.error("❌ Error al enviar la actualización:", error);
-        }
-
+    } catch (error) {
+        console.error("❌ Error al enviar la actualización:", error);
+        alert("Error al enviar los datos.");
+    }
         // Deshabilitar los campos nuevamente
         const inputs = document.querySelectorAll("input");
         inputs.forEach(input => input.setAttribute("disabled", "true"));
