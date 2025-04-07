@@ -113,6 +113,8 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
     const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
     const correoOriginal = req.user.correo;
 
+    console.log(req.body);
+
     if (!req.user.id_direccion || !num || !cp || !calle) {
         return res.status(400).send({ status: "error", message: "Faltan datos necesarios para actualizar la dirección." });
     }
