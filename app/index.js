@@ -173,22 +173,20 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             [correoOriginal]
         );
 
-        // 3. Validar y preparar nueva contraseña solo si se envió
-        let hashPassword = null;
+        // 3. Verificar si la nueva contraseña es diferente de la actual
+        let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
         if (password) {
             const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
 
+            // Solo hacemos hash de la nueva contraseña si no es igual a la actual
             if (!mismaPassword) {
                 const salt = await bcryptjs.genSalt(5);
                 hashPassword = await bcryptjs.hash(password, salt);
             }
-        } else {
-            // Si no se proporcionó una nueva contraseña, no se cambia
-            hashPassword = userRow.contra_user; // Mantener la contraseña original
         }
 
         // 4. Actualización de usuario y dirección en una sola consulta
-        let updateQuery = `
+        let updateQuery = ` 
             UPDATE musuario
             JOIN ddireccion ON musuario.id_direccion = ddireccion.id_direccion
             JOIN cestado ON ddireccion.id_estado = cestado.id_estado
@@ -231,7 +229,6 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos" });
     }
 });
-
 
 
 
