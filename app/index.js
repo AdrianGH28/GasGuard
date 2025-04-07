@@ -112,7 +112,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
     const correoOriginal = req.user.correo;
 
     try {
-        // 1. Buscar IDs de colonia, ciudad, estado a partir de los nombres
+        // 1. Verificar si la dirección cambia (colonia, ciudad, estado)
         const [[coloniaRow]] = await pool.execute(
             'SELECT id_colonia FROM ccolonia WHERE nom_col = ? LIMIT 1',
             [colonia]
@@ -126,19 +126,19 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             [estado]
         );
 
-        // Validar que los datos existen
+        // Verificar que la colonia, ciudad y estado existen
         if (!coloniaRow || !ciudadRow || !estadoRow) {
             return res.status(400).send({ status: "error", message: "Colonia, ciudad o estado no válidos" });
         }
 
-        // 2. Verificar si se cambió la contraseña
+        // 2. Actualizar la contraseña si es que la cambian
         let hashPassword = null;
         if (password && password !== req.user.contra_user) {
             const salt = await bcryptjs.genSalt(5);
             hashPassword = await bcryptjs.hash(password, salt);
         }
 
-        // 3. Actualizar los datos en musuario
+        // 3. Preparar la consulta para actualizar los datos del usuario
         let updateQuery = `UPDATE musuario 
             SET nom_user = ?, correo_user = ?, 
                 ${hashPassword ? 'contra_user = ?,' : ''} 
@@ -146,7 +146,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
                     SELECT id_direccion 
                     FROM ddireccion 
                     WHERE id_colonia = ? AND id_ciudad = ? AND id_estado = ?
-                    LIMIT 1  -- Aquí agregamos LIMIT 1 para asegurarnos de obtener solo una fila
+                    LIMIT 1
                 )
             WHERE correo_user = ?`;
 
@@ -154,14 +154,15 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
             ? [nombre, correo, hashPassword, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal]
             : [nombre, correo, coloniaRow.id_colonia, ciudadRow.id_ciudad, estadoRow.id_estado, correoOriginal];
 
+        // Ejecutar la actualización de datos del usuario
         await pool.execute(updateQuery, params);
 
-        // 4. Si se cambió el correo, reiniciar verif_user a 0
+        // 4. Si se cambió el correo, actualizar `verif_user` a 0
         if (correo !== correoOriginal) {
             await pool.execute('UPDATE musuario SET verif_user = 0 WHERE correo_user = ?', [correo]);
         }
 
-        // 5. Actualizar la dirección del usuario (campos de catálogos)
+        // 5. Actualizar la dirección del usuario si cambia
         await pool.execute(`
             UPDATE ddireccion
             JOIN cestado ON ddireccion.id_estado = cestado.id_estado
@@ -186,6 +187,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos del usuario" });
     }
 });
+
 
 
 // Ruta para obtener los datos del usuario
