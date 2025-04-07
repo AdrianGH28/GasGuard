@@ -107,7 +107,6 @@ app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registro-afiliados", authentication.registroAfiliados);
 
 app.get("/api/user-info", authentication.getUserInfo);
-
 app.put("/api/update-user", authorization.proteccion, async (req, res) => {
     const { nombre, correo, password, calle, num, colonia, ciudad, cp, estado } = req.body;
     const correoOriginal = req.user.correo;
@@ -140,14 +139,14 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         }
 
         // 3. Actualizar los datos en musuario
-        let updateQuery = `
-            UPDATE musuario 
+        let updateQuery = `UPDATE musuario 
             SET nom_user = ?, correo_user = ?, 
                 ${hashPassword ? 'contra_user = ?,' : ''} 
                 id_direccion = (
                     SELECT id_direccion 
                     FROM ddireccion 
                     WHERE id_colonia = ? AND id_ciudad = ? AND id_estado = ?
+                    LIMIT 1  -- Aquí agregamos LIMIT 1 para asegurarnos de obtener solo una fila
                 )
             WHERE correo_user = ?`;
 
@@ -187,6 +186,7 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         res.status(500).send({ status: "error", message: "Error al actualizar los datos del usuario" });
     }
 });
+
 
 // Ruta para obtener los datos del usuario
 app.get("/api/usuario", authorization.proteccion, async (req, res) => {
