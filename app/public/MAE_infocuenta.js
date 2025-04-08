@@ -171,6 +171,7 @@ saveBtn.addEventListener("click", async () => {
 
     newPassword.value = "";
     confirmPassword.value = "";
+    originalPassword.style.display = "block";
 });
 
 // CANCELAR cambios
