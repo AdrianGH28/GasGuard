@@ -89,13 +89,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         const ciudad = document.getElementById("ciudad").value;
         const cp = document.getElementById("cp").value;
         const estado = document.getElementById("estado").value;
+        // Guarda el valor original (esto se ejecuta cuando se carga la página)
+        const originalPassword = document.getElementById("password").value;
+
+        // Cuando da clic en guardar
         let password = document.getElementById("password").value;
-    
-       // Si la contraseña está vacía o no se cambió, no la incluimos en la actualización
-    if (password.trim() === "") {
-        password = null; // O no se incluye en el cuerpo si es nulo
-    }
-    
+
+        if (password === originalPassword) {
+            password = null; // No se cambió, así que no la enviamos
+        }
+
         try {
             const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
                 method: "PUT",
@@ -114,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     estado
                 })
             });
-    
+
             const responseData = await response.json();
             if (responseData.status === "ok") {
                 console.log("✅ Datos actualizados correctamente");
@@ -127,18 +130,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("❌ Error al enviar la actualización:", error);
             alert("Error al enviar los datos.");
         }
-    
+
         // Deshabilitar los campos nuevamente
         const inputs = document.querySelectorAll("input");
         inputs.forEach(input => input.setAttribute("disabled", "true"));
         editBtn.style.display = "flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
-    
+
         // Ocultar los campos de contraseña
         passwordContainer.classList.remove("active");
     });
-    
+
 
     // Funcionalidad de cancelar cambios
     cancelBtn.addEventListener("click", function () {
