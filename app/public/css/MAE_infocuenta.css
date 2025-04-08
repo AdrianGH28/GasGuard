@@ -271,7 +271,7 @@ nav a.active .animation {
   display: flex;
   align-items: center;
   font-size: 20px;
-  color: rgba(255, 0, 0, 0.74);
+  color: #FF0000;
   font-weight: 500;
   background: none;
   border: none;
@@ -289,7 +289,7 @@ nav a.active .animation {
   width: 665px;
   height: 450px;
   flex-shrink: 0;
-  border: 1px solid #FA0000;
+  border: 1px solid #FF0000;
   background: transparent;
   padding: 20px 50px;
   margin-top: 20px;
@@ -321,7 +321,7 @@ nav a.active .animation {
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(255, 0, 0, 0.74);
+  color: #FF0000;
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
@@ -448,13 +448,13 @@ input[type="password"] {
     width: 25px;  /* Ancho del icono */
     height: 15px; /* Alto del icono */
     font-size: 18px; /* Tamaño de la fuente */
-    color: rgba(255, 0, 0, 0.74); /* Color del icono */
+    color: #FF0000; /* Color del icono */
     flex-shrink: 0;
 }
 
 .edit-info i {
     font-size: 22px !important; /* O el tamaño que quieras */
-    color: rgba(255, 0, 0, 0.74);
+    color: #FF0000;
   }
 
 /* Oculta los botones "Guardar" y "Cancelar" por defecto */
@@ -525,7 +525,7 @@ input[type="password"]:focus:not([disabled]) {
     width: 167px;
     height: 46px;
     flex-shrink: 0;
-    color: rgba(255, 0, 0, 0.74);
+    color: #FF0000;
     text-align: center;
     font-size: 13px;
     font-style: normal;
