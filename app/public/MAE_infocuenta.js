@@ -173,6 +173,30 @@ saveBtn.addEventListener("click", async () => {
     confirmPassword.value = "";
 });
 
+// CANCELAR cambios
+cancelBtn.addEventListener("click", () => {
+    document.getElementById("nombre").value = datosOriginales.nombre;
+    document.getElementById("correo").value = datosOriginales.correo;
+    originalPassword.value = datosOriginales.password;
+    document.getElementById("calle").value = datosOriginales.calle;
+    document.getElementById("num").value = datosOriginales.num;
+    document.getElementById("colonia").value = datosOriginales.colonia;
+    document.getElementById("ciudad").value = datosOriginales.ciudad;
+    document.getElementById("cp").value = datosOriginales.cp;
+    document.getElementById("estado").value = datosOriginales.estado;
+
+    // Deshabilitar inputs y ocultar botones
+    inputs.forEach(input => input.setAttribute("disabled", "true"));
+    editBtn.style.display = "flex";
+    saveBtn.style.display = "none";
+    cancelBtn.style.display = "none";
+
+    // Limpiar y ocultar contraseñas
+    newPassword.value = "";
+    confirmPassword.value = "";
+    passwordContainer.classList.remove("active");
+});
+
 
     console.log("¡La página ha cargado!");
 });
