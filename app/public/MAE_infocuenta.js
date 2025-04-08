@@ -87,6 +87,7 @@ editBtn.addEventListener("click", () => {
     saveBtn.style.display = "inline-flex";
     cancelBtn.style.display = "inline-flex";
     passwordContainer.classList.add("active");
+    originalPassword.style.display = "none";
 });
 
     // Funcionalidad de guardar cambios
