@@ -4,13 +4,8 @@
     <meta charset="utf-8">
     <title>GasGuard</title>
     <link rel="stylesheet" href="/css/MAE_infocuenta.css">
-    <link rel="stylesheet" href="/css/MAE_navbar.css">
-    <link rel="stylesheet" href="/css/backgroundvideo.css">
-    <link rel="stylesheet" href="/css/alertas.css">
-    <script src="MAE_infocuenta.js" defer></script> <!-- Asegúrate de agregar tu archivo JS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!--
-    <l<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> -->
+    <l<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
     <link rel="icon" href="images/logotipo.png" type="image/png">
 </head>
@@ -53,11 +48,9 @@
         <!-- Encabezado con "CUENTA" y "Atrás" -->
         <div class="header-top">
             <h1 class="page-title">CUENTA</h1>
-            <a class="nav-link" href="page4.html" data-page="suscripción">
             <button class="back-button">
                 Atrás <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-            </button>  
-        </a>          
+            </button>            
         </div>
 
         <!-- Contenedor de Información -->
@@ -89,13 +82,14 @@
             
 
             <input type="text" class="full-field" id="nombre" placeholder="Nombre" disabled>
-            <input type="email" class="full-field" id="correo" placeholder="Correo electrónico" disabled>
+            <input type="email" class="full-field" id="correo" placeholder="Correo electrónico" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" disabled>
+
             <small class="note">* La contraseña debe contener de 8 a 12 caracteres</small>
             <!-- Campo original de "Contraseña" -->
             <input type="password" class="full-field" id="password" placeholder="Contraseña" disabled>
 
             <!-- Nuevos campos de contraseña (inicialmente ocultos) -->
-            <div class="password-container" style="display: none;">
+            <div class="password-container">
                 <input type="password" class="half-field" id="new-password" placeholder="Elige una contraseña">
                 <input type="password" class="half-field" id="confirm-password" placeholder="Confirma contraseña">
             </div>
@@ -113,7 +107,16 @@
                 <input type="text" class="address-field address-medium" id="estado" placeholder="Estado" disabled>
             </div>
         </div>
+        
+        <!-- Botón de Cerrar sesión -->
+        <div class="logout-container">
+            <button class="logout-button">Cerrar sesión</button>
+        </div>
+
     </div>
+
+
+
 
     <div class="video-background">
         <video autoplay muted loop id="video-background">
@@ -124,6 +127,6 @@
 
     
 
-    
+    <script src="MAE_infocuenta.js"></script> <!-- Asegúrate de agregar tu archivo JS -->
 </body>
 </html>

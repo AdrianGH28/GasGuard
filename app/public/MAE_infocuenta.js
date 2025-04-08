@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
     // Navegación del usuario
     const userContainer = document.getElementById("user-container");
 
@@ -18,164 +18,128 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
-    if (currentPage === "MAE_infocuenta.html") {
+    if (currentPage === "page4.html") {
         userContainer.classList.add("active");
     } else {
         userContainer.classList.remove("active");
     }
 
-    // Funcionalidad de edición de cuenta
+    // Variables para botones y campos
     const editBtn = document.getElementById("edit-btn");
     const saveBtn = document.getElementById("save-btn");
     const cancelBtn = document.getElementById("cancel-btn");
     const passwordContainer = document.querySelector(".password-container");
     const newPassword = document.getElementById("new-password");
     const confirmPassword = document.getElementById("confirm-password");
+    const originalPassword = document.getElementById("password");
+    const correoInput = document.getElementById("correo");
     const inputs = document.querySelectorAll("input");
 
-    // Obtener los datos del usuario
-    let data; // Variable que almacenará los datos del usuario
+    // Objeto para guardar los valores originales
+    let datosOriginales = {};
 
-    try {
-        const response = await fetch("https://gasguard-production.up.railway.app/api/user-info", {
-            method: "GET",
-            credentials: "include"  // ⚠️ Importante para que las cookies se envíen
-        });
-        if (!response.ok) {
-            throw new Error("Error al obtener la información del usuario");
-        }
-        const text = await response.text(); // 🔥 Capturar respuesta en texto
-        data = JSON.parse(text); // Convierte a JSON después de imprimir
-
-        if (data.status === "ok") {
-            console.log("✅ Datos del usuario recibidos:", data.user);
-
-            // Llenar los campos con los datos del usuario
-            document.getElementById("nombre").value = data.user.nom_user || "VACIO";
-            document.getElementById("correo").value = data.user.correo_user || "VACIO";
-            document.getElementById("password").value = data.user.contra_user || "VACIO";
-            document.getElementById("calle").value = data.user.calle || "VACIO";
-            document.getElementById("num").value = data.user.num || "VACIO";
-            document.getElementById("colonia").value = data.user.colonia || "VACIO";
-            document.getElementById("ciudad").value = data.user.ciudad || "VACIO";
-            document.getElementById("cp").value = data.user.cp || "VACIO";
-            document.getElementById("estado").value = data.user.estado || "VACIO";
-        } else {
-            console.error("⚠️ Error en la respuesta:", data.message);
-        }
-    } catch (error) {
-        console.error("❌ Error en la solicitud:", error);
-    }
-
-    // Funcionalidad de edición de cuenta
+    // Al hacer clic en "Editar información"
     editBtn.addEventListener("click", function () {
-        // Habilitar los campos para edición
-        const inputs = document.querySelectorAll("input");
+        // Guardar valores originales
+        datosOriginales = {
+            nombre: document.getElementById("nombre").value,
+            correo: document.getElementById("correo").value,
+            calle: document.getElementById("calle").value,
+            num: document.getElementById("num").value,
+            colonia: document.getElementById("colonia").value,
+            ciudad: document.getElementById("ciudad").value,
+            cp: document.getElementById("cp").value,
+            estado: document.getElementById("estado").value
+        };
+
         inputs.forEach(input => input.removeAttribute("disabled"));
         editBtn.style.display = "none";
         saveBtn.style.display = "inline-flex";
         cancelBtn.style.display = "inline-flex";
+
         passwordContainer.classList.add("active");
+        originalPassword.style.display = "none";
     });
 
-    // Funcionalidad de guardar cambios
-    saveBtn.addEventListener("click", async function () {
-        // Obtener los valores de los campos
-        const nombre = document.getElementById("nombre").value;
-        const correo = document.getElementById("correo").value;
-        const calle = document.getElementById("calle").value;
-        const num = document.getElementById("num").value;
-        const colonia = document.getElementById("colonia").value;
-        const ciudad = document.getElementById("ciudad").value;
-        const cp = document.getElementById("cp").value;
-        const estado = document.getElementById("estado").value;
-        // Guarda el valor original (esto se ejecuta cuando se carga la página)
-        const originalPassword = document.getElementById("password").value;
+    // Al hacer clic en "Guardar"
+    saveBtn.addEventListener("click", function () {
+        const correo = correoInput.value.trim();
+        const nueva = newPassword.value.trim();
+        const confirmacion = confirmPassword.value.trim();
 
-        // Cuando da clic en guardar
-        let password = document.getElementById("password").value;
+        // Expresiones de validación
+        const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+        const passwordValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-#])[A-Za-z\d@$!%*?&_\-#]{8,12}$/;
+        const cpInput = document.getElementById("cp");
+        const cp = cpInput.value.trim();
+        const cpValido = /^\d{5}$/.test(cp);
 
-        if (password === originalPassword) {
-            password = null; // No se cambió, así que no la enviamos
+        // Validación de campos vacíos
+        const camposObligatorios = [
+            document.getElementById("nombre"),
+            document.getElementById("correo"),
+            document.getElementById("calle"),
+            document.getElementById("num"),
+            document.getElementById("colonia"),
+            document.getElementById("ciudad"),
+            document.getElementById("cp"),
+            document.getElementById("estado")
+        ];
+
+        const hayVacios = camposObligatorios.some(input => input.value.trim() === "");
+        if (hayVacios) return;
+
+        // Validación del nombre
+        const nombreInput = document.getElementById("nombre");
+        const nombre = nombreInput.value.trim();
+        const nombreValido = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9 ]{2,}$/.test(nombre);
+        if (!nombreValido) return;
+
+        // Validar CP
+        if (!cpValido) return;
+
+        // Validar correo
+        if (!correoValido) return;
+
+        // Validación de contraseña (si se está escribiendo)
+        if (nueva || confirmacion) {
+            if (!passwordValida.test(nueva)) return;
+            if (nueva !== confirmacion) return;
         }
 
-        try {
-            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    nombre,
-                    correo,
-                    password,
-                    calle,
-                    num,
-                    colonia,
-                    ciudad,
-                    cp,
-                    estado
-                })
-            });
-
-            const responseData = await response.json();
-            if (responseData.status === "ok") {
-                console.log("✅ Datos actualizados correctamente");
-                alert("Los datos se actualizaron correctamente.");
-            } else {
-                console.error("⚠️ Error al actualizar los datos:", responseData.message);
-                alert("Hubo un error al actualizar los datos.");
-            }
-        } catch (error) {
-            console.error("❌ Error al enviar la actualización:", error);
-            alert("Error al enviar los datos.");
-        }
-
-        // Deshabilitar los campos nuevamente
-        const inputs = document.querySelectorAll("input");
+        // Si todo es válido, deshabilitar inputs y ocultar botones
         inputs.forEach(input => input.setAttribute("disabled", "true"));
         editBtn.style.display = "flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
 
-        // Ocultar los campos de contraseña
         passwordContainer.classList.remove("active");
+        originalPassword.style.display = "block";
     });
 
-
-    // Funcionalidad de cancelar cambios
+    // Al hacer clic en "Cancelar"
     cancelBtn.addEventListener("click", function () {
-        // Deshabilitar los campos nuevamente
-        const inputs = document.querySelectorAll("input");
+        // Restaurar valores originales
+        document.getElementById("nombre").value = datosOriginales.nombre || "";
+        document.getElementById("correo").value = datosOriginales.correo || "";
+        document.getElementById("calle").value = datosOriginales.calle || "";
+        document.getElementById("num").value = datosOriginales.num || "";
+        document.getElementById("colonia").value = datosOriginales.colonia || "";
+        document.getElementById("ciudad").value = datosOriginales.ciudad || "";
+        document.getElementById("cp").value = datosOriginales.cp || "";
+        document.getElementById("estado").value = datosOriginales.estado || "";
+
+        // Deshabilitar inputs y ocultar botones
         inputs.forEach(input => input.setAttribute("disabled", "true"));
         editBtn.style.display = "flex";
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
 
-        // Ocultar los campos de contraseña
         passwordContainer.classList.remove("active");
+        originalPassword.style.display = "block";
 
-        // Limpiar los campos de contraseña
+        // Limpiar contraseñas
         newPassword.value = "";
         confirmPassword.value = "";
     });
-
-
-    console.log("¡La página ha cargado!");
 });
-
-
-const toggleBtn = document.getElementById('toggleNav');
-const nav = document.querySelector('nav');
-
-toggleBtn.addEventListener('click', () => {
-    nav.classList.toggle('active');
-});
-
-// Opcional: cerrar panel al hacer clic en un enlace
-document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', () => {
-        nav.classList.remove('active');
-    });
-});
-

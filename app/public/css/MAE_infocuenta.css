@@ -1,3 +1,234 @@
+/* Importación de la fuente en el CSS */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    justify-content: center; /* Centra horizontalmente el nav */
+}
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+#video-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+nav {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    padding: 0;
+    border-left: 41px solid rgba(0, 0, 0, 0);
+    border-right: 41px solid rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 20px;
+    height: 100%;
+}
+
+.logo-container img {
+    width: 4%;
+    height: auto;
+    max-width: 100%;
+    margin-right: 10px;
+}
+
+.logo-text {
+    color: #FF0000;
+    font-size: 1.2em;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 0;
+}
+
+.container-items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 60px !important;
+}
+
+nav a {
+    font-size: 1em;
+    text-transform: uppercase;
+    color: #FF0000;
+    text-decoration: none;
+    line-height: 50px;
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    text-align: center;
+    padding: 0 20px;
+    margin-top: 3%;
+}
+
+nav a i {
+    font-size: 30px;
+    color: rgba(0, 0, 0, 0.42);
+    transition: color 0.3s ease;
+}
+
+nav a:hover i {
+    color: red;
+}
+
+/* Definir la animación para los links */
+nav a .animation {
+    content: '';
+    position: absolute;
+    height: 5px;
+    width: 0;
+    bottom: 0;
+    background: red;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+nav a:nth-child(1) {
+    width: 100px;
+}
+
+nav a:nth-child(2) {
+    width: 110px;
+}
+
+nav a:nth-child(3) {
+    width: 100px;
+}
+
+/* Ajuste del hover para cada item y su animación */
+nav a:nth-child(1):hover .animation,
+nav a:nth-child(2):hover .animation,
+nav a:nth-child(3):hover .animation {
+    width: 75px;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
+
+nav a .animation {
+    opacity: 0;
+    width: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+}
+
+/* Estilo para el contenedor de Usuario */
+.user-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 41px;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    width: auto;
+    color: #FF0000;
+    font-weight: 500;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+
+.user-container a {
+    display: flex;
+    align-items: center;
+}
+
+.user-container .mr-2 {
+    margin-right: 15px;
+}
+
+.user-container i {
+    color: #FF0000;
+    font-size: 30px;
+    padding-left: 15px ;
+}
+
+/* Animación para el contenedor de Usuario */
+.user-container .animacion {
+    content: '';
+    position: absolute;
+    height: 5px;
+    width: 0;
+    bottom: 0;
+    background: red;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(-50%);
+}
+
+.user-container:hover .animacion {
+    width: 100%;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
+
+.user-container .animacion {
+    opacity: 0;
+    width: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+}
+/* Cuando el enlace tiene la clase 'active', la animación permanece visible */
+
+nav a.active i {
+    color: red; /* El color del icono será rojo cuando esté activo */
+}
+
+nav a.active .animation {
+    width: 75px; /* Asegura que la barra de animación se muestre */
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Estilo para el contenedor de usuario activo */
+.user-container.active {
+    color: red; /* Cambia el color del texto a rojo */
+}
+
+.user-container.active i {
+    color: red; /* Cambia el color del ícono a rojo */
+}
+
+.user-container.active .animacion {
+    width: 100%;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1);
+}
 
 /* Estilos generales */
 * {
@@ -39,14 +270,13 @@
 .back-button {
   display: flex;
   align-items: center;
-  color: rgba(255, 0, 0, 0.74);
   font-size: 20px;
+  color: rgba(255, 0, 0, 0.74);
   font-weight: 500;
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 10px;
-  text-align: right;
+  margin-right: 30px;
 }
 
 .back-button i {
@@ -57,7 +287,7 @@
 /* Contenedor de Información */
 .container {
   width: 665px;
-  height: 464px;
+  height: 450px;
   flex-shrink: 0;
   border: 1px solid #FA0000;
   background: transparent;
@@ -83,6 +313,7 @@
   margin-left: 15px;
 }
 
+/* Botón "Editar Información" */
 .edit-info {
   display: inline-flex;
   align-items: center;
@@ -95,18 +326,24 @@
   font-weight: 500;
   text-decoration: none;
   padding: 0;
+  flex-direction: row-reverse;
   margin-left: -185px;
 }
 
-/* Ícono más grande y perfectamente alineado */
 .edit-info i {
-  font-size: 22px; /* o el tamaño que prefieras */
+  font-size: 22px;
+  margin-left: 8px;
   line-height: 1;
   vertical-align: middle;
   display: inline-block;
   position: relative;
-  top: -5px; /* se puede ajustar */
+  top: -5px;
 }
+
+/* Subrayado solo para el texto */
+.edit-info .underline-text {
+    text-decoration: underline;
+  }
 
 /* Campos de entrada */
 input[type="text"],
@@ -124,21 +361,20 @@ input[type="password"] {
 
 /* Campos de ancho completo */
 .full-field {
-  width: 540px;
-  margin: 0 0 20px 0;
-  display: flex;
-}
-
+    width: 540px;
+    margin: 0 0 20px 0;
+    display: flex;
+  }
+  
 /* Fila de dirección */
 .address-row {
-  width: 100%;
-  display: flex;
-  box-sizing: border-box;
-  gap: 0px;
-  justify-content: space-between;
-  padding: 0 0px;
+    width: 100%;
+    display: flex;
+    box-sizing: border-box;
+    gap: 0px;
+    justify-content: space-between;
+    padding: 0 0px;
 }
-
 
 /* Texto informativo debajo del correo */
 .note {
@@ -155,12 +391,13 @@ input[type="password"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(0, 0, 0, 0.42);  
-  font-size: 12px !important;
+  color: rgba(0, 0, 0, 0.42);
+  font-size: 12px;
   font-weight: 500;
   text-align: center;
+  margin: 18px 0;
   position: relative;
-  margin-bottom: 20px;
+  margin-top: 7.1px;
 }
 
 /* Líneas a los lados del título "Dirección" */
@@ -171,11 +408,6 @@ input[type="password"] {
   height: 1px;
   background-color: rgba(0, 0, 0, 0.42);
   margin: 0px 15px;
-}
-
-a.nav-link {
-  text-decoration: none;
-
 }
 
 /* Campos de dirección */
@@ -191,7 +423,6 @@ a.nav-link {
 .address-small  { width: 85px; }
 .address-medium { width: 180px; }
 
-
 /* Estilos para los botones de edición (Guardar y Cancelar) */
 .edit-info, .save-info, .cancel-info {
     display: flex;
@@ -202,7 +433,7 @@ a.nav-link {
     padding: 0;
   }
   
-  /* Contenedor de los botones "Guardar" y "Cancelar" */
+/* Contenedor de los botones "Guardar" y "Cancelar" */
 .edit-actions {
     justify-content: left;
     margin-left: -90px;
@@ -211,15 +442,6 @@ a.nav-link {
     gap: 30px; /* 🔹 Ajusta el espacio entre los íconos */
 }
 
-/* Estilos para los botones de edición */
-.edit-info, .save-info, .cancel-info {
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
 
 /* Íconos dentro de los botones */
 .save-info i, .cancel-info i {
@@ -240,14 +462,16 @@ a.nav-link {
     display: none;
 }
 
+#password {
+    display: block;
+  }
+
 /* Contenedor de las nuevas contraseñas */
 .password-container {
     display: none;
     justify-content: space-between;
-    gap: 15px; /* Espacio entre los dos campos */
     margin-top: 10px;
     height: 55.764px; /* 🔹 Mantiene la misma altura que un campo de texto normal */
-    visibility: hidden; /* 🔹 Lo oculta sin que afecte el diseño */
 }
 
 /* Cuando se edita la información, los campos se hacen visibles */
@@ -258,34 +482,13 @@ a.nav-link {
 
 /* Estilos de los nuevos campos de contraseña */
 .half-field {
-    width: calc(50% - 8px); /* Cada campo ocupa el 50% con margen */
+    width: 250px;
     height: 48px;
     border: 1px solid rgba(0, 0, 0, 0.42);
     background: transparent;
     font-size: 14px;
     padding: 0 15px;
     border-radius: 5px;
-}
-
-  /* Campos de dirección */
-  .address-field {
-    height: 55.764px;
-    border: 1px solid rgba(0, 0, 0, 0.42);
-    background: transparent;
-    font-size: 15px;
-    padding: 0 8px;
-  }
-  
-  
-
-  
-/* Íconos dentro de los botones */
-.save-info i, .cancel-info i {
-  width: 25px;  /* Ancho del icono */
-  height: 15px; /* Alto del icono */
-  font-size: 18px; /* Tamaño de la fuente */
-  color: rgba(255, 0, 0, 0.74); /* Color del icono */
-  flex-shrink: 0;
 }
 
 /* Hover */
@@ -306,3 +509,35 @@ input[type="password"]:focus:not([disabled]) {
   border: 1px solid #F00;
   outline: none;
 }
+
+
+
+
+
+
+
+
+
+
+.logout-button {
+    margin-top: 5px;
+    background: transparent;
+    width: 167px;
+    height: 46px;
+    flex-shrink: 0;
+    color: rgba(255, 0, 0, 0.74);
+    text-align: center;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: left;
+    margin-left: 565px;
+}
+
+
+
+
