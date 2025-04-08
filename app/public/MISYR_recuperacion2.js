@@ -8,6 +8,7 @@ function esperar(ms) {
 document.addEventListener('DOMContentLoaded', async () => {
     const reenviarBtn = document.getElementById('reenviar-codigo');
     const codigoForm = document.getElementById('codigo-contraseña-form');
+    const submitBtn = document.querySelector('button[type="submit"]');
     const correo = localStorage.getItem('resetEmail');
 
     if (!correo) {
