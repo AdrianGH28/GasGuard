@@ -92,87 +92,89 @@ editBtn.addEventListener("click", () => {
 
     // Funcionalidad de guardar cambios
     // GUARDAR cambios
-saveBtn.addEventListener("click", async () => {
-    const nombre = document.getElementById("nombre").value.trim();
-    const correo = document.getElementById("correo").value.trim();
-    const calle = document.getElementById("calle").value.trim();
-    const num = document.getElementById("num").value.trim();
-    const colonia = document.getElementById("colonia").value.trim();
-    const ciudad = document.getElementById("ciudad").value.trim();
-    const cp = document.getElementById("cp").value.trim();
-    const estado = document.getElementById("estado").value.trim();
-
-    let password = originalPassword.value;
-    const nueva = newPassword.value.trim();
-    const confirmacion = confirmPassword.value.trim();
-
-    // Validaciones
-    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
-    const passwordValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-#])[A-Za-z\d@$!%*?&_\-#]{8,12}$/;
-    const nombreValido = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9 ]{2,}$/.test(nombre);
-    const cpValido = /^\d{5}$/.test(cp);
-
-    if (!nombreValido) return alert("❗Nombre inválido.");
-    if (!correoValido) return alert("❗Correo inválido.");
-    if (!cpValido) return alert("❗Código postal inválido.");
-    if ([nombre, correo, calle, num, colonia, ciudad, cp, estado].some(v => v === "")) {
-        return alert("❗Todos los campos son obligatorios.");
-    }
-
-    // Validación de contraseña solo si hay cambio
-    if (nueva || confirmacion) {
-        if (!passwordValida.test(nueva)) {
-            return alert("❗Contraseña inválida. Requiere mayúscula, minúscula, número, símbolo y entre 8-12 caracteres.");
+    saveBtn.addEventListener("click", async () => {
+        const nombre = document.getElementById("nombre").value.trim();
+        const correo = document.getElementById("correo").value.trim();
+        const calle = document.getElementById("calle").value.trim();
+        const num = document.getElementById("num").value.trim();
+        const colonia = document.getElementById("colonia").value.trim();
+        const ciudad = document.getElementById("ciudad").value.trim();
+        const cp = document.getElementById("cp").value.trim();
+        const estado = document.getElementById("estado").value.trim();
+    
+        let password = originalPassword.value;
+        const nueva = newPassword.value.trim();
+        const confirmacion = confirmPassword.value.trim();
+    
+        let cambiarPassword = false;
+    
+        // Validaciones
+        const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+        const passwordValida = /^.{8,12}$/; // Solo longitud
+        const nombreValido = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9 ]{2,}$/.test(nombre);
+        const cpValido = /^\d{5}$/.test(cp);
+    
+        if (!nombreValido) return alert("❗Nombre inválido.");
+        if (!correoValido) return alert("❗Correo inválido.");
+        if (!cpValido) return alert("❗Código postal inválido.");
+        if ([nombre, correo, calle, num, colonia, ciudad, cp, estado].some(v => v === "")) {
+            return alert("❗Todos los campos son obligatorios.");
         }
-        if (nueva !== confirmacion) {
-            return alert("❗Las contraseñas no coinciden.");
+    
+        // Validación de contraseña solo si se intenta cambiar
+        if (nueva || confirmacion) {
+            if (!passwordValida.test(nueva)) {
+                return alert("❗Contraseña inválida. Debe tener entre 8 y 12 caracteres.");
+            }
+            if (nueva !== confirmacion) {
+                return alert("❗Las contraseñas no coinciden.");
+            }
+            password = nueva;
+            cambiarPassword = true;
         }
-        password = nueva;
-    }
-
-    try {
-        const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre,
-                correo,
-                password,
-                calle,
-                num,
-                colonia,
-                ciudad,
-                cp,
-                estado
-            })
-        });
-
-        const responseData = await response.json();
-        if (responseData.status === "ok") {
-            alert("✅ Datos actualizados.");
-            // Actualizar valores originales con los nuevos
-            datosOriginales = { nombre, correo, password, calle, num, colonia, ciudad, cp, estado };
-        } else {
-            alert("⚠️ Hubo un error al actualizar los datos.");
+    
+        try {
+            const response = await fetch("https://gasguard-production.up.railway.app/api/update-user", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nombre,
+                    correo,
+                    password: cambiarPassword ? password : null, // Solo si cambió
+                    calle,
+                    num,
+                    colonia,
+                    ciudad,
+                    cp,
+                    estado
+                })
+            });
+    
+            const responseData = await response.json();
+            if (responseData.status === "ok") {
+                alert("✅ Datos actualizados.");
+                datosOriginales = { nombre, correo, password, calle, num, colonia, ciudad, cp, estado };
+            } else {
+                alert("⚠️ Hubo un error al actualizar los datos.");
+            }
+        } catch (error) {
+            console.error("❌ Error en la solicitud:", error);
+            alert("❌ Error al enviar los datos.");
         }
-    } catch (error) {
-        console.error("❌ Error en la solicitud:", error);
-        alert("❌ Error al enviar los datos.");
-    }
-
-    // Ocultar edición y deshabilitar campos
-    inputs.forEach(input => input.setAttribute("disabled", "true"));
-    editBtn.style.display = "flex";
-    saveBtn.style.display = "none";
-    cancelBtn.style.display = "none";
-    passwordContainer.classList.remove("active");
-
-    newPassword.value = "";
-    confirmPassword.value = "";
-    originalPassword.style.display = "block";
-});
+    
+        // Ocultar edición y limpiar
+        inputs.forEach(input => input.setAttribute("disabled", "true"));
+        editBtn.style.display = "flex";
+        saveBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+        passwordContainer.classList.remove("active");
+    
+        newPassword.value = "";
+        confirmPassword.value = "";
+        originalPassword.style.display = "block";
+    });
 
 // CANCELAR cambios
 cancelBtn.addEventListener("click", () => {
