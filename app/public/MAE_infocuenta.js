@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
             if (result.status === "ok") {
                 alert("👋 Sesión cerrada correctamente");
-                window.location.href = "login.html";
+                window.location.href = "/login";
             } else {
                 alert("⚠️ No se pudo cerrar sesión.");
             }
