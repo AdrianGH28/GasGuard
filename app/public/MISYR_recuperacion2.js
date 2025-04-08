@@ -53,7 +53,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("Correo asociado:", correo);
 
         if (!correo || !codigo) {
-            alert("Faltan datos: Código o correo");
+            mostraralerta("info", "Todos los campos son obligatorios");
+            return;
+        }
+        const regexnums = /^[1234567890\s]+$/;
+        if (!regexnums.test(codigo)) {
+            mostraralerta('error', "El código solo debe contener caracteres numéricos.");
+            return;
+        }
+        if (codigo.length !== 6) {
+            mostraralerta('error', "El código debe contener 6 dígitos");
             return;
         }
 
@@ -69,27 +78,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (response.ok && result.status === 'ok') {
                 submitBtn.disabled = true;
-            mostraralerta('success',result.message);
-            //mostraralerta('success',"Correo verificado exitosamente");
+                mostraralerta('success',result.message);
+                //mostraralerta('success',"Correo verificado exitosamente");
+    
+                // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
+                await esperar(4000); // Espera 4 segundos
+    
+                // Hacer la animación de desvanezca del body
+                document.body.style.transition = 'opacity 0.5s';
+                document.body.style.opacity = '0'; // Opcional: transición de desvanezca
+    
+                // Esperar a que la animación termine antes de redirigir
+                await esperar(500); // Esperar el tiempo de la animación (500 ms)
+    
+                cerraralerta();
+                window.location.href=result.redirect;
 
-            // Esperar 4 segundos (4000 ms) antes de cerrar la alerta y redirigir
-            await esperar(4000); // Espera 4 segundos
-
-            // Hacer la animación de desvanezca del body
-            document.body.style.transition = 'opacity 0.5s';
-            document.body.style.opacity = '0'; // Opcional: transición de desvanezca
-
-            // Esperar a que la animación termine antes de redirigir
-            await esperar(500); // Esperar el tiempo de la animación (500 ms)
-
-            cerraralerta();
-                window.location.href = result.redirect;
             } else {
-                mostraralerta(result.message || 'Error al validar el código');
+                //mostraralerta("error", 'Error al validar el código');
+                mostraralerta("error", result.message);
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            mostraralerta('Error al intentar validar el código.');
+            mostraralerta("error", 'Error al intentar validar el código.');
         }
     });
 });
