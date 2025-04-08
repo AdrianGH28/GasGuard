@@ -1,3 +1,10 @@
+window.addEventListener('load', () => {
+    const body = document.body;
+    body.style.opacity = '1';
+});
+function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 document.addEventListener('DOMContentLoaded', async () => {
     const reenviarBtn = document.getElementById('reenviar-codigo');
     const codigoForm = document.getElementById('codigo-contraseña-form');
