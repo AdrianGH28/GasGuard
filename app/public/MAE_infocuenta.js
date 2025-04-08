@@ -1,9 +1,24 @@
 document.addEventListener("DOMContentLoaded", async function () {
 
-     // Cerrar sesión
-     document.getElementById("logout-btn").addEventListener("click", () => {
-        document.cookie = 'jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        document.location.href = "/login";
+    document.getElementById("logout-btn").addEventListener("click", async () => {
+        try {
+            const response = await fetch("https://gasguard-production.up.railway.app/api/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+    
+            const result = await response.json();
+    
+            if (result.status === "ok") {
+                alert("👋 Sesión cerrada correctamente");
+                window.location.href = "login.html";
+            } else {
+                alert("⚠️ No se pudo cerrar sesión.");
+            }
+        } catch (error) {
+            console.error("❌ Error al cerrar sesión:", error);
+            alert("❌ Error inesperado al cerrar sesión.");
+        }
     });
 
     // Navegación del usuario

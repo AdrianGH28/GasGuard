@@ -245,7 +245,14 @@ if (password) {
     }
 });
 
-
+app.post("/api/logout", (req, res) => {
+    res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None"
+    });
+    res.json({ status: "ok", message: "Sesión cerrada" });
+});
 
 
 
