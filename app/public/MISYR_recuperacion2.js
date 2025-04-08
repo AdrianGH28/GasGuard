@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
 
         const codigo = document.getElementById('codigo').value;
+        const correo = localStorage.getItem('resetEmail');
         console.log("Enviando código:", codigo);
         console.log("Correo asociado:", correo);
 
