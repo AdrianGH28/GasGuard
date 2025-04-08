@@ -181,7 +181,7 @@ nav a .animation {
     height: 5px;
     width: 0;
     bottom: 0;
-    background: red;
+    background: #FF0000;
     border-radius: 8px;
     transition: all 0.3s ease;
     opacity: 0;
@@ -204,7 +204,7 @@ nav a .animation {
 /* Cuando el enlace tiene la clase 'active', la animación permanece visible */
 
 nav a.active i {
-    color: red; /* El color del icono será rojo cuando esté activo */
+    color: #FF0000; /* El color del icono será rojo cuando esté activo */
 }
 
 nav a.active .animation {
@@ -216,11 +216,11 @@ nav a.active .animation {
 
 /* Estilo para el contenedor de usuario activo */
 .user-container.active {
-    color: red; /* Cambia el color del texto a rojo */
+    color: #FF0000; /* Cambia el color del texto a rojo */
 }
 
 .user-container.active i {
-    color: red; /* Cambia el color del ícono a rojo */
+    color: #FF0000; /* Cambia el color del ícono a rojo */
 }
 
 .user-container.active .animacion {

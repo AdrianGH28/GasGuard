@@ -195,6 +195,7 @@ cancelBtn.addEventListener("click", () => {
     newPassword.value = "";
     confirmPassword.value = "";
     passwordContainer.classList.remove("active");
+    originalPassword.style.display = "block";
 });
 
 
