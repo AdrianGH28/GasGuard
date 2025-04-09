@@ -1,48 +1,70 @@
-const mensajeError = document.getElementsByClassName("error")[0];
-const alertContainer = document.createElement("div");
+// === Ajustes de layout y viewport ===
 
-window.addEventListener('load', () => {
-    const body = document.body;
-    body.style.opacity='1';
+function adjustLayout() {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const container = document.querySelector('.container');
+    const imageOverlay = document.querySelector('.image-overlay');
+
+    if (container) {
+        container.style.minHeight = `${windowHeight * 0.8}px`;
+    }
+
+    if (imageOverlay && windowWidth <= 1024) {
+        imageOverlay.style.width = '100%';
+        imageOverlay.style.height = '100%';
+        imageOverlay.style.top = '0';
+        imageOverlay.style.left = '0';
+        imageOverlay.style.transform = 'none';
+    }
+
+    if (windowWidth > 1920) {
+        document.documentElement.style.fontSize = '20px';
+    } else {
+        document.documentElement.style.fontSize = '';
+    }
+}
+
+adjustLayout();
+window.addEventListener('resize', adjustLayout);
+
+window.addEventListener('orientationchange', function () {
+    setTimeout(adjustLayout, 100);
 });
-// Crear la alerta de error
-alertContainer.id = "customAlert";
-alertContainer.style.cssText = `
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    z-index: 1000;
-`;
 
-// Ícono de información
-const alertIcon = document.createElement("i");
-alertIcon.className = "fa-solid fa-circle-info";
-alertIcon.style.color = "#721c24";
+function setViewport() {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (window.innerWidth <= 768) {
+        viewport.setAttribute(
+            'content',
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+        );
+    } else {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+    }
+}
 
-const alertText = document.createElement("span");
-alertText.textContent = "Usuario o contraseña incorrecto";
+setViewport();
+window.addEventListener('resize', setViewport);
 
-// Agregar elementos al contenedor
-alertContainer.appendChild(alertIcon);
-alertContainer.appendChild(alertText);
-document.body.appendChild(alertContainer);
 
 document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const correo = document.querySelector("#correo").value;
-    const password = document.querySelector("#password").value;
+    const correo = document.getElementById('correo').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+
+    // Verifica si hay campos vacíos
+    if (correo === '' || password === '') {
+        mostrarAlertaCamposVacios('Es necesario completar todos los campos');
+        return;
+    }
+
+    // Verifica si el correo es inválido
+    if (!correoValido) {
+        mostrarAlertaPersonalizada('Correo y/o contraseña incorrectos, intente de nuevo');
+        return;
+    }
 
     try {
         const res = await fetch("https://gasguard-production.up.railway.app/api/login", {
@@ -69,17 +91,41 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     } catch (error) {
         console.error("Error en login:", error);
     }
+
+    
+    // === Función para mostrar alerta personalizada (correo/contraseña incorrectos) ===
+    function mostrarAlertaPersonalizada(mensaje) {
+        const alerta = document.getElementById('custom-alert');
+        const texto = alerta.querySelector('.custom-message');
+        texto.textContent = mensaje;
+        alerta.classList.add('show');
+        alerta.style.display = 'flex';
+
+        setTimeout(() => {
+            alerta.classList.remove('show');
+            setTimeout(() => {
+                alerta.style.display = 'none';
+            }, 300);
+        }, 2000);
+    }
+
+    // === Función para mostrar alerta de campos vacíos ===
+    function mostrarAlertaCamposVacios(mensaje) {
+        const alerta = document.getElementById('alert-campos-vacios');
+        const texto = alerta.querySelector('.custom-message');
+        texto.textContent = mensaje;
+        alerta.classList.add('show');
+        alerta.style.display = 'flex';
+
+        setTimeout(() => {
+            alerta.classList.remove('show');
+            setTimeout(() => {
+                alerta.style.display = 'none';
+            }, 300);
+        }, 2000);
+    }
 });
 
-// Función para mostrar la alerta
-function mostrarAlerta(mensaje) {
-    alertText.textContent = mensaje;
-    alertContainer.style.opacity = "1";
-
-    setTimeout(() => {
-        alertContainer.style.opacity = "0";
-    }, 3000);
-}
 
 document.getElementById('login-form').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -116,4 +162,32 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         console.error("Error al enviar correo:", error);
         mostraralerta('error', 'Error en el servidor. Intenta nuevamente.');
     }
+
+    
 });
+
+
+// === Ajustes responsive adicionales ===
+function handleResponsive() {
+    if (window.innerWidth < 992) {
+        const navbarHeight = document.querySelector('.navbar-container').offsetHeight;
+        const container = document.querySelector('.container');
+        container.style.minHeight = `calc(100vh - ${navbarHeight}px)`;
+    }
+
+    const imageOverlay = document.querySelector('.image-overlay');
+    if (window.innerWidth < 992) {
+        imageOverlay.style.width = '100%';
+        imageOverlay.style.height = '50%';
+        imageOverlay.style.top = '0';
+        imageOverlay.style.transform = 'none';
+    } else {
+        imageOverlay.style.width = '920px';
+        imageOverlay.style.height = '830px';
+        imageOverlay.style.top = '50%';
+        imageOverlay.style.transform = 'translateY(-50%)';
+    }
+}
+
+window.addEventListener('load', handleResponsive);
+window.addEventListener('resize', handleResponsive);

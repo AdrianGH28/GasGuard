@@ -8,6 +8,12 @@ html, body {
 
 }
 
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .container {
     width: 90%;
     margin: 0 auto;
@@ -22,15 +28,15 @@ html, body {
     font-size: 22px;
     font-weight: 500;
     text-decoration: none;
-    line-height: normal;
 }
+
 nav {
     display: flex;
     justify-content: start;
     width: 100%;
 }
-.logo-container{
-    width: 100%;
+
+.logo-container {
     padding-left: 63px;
     padding-top: 19px;
     display: flex;
@@ -38,9 +44,13 @@ nav {
 }
 
 .navbar-brand img {
-    width: auto;
     height: 55px;
     margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 500;
 }
 
 
@@ -57,8 +67,6 @@ body {
     min-height: 100vh;
     background: #f5f5f5;
     display: block;
-    opacity: 0;
-    transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
 }
 
 .video-background {
@@ -236,32 +244,8 @@ body {
     margin-bottom: 40px; /* Reduce el espacio debajo del título */
 }
 
-.input-field {
-    align-self: center;
-    width: 391px;
-    height: 10px;
-    border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-    font-size: 16px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.42);
-    padding: 10px 0;
-    margin-bottom: 40px;
-    line-height: 35px;
-}
-
-.input-field:last-of-type {
-    margin-bottom: 30px; /* Evita que el último input tenga margen extra */
-}
-
-.input-field:focus {
-    outline: none;
-    color: red;
-    border-bottom: 2px solid red;
-}
-
 .input-field:focus::placeholder {
-    color: red; /* Cambia el color del placeholder (Correo, Contraseña) a rojo */
+    color: rgba(255, 0, 0, 0.4);
 }
 
 .forgot-password {
@@ -303,4 +287,134 @@ body {
 
 .login-btn:hover {
     background: rgba(255, 0, 0, 0.9);
+}
+
+
+/* === Inputs animados estilo flotante === */
+
+.grupo {
+    position: relative;
+    margin-bottom: 45px;
+    width: 391px;
+}
+
+.grupo input {
+    background: none;
+    color: #333;
+    font-size: 16px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 391px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    transition: 0.3s ease all;
+}
+
+.grupo input:focus {
+    outline: none;
+    color: #FA0000;
+}
+
+.grupo label {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 16px;
+    position: absolute;
+    left: 0px;
+    top: 14px;
+    pointer-events: none;
+    transition: 0.3s ease all;
+}
+
+.grupo input:focus ~ label,
+.grupo input:valid ~ label {
+    top: -14px;
+    font-size: 12px;
+    color: #FA0000;
+}
+
+.barra {
+    position: relative;
+    display: block;
+    width: 391px;
+}
+
+.barra::before {
+    content: "";
+    height: 1px;
+    bottom: 0;
+    position: absolute;
+    background: linear-gradient(to right, #ff0000, #ff0000);
+    transition: 0.3s ease width;
+    left: 0;
+}
+
+.grupo input:focus ~ .barra::before {
+    width: 410px;
+}
+
+
+
+
+
+
+
+
+
+
+.custom-toast {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 630px;
+    height: 45px;
+    background: #D9D9D9;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding-left: 20px;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.custom-toast.show {
+    display: flex;
+    opacity: 1;
+}
+
+.custom-icon {
+    color: rgba(0, 0, 0, 0.42);
+    width: 24.219px;
+    height: 24.219px;
+    font-size: 24.219px;
+    flex-shrink: 0;
+    margin-left: 20px;
+}
+
+.custom-message {
+    color: rgba(0, 0, 0, 0.70);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: right;
+    flex: 1;
+    text-align: left;
+    margin-left: 50px;
+}
+
+#alert-campos-vacios {
+    width: 507px;
+    height: 45px;
+    flex-shrink: 0;
+}
+
+#alert-campos-vacios .custom-message {
+    margin-left: 30px;
+    text-align: left;
 }
