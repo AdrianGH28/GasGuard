@@ -36,13 +36,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Respuesta del servidor:", result);
 
             if (response.ok && result.status === 'ok') {
-                mostraralerta('Código reenviado a tu correo.');
+                mostraralerta("success", 'Código reenviado a tu correo.');
             } else {
-                mostraralerta(result.message || 'Error al reenviar el código');
+                mostraralerta("error", 'Error al reenviar el código');
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
-            mostraralerta('Error al intentar reenviar el código.');
+            mostraralerta("error", 'Error al intentar reenviar el código.');
         }
     });
 
