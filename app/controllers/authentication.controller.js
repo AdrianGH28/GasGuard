@@ -71,7 +71,7 @@ export async function login(req, res) {
                 expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
                 path: "/"
             });
-            return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/maeinfocuenta' });
+            return res.send({ status: "ok", message: "Usuario loggeado", redirect: '/maeseleccioninfo' });
         } else {
             return res.send({ status: "pending", message: "Verificación requerida", redirect: '/paso4' });
         }
