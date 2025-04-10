@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && result.status === 'ok') {
                 mostraralerta("success", 'Código reenviado a tu correo.');
             } else {
-                mostraralerta("error", response.message);
+                mostraralerta("error", result.message);
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
