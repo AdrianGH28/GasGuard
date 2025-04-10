@@ -225,8 +225,8 @@ async function registro(req, res) {
         const direccionId = direccionResult.insertId;
 
         await pool.execute(
-            'INSERT INTO musuario (nom_user, correo_user, contra_user, id_direccion) VALUES (?, ?, ?, ?)',
-            [nombre, correo, hashPassword, direccionId]
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, id_direccion, id_estcuenta) VALUES (?, ?, ?, ?, ?)',
+            [nombre, correo, hashPassword, direccionId, 1]
         );
 
         return res.status(201).send({ status: "ok", message: `Usuario ${nombre} agregado`, redirect: "/paso2" });
