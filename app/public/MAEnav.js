@@ -10,10 +10,10 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     // Obtener la ruta completa de la página actual
     var currentPage = window.location.pathname;
-
     // Seleccionar todos los enlaces de navegación
     var navLinks = document.querySelectorAll("nav a");
     var userContainer = document.querySelector(".user-container");
+    var crudicon = document.getElementById('iralcrud');
 
     // Iterar a través de cada enlace y añadir la clase 'active' al que corresponde a la ruta actual
     navLinks.forEach(function(link) {
@@ -30,6 +30,11 @@ document.addEventListener("DOMContentLoaded", function() {
         userContainer.classList.add("active");
     } else {
         userContainer.classList.remove("active");
+    }
+    if (currentPage === "/maecrudcuentasafi") {
+        crudicon.classList.add("active");
+    } else {
+        crudicon.classList.remove("active");
     }
 });
 
