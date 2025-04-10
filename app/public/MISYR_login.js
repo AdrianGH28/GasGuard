@@ -80,7 +80,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
         if (!res.ok) {
             const resJson = await res.json();
-            mostrarAlerta(resJson.message || "Usuario o contraseña incorrecto");
+            mostrarAlertaPersonalizada(resJson.message || "Usuario o contraseña incorrecto");
             return;
         }
 
