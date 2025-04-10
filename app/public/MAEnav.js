@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
     var userContainer = document.getElementById("user-container");
 
+    // Redirigir a la página cuando se hace clic en el contenedor del usuario
     userContainer.addEventListener("click", function() {
-        window.location.href = "/maeseleccioninfo";  // Redirige a la página de usuario
+        window.location.href = "/maeseleccioninfo";  // Redirige a la página correcta
     });
 });
 
@@ -16,11 +17,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Iterar a través de cada enlace y añadir la clase 'active' al que corresponde a la ruta actual
     navLinks.forEach(function(link) {
-        // Verificar si el enlace apunta a la ruta actual
-        if (link.getAttribute("href") === currentPage) {
-            link.classList.add("active");
+        // Verifica si la ruta de cada enlace coincide con la página actual
+        if (link.getAttribute("href").split("/").pop() === currentPage) {
+            link.classList.add("active"); // Activar el enlace actual
         } else {
-            link.classList.remove("active");
+            link.classList.remove("active"); // Eliminar la clase active de otros enlaces
         }
     });
 
