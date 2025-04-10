@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response.ok && result.status === 'ok') {
                 mostraralerta("success", 'Código reenviado a tu correo.');
             } else {
-                mostraralerta("error", 'Error al reenviar el código');
+                mostraralerta("error", result.message);
             }
         } catch (error) {
             console.error("Error en la solicitud:", error);
