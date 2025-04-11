@@ -95,8 +95,8 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
 });
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const token = localStorage.getItem("token"); // o donde guardes el token
-        fetch("https://gasguard-production.up.railway.app/api/afiliadosempre", {
+        
+        const res = await fetch("https://gasguard-production.up.railway.app/api/afiliadosempre", {
             credentials: "include" // esto permite que se envíen las cookies automáticamente
         });
 
