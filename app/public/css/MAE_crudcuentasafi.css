@@ -19,6 +19,7 @@
     z-index: 999;
     box-sizing: content-box;
     border: none; /* (Importante: puede necesitar quitar bordes predeterminados del <dialog>) */
+    height: fit-content;  /* Asegura que la altura sea solo lo necesario */
 }
 #alertamodal:open {
     display: flex;
@@ -26,12 +27,14 @@
 
 .alertcontent {
     display: flex;
-    flex-direction: column;
+    flex-direction: column;  /* Asegura que los elementos estén apilados */
     align-items: flex-start;
     gap: 4px;
     align-self: stretch;
-    width: 240px;
+    width: 100%;  /* Asegura que ocupe todo el ancho del contenedor */
+    overflow: auto;  /* Evita desbordamientos inesperados */
 }
+
 
 .alertheading {
     font-size: 16px;
@@ -101,6 +104,8 @@
 .alertactionscont .aceptar.success {
     color: #2ecc71; /* Color para el botón Aceptar en alerta de éxito */
 }
+
+
 .page-title {
     color: #FA0000;
     font-size: 30px;
