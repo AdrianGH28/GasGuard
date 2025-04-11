@@ -153,7 +153,7 @@ function mostrarNuevaAlerta(type, message) {
     const cancelarButton = alertBox.querySelector('.cancelar');
 
     // Limpiar clases anteriores
-    alertBox.className = 'modalalert';
+    alertBox.className = 'modalalert custom-alert'; // Asegúrate de usar "custom-alert"
     alertIcon.className = 'fa-solid';
     if (cancelarButton) cancelarButton.style.display = 'none';
 
@@ -172,6 +172,9 @@ function mostrarNuevaAlerta(type, message) {
     alertIcon.style.color = config.color;
     aceptarButton.style.color = config.aceptarColor;
     aceptarButton.style.fontWeight = config.aceptarBold;
+
+    // Establecer el borde izquierdo dinámicamente
+    alertBox.style.borderLeftColor = config.color; // Actualiza el borde izquierdo
 
     if (type === 'warning' && cancelarButton) cancelarButton.style.display = 'inline';
 

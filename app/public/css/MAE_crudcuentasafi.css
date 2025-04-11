@@ -24,7 +24,9 @@
 #alertamodal:open {
     display: flex;
 }
-
+#alertamodal ::backdrop{
+    background-color: transparent;
+}
 .alertcontent {
     display: flex;
     flex-direction: column;
