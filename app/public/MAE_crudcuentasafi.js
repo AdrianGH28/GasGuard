@@ -82,13 +82,10 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
 
         mostraralerta('success', data.message || "Afiliado registrado correctamente.");
 
-        await esperar(4000); // Espera 4 segundos
+        await esperar(3000); // Espera 4 segundos
             // Esperar a que la animación termine antes de redirigir
-            await esperar(500); // Esperar el tiempo de la animación (500 ms)
-
             cerraralerta();
             modal.close();
-
         // Si quieres cerrar el modal automáticamente:
 
     } catch (err) {
@@ -117,6 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Error:", error);
     }
 });
+
 let alertaTimeout;
 let alertaTipoActual = "";
 
@@ -271,3 +269,4 @@ document.getElementById('enviar-correov-form').addEventListener('submit', async 
         mostraralerta('error', 'Error en el servidor. Intenta nuevamente.');
     }
 });
+//Aqui tratare de generar los containers de las cuentas afiliadas dinamicamente, o sea conectado al back

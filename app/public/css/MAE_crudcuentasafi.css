@@ -4,7 +4,7 @@
     justify-content: space-around;
     align-items: start;
     margin: 0%;
-    transform: translateX(-50%) translateY(-20px); /* Inicia un poco hacia arriba */
+    transform: translateX(-50%) translateY(-20px);
     width: 360px;
     height: auto;
     padding: 24px;
@@ -21,12 +21,14 @@
     box-sizing: content-box;
     height: fit-content;  /* Asegura que la altura sea solo lo necesario */
 
+    opacity: 0; /* Empieza oculto */
+    visibility: hidden; /* Inicia invisibilidad */
 }
 #alertamodal:open {
     display: flex;
-    transform: translateX(-50%) translateY(0); /* Se mueve a su posición original */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Restablecemos la transición normal */
-    top: 19px;
+    opacity: 1; /* Se hace visible */
+    visibility: visible; /* Hace visible el modal */
+    transform: translateX(-50%) translateY(0); /* Se desplaza a su posición final */
 }
 #alertamodal::backdrop {
     background-color: transparent;
