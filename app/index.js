@@ -71,6 +71,8 @@ app.get("/login", authorization.soloPublico, (req, res) => res.sendFile(__dirnam
 app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/registropago.html"));
 app.get("/paso1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso1.html"));
 app.get("/paso2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso2.html"));
+app.get("/repagoempresa", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_repagoempresa.html"));
+app.get("/tipocuenta", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_selecttipocuenta.html"));
 app.get("/paso4", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso4.html"));
 app.get("/recuperacion1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion1.html"));
 app.get("/recuperacion2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion2.html"));
@@ -105,6 +107,10 @@ app.post("/api/verifica-contra-login", authentication.verificaCorreoLogin);
 app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registrar-afiliado", authorization.proteccion, authentication.registrarAfiliado);
+
+app.post("/api/el-tipo-cuenta", authentication.eltipocuenta);
+app.post("/api/repagoempresa", authentication.repagoempresa);
+app.post("/api/obtener-precio-empr", authentication.Obtenerprecioempr);
 
 app.get("/api/user-info", authentication.getUserInfo);
 
@@ -258,8 +264,9 @@ app.post("/api/logout", (req, res) => {
 // Ruta para obtener las cuentas afiliadas de la empresa logueada
 app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
     try {
-        const idEmpresa = req.usuario.id_user; // suponiendo que el middleware agrega el id del usuario logueado
+        console.log("Usuario autenticado:", req.user); // 👀 aquí se verá el contenido del token
 
+        const idEmpresa = req.user.id_user;
         const [rows] = await pool.execute(`
             SELECT 
                 musuario.id_user,

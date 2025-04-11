@@ -93,10 +93,13 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
         mostraralerta('error', "Error de conexión con el servidor.");
     }
 });
-
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const res = await fetch("https://gasguard-production.up.railway.app/api/afiliadosempre");
+        const token = localStorage.getItem("token"); // o donde guardes el token
+        fetch("https://gasguard-production.up.railway.app/api/afiliadosempre", {
+            credentials: "include" // esto permite que se envíen las cookies automáticamente
+        });
+
         if (!res.ok) {
             throw new Error("Error al obtener la información de las cuentas afiliadas");
         }
@@ -114,6 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Error:", error);
     }
 });
+
 
 let alertaTimeout;
 let alertaTipoActual = "";

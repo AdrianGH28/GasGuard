@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="/css/MISYR_repagoempresa.css">
+    <link rel="stylesheet" href="/css/backgroundvideo.css">
+    <link rel="stylesheet" href="/css/headersencillo.css">
+    <link rel="stylesheet" href="/css/alertas.css">
+    <script src="MISYR_repagoempresa.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
+</head>
+
+<body>
+    <div id="alertamodal" class="custom-alert">
+        <div class="alerticon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="alertcontent">
+            <div class="alertheadingcont">
+                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+            </div>
+            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+            <div class="alertactionscont">
+                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+            </div>
+        </div>
+        <div class="alertclosebtn">
+            <button class="closebtn" onclick="cerraralerta()">
+                <i class="fa fa-x"></i>
+            </button>
+        </div>
+    </div>
+    <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="/images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+    <nav class="navbar-container">
+        <div class="logo-container">
+            <a class="navbar-brand" href="#">
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="javascript:void(0);"
+                onclick='mostraralerta("warning","¿Estás seguro de que deseas regresar sin guardar cambios?")'
+                class="back-link">
+                <i class="fa fa-arrow-left"></i> Regresar
+            </a>
+        </div>
+    </nav>
+    <main>
+        <div class="contenedor-general">
+            <div class="contenedor-p">
+                <div class="contenedor-pa">
+                    <div class="txt">
+                        <h1>Paso 3</h1>
+                        <p>Realiza tu pago</p>
+                    </div>
+                </div>
+                <form id="form" action="">
+                    <div class="form">
+
+                        <div class="contenedor">
+                            <div class="contenedor1">
+                                <div class="inputflex">
+                                    <div class="grupo">
+                                        <label for="subscription" id="labeldisp">Suscripción:</label>
+                                        <select id="subscription">
+                                            <option value="mensual">Mensual</option>
+                                            <option value="semestral">Semestral</option>
+                                            <option value="anual">Anual</option>
+                                        </select>
+                                        <span class="barra"></span>
+                                    </div>
+                                </div>
+                                <div class="inputflex">
+                                    <div class="grupo">
+                                        <label for="disp" id="labeldisp">No. de dispositivos:</label>
+                                        <input type="number" name="disp" id="disp" min="2" max="20">
+                                        <span class="barra"></span>
+                                    </div>
+                                </div>
+                                <div class="inputflex">
+                                    <div class="centrado">
+                                        <button type="button" class="button" onclick="calcularMonto()" id="monto">Calcular Monto</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contenedor2">
+                                <div class="division">
+                                    <span>Pagar</span>
+                                </div>
+                            </div>
+                            <div class="contenedor1">
+                                <div class="input-entero">
+                                    <div class="textcont">
+                                        <p>Monto a pagar: <span id="montoPagar">$0</span> MXN</p>
+                                    </div>
+                                </div>
+                                <div class="input-entero">
+                                    <div class="textcont">
+                                        <p>Método de pago</p>
+                                    </div>
+                                </div>
+                                <div class="input-entero">
+                                    <div class="grupo">
+                                        <button type="button"class="paypal-btn" onclick="payWithPayPal()">
+                                            <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
+                                                alt="PayPal">Pagar con PayPal
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="" id="submitbtn" type="submit">Pagar</button>
+                        <p class="error escondido">Error al registrarse</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>
+</body>
+
+</html>
