@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Seleccionar todos los enlaces de navegación
     var navLinks = document.querySelectorAll("nav a");
     var userContainer = document.querySelector(".user-container");
-    var crudicon = document.getElementById('iralcrud');
+    var crudicon = document.querySelector('#iralcrud');
 
     // Iterar a través de cada enlace y añadir la clase 'active' al que corresponde a la ruta actual
     navLinks.forEach(function(link) {
