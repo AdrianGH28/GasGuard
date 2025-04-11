@@ -26,15 +26,13 @@
 }
 #alertamodal:open {
     display: flex;
-    opacity: 1; /* Se hace visible */
-    visibility: visible; /* Hace visible el modal */
-    transform: translateX(-50%) translateY(0); /* Se desplaza a su posición final */
 }
-#alertamodal:not([open]) {
-    opacity: 0; /* Se oculta */
-    visibility: hidden; /* Se oculta completamente */
-    transform: translateX(-50%) translateY(-20px); /* Se mueve hacia arriba fuera de la pantalla */
+#alertamodal.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    visibility: visible;
 }
+
 #alertamodal::backdrop {
     background-color: transparent;
 }

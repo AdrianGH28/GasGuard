@@ -122,21 +122,20 @@ let alertaTipoActual = "";
 
 function isAlertVisible() {
     const alertBox = document.getElementById('alertamodal');
-    return alertBox && alertBox.open;
+    return alertBox && alertBox.classList.contains('open'); // corregido aquí
 }
 
 function mostraralerta(type, message) {
     console.log("mostraralerta:", type, message);
     clearTimeout(alertaTimeout);
-    
+
     const alertBox = document.getElementById('alertamodal');
 
-    // Si ya está visible, cerramos la alerta y luego mostramos la nueva
     if (isAlertVisible()) {
         console.log("Alerta ya visible, cerrando la anterior...");
         cerraralerta(() => {
             console.log("Alerta anterior cerrada, mostrando nueva alerta");
-            setTimeout(() => mostrarNuevaAlerta(type, message), 100); // Pequeño retraso para dar tiempo al cierre
+            setTimeout(() => mostrarNuevaAlerta(type, message), 100);
         });
         return;
     }
@@ -185,11 +184,12 @@ function mostrarNuevaAlerta(type, message) {
         alertBox.style.visibility = 'visible';
         alertBox.style.opacity = 1;
         alertBox.style.transform = 'translateX(-50%) translateY(0)';
-    }, 10); // Retraso muy corto para iniciar la transición
+        alertBox.classList.add('open'); // ← AÑADIDO para marcarla como abierta
+    }, 10);
 
     console.log("Alerta mostrada correctamente");
 
-    // Si la alerta no es de tipo que requiera intervención (warning o confirmation), se cierra automáticamente
+    // Si la alerta no requiere intervención, cerrar automáticamente
     if (type !== 'warning' && type !== 'confirmation') {
         alertaTimeout = setTimeout(() => {
             console.log("Timeout alcanzado, cerrando alerta");
@@ -215,14 +215,16 @@ function cerraralerta(callback) {
         return;
     }
 
-    alertBox.style.opacity = 0;  // Desaparece con la transición
-    alertBox.style.transform = 'translateX(-50%) translateY(-20px)'; // Se desplaza hacia arriba
+    alertBox.style.opacity = 0;
+    alertBox.style.transform = 'translateX(-50%) translateY(-20px)';
     setTimeout(() => {
         alertBox.style.visibility = 'hidden';
+        alertBox.classList.remove('open'); // ← QUITAR la clase cuando se cierre
         if (callback) callback();
         console.log("Alerta cerrada y oculta");
-    }, 300); // Espera que se complete la transición de 300ms
+    }, 300);
 }
+
 
 document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
     event.preventDefault();
