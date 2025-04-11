@@ -108,7 +108,7 @@ app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registrar-afiliado", authorization.proteccion, authentication.registrarAfiliado);
 
-app.post("/api/el-tipo-cuenta", authentication.eltipocuenta);
+
 app.post("/api/repagoempresa", authentication.repagoempresa);
 app.post("/api/obtener-precio-empr", authentication.Obtenerprecioempr);
 
