@@ -20,11 +20,17 @@
     z-index: 999;
     box-sizing: content-box;
     height: fit-content;  /* Asegura que la altura sea solo lo necesario */
+
+    opacity: 0; /* Empieza oculto */
+    visibility: hidden; /* Inicia invisibilidad */
 }
 #alertamodal:open {
     display: flex;
+    opacity: 1; /* Se hace visible */
+    visibility: visible; /* Hace visible el modal */
+    transform: translateX(-50%) translateY(0); /* Se desplaza a su posición final */
 }
-#alertamodal ::backdrop{
+#alertamodal::backdrop {
     background-color: transparent;
 }
 .alertcontent {
