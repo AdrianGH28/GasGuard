@@ -14,6 +14,26 @@
 </head>
 
 <body>
+    <dialog id="alertamodal" class="custom-alert">
+        <div class="alerticon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="alertcontent">
+            <div class="alertheadingcont">
+                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+            </div>
+            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+            <div class="alertactionscont">
+                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+            </div>
+        </div>
+        <div class="alertclosebtn">
+            <button class="closebtn" onclick="cerraralerta()">
+                <i class="fa fa-x"></i>
+            </button>
+        </div>
+    </dialog>
     <nav>
         <div class="navbar-container">
             <!-- Contenedor logo y texto -->
@@ -72,7 +92,7 @@
             <dialog class="contenedor-general" id="modal">
                 <div class="contenedor-p">
                     <div class="contenedor-pa">
-    
+
                         <div class="txt">
                             <h1>Registrar</h1>
                             <p>*Nota: El encargado podrá editar esta información</p>
@@ -80,7 +100,7 @@
                     </div>
                     <form id="cuentas-afiliadas-form">
                         <div class="form">
-    
+
                             <div class="contenedor">
                                 <div class="contenedor1">
                                     <div class="input-entero">
@@ -88,20 +108,22 @@
                                             <input type="text" name="nombre" id="nombre" placeholder="Nombre">
                                             <span class="barra"></span>
                                         </div>
-    
-    
+
+
                                     </div>
                                     <div class="input-entero">
-    
+
                                         <div class="grupo">
-                                            <input type="email" name="correo" id="correo" placeholder="Correo electrónico">
+                                            <input type="email" name="correo" id="correo"
+                                                placeholder="Correo electrónico">
                                             <span class="barra"></span>
                                         </div>
                                     </div>
                                     <p>* La contraseña debe ser entre 8 a 12 caractéres</p>
                                     <div class="input-mitad">
                                         <div class="grupo">
-                                            <input type="password" name="password" id="password" placeholder="Contraseña">
+                                            <input type="password" name="password" id="password"
+                                                placeholder="Contraseña">
                                             <span class="barra"></span>
                                         </div>
                                         <div class="grupo">
@@ -153,26 +175,6 @@
                             <p id="cerrarmodal">Cancelar</p>
                         </div>
                     </form>
-                </div>
-                <div id="alertamodal" class="custom-alert">
-                    <div class="alerticon">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </div>
-                    <div class="alertcontent">
-                        <div class="alertheadingcont">
-                            <div class="alertheading">¿Está seguro de que desea abandonar?</div>
-                        </div>
-                        <div class="alertcontentcont">Los cambios no se verán reflejados</div>
-                        <div class="alertactionscont">
-                            <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
-                            <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
-                        </div>
-                    </div>
-                    <div class="alertclosebtn">
-                    <button class="closebtn" onclick="cerraralerta()">
-                        <i class="fa fa-x"></i>
-                    </button>
-                    </div>
                 </div>
             </dialog>
             <div class="grupodetarjetas">
@@ -360,7 +362,7 @@
                 </div>
             </div>
         </div>
-        
+
 
     </div>
 
