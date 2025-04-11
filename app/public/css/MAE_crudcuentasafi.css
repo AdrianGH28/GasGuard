@@ -116,6 +116,10 @@ line-height: normal;
     margin-top: 30px;
 }
 
+.user-container a {
+    text-decoration: none;
+}
+
 .containercuentas {
     width: 100%;
     max-height: calc(100vh - 200px); /* Ajusta el 250px según el tamaño de tu header/top */
