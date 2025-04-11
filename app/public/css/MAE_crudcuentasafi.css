@@ -1,3 +1,4 @@
+
 .page-title {
     color: #FA0000;
     font-size: 30px;
@@ -187,7 +188,7 @@ line-height: normal;
   }
   #modal{
 
-    z-index: 999;
+    z-index: 7;
     top: 50%;
     left: 50%;
     position: fixed;

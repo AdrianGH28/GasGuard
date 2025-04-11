@@ -21,7 +21,7 @@
     opacity: 0; /* Inicia oculto */
     visibility: hidden; /* Se asegura de que no sea visible */
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Añadimos el retraso para visibility */
-    z-index: 1000; 
+    z-index: 10; 
     box-sizing: content-box;
 }
 
