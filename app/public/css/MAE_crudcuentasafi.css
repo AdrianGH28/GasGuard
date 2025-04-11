@@ -26,6 +26,8 @@
 }
 #alertamodal:open {
     display: flex;
+    opacity: 1; /* Empieza oculto */
+    visibility: visible; /* Inicia invisibilidad */
 }
 #alertamodal::backdrop {
     background-color: transparent;

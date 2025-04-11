@@ -122,7 +122,7 @@ let alertaTipoActual = "";
 
 function isAlertVisible() {
     const alertBox = document.getElementById('alertamodal');
-    return alertBox && alertBox.open;
+    return alertBox && alertBox.style.visibility === 'visible';
 }
 
 function mostraralerta(type, message) {
@@ -153,10 +153,11 @@ function mostrarNuevaAlerta(type, message) {
     const cancelarButton = alertBox.querySelector('.cancelar');
 
     // Limpiar clases anteriores
-    alertBox.className = 'modalalert custom-alert'; // Asegúrate de usar "custom-alert"
+    alertBox.className = 'modalalert';
     alertIcon.className = 'fa-solid';
     if (cancelarButton) cancelarButton.style.display = 'none';
 
+    // Configurar por tipo
     const tipos = {
         info:    { clase: 'alert-info',    icon: 'fa-circle-info',      titulo: 'Información', color: '#4B85F5', aceptarColor: '#6C7D7D', aceptarBold: '400' },
         warning: { clase: 'alert-warning', icon: 'fa-circle-exclamation', titulo: 'Advertencia', color: '#FDCD0F', aceptarColor: '#FDCD0F', aceptarBold: '700' },
@@ -173,18 +174,14 @@ function mostrarNuevaAlerta(type, message) {
     aceptarButton.style.color = config.aceptarColor;
     aceptarButton.style.fontWeight = config.aceptarBold;
 
-    // Establecer el borde izquierdo dinámicamente
-    alertBox.style.borderLeftColor = config.color; // Actualiza el borde izquierdo
-
     if (type === 'warning' && cancelarButton) cancelarButton.style.display = 'inline';
 
     alertContent.textContent = message;
     alertaTipoActual = type;
 
     // Mostrar alerta
-    if (!alertBox.open) {
-        alertBox.showModal();
-    }
+    alertBox.style.visibility = 'visible';
+    alertBox.style.opacity = '1';
     console.log("Alerta mostrada correctamente");
 
     if (type !== 'warning' && type !== 'confirmation') {
@@ -220,14 +217,15 @@ function cerraralerta(callback) {
         return;
     }
 
-    alertBox.close();
-    console.log("Alerta cerrada");
-    alertaTipoActual = "";
-    clearTimeout(alertaTimeout);
-
-    if (callback) callback();
+    alertBox.style.opacity = '0';
+    setTimeout(() => {
+        alertBox.style.visibility = 'hidden';
+        console.log("Alerta cerrada y oculta");
+        alertaTipoActual = "";
+        clearTimeout(alertaTimeout);
+        if (callback) callback();
+    }, 300); // Esperamos la animación
 }
-
 
 window.addEventListener('load', () => {
     const body = document.body;
