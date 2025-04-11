@@ -109,8 +109,33 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const afiliadosContainer = document.getElementById("containercuentas");
 
-        afiliados.forEach(afiliado => {
-            // Aquí se crearán las tarjetas de las cuentas afiliadas
+        let groupContainer = null;
+        afiliados.forEach((afiliado, index) => {
+            // Cada 4 tarjetas o si es la primera, creamos un nuevo grupo
+            if (index % 4 === 0) {
+                groupContainer = document.createElement("div");
+                groupContainer.classList.add("grupo-tarjetas"); // Clase para agrupar 4 tarjetas (puedes darle estilo si quieres)
+                afiliadosContainer.appendChild(groupContainer);
+            }
+
+            const tarjeta = document.createElement("div");
+            tarjeta.classList.add("tarjeta-afiliado"); // Clase de tu tarjeta con estilos aplicados
+
+            const direccionCompleta = `${afiliado.numero_direc} ${afiliado.nom_calle}, ${afiliado.nom_col}, ${afiliado.nom_ciudad}, ${afiliado.cp_copost}, ${afiliado.nom_estado}`;
+
+            tarjeta.innerHTML = `
+                <div class="icono-tarjeta">
+                    <i class="fas fa-user-circle"></i> <!-- Cambia el icono si quieres -->
+                </div>
+                <div class="info-tarjeta">
+                    <h3>${afiliado.nom_user}</h3>
+                    <p><strong>Correo:</strong> ${afiliado.correo_user}</p>
+                    <p><strong>Dirección:</strong> ${direccionCompleta}</p>
+                    <p><strong>Estado del dispositivo:</strong> -- </p> <!-- Aquí pones el estado si luego lo tienes -->
+                </div>
+            `;
+
+            groupContainer.appendChild(tarjeta);
         });
 
     } catch (error) {
