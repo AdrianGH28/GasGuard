@@ -109,34 +109,67 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const afiliadosContainer = document.getElementById("containercuentas");
 
-        let groupContainer = null;
+        let grupoTarjetas = null;
         afiliados.forEach((afiliado, index) => {
-            // Cada 4 tarjetas o si es la primera, creamos un nuevo grupo
+            // Crear nuevo grupo cada 4 tarjetas
             if (index % 4 === 0) {
-                groupContainer = document.createElement("div");
-                groupContainer.classList.add("grupo-tarjetas"); // Clase para agrupar 4 tarjetas (puedes darle estilo si quieres)
-                afiliadosContainer.appendChild(groupContainer);
+                grupoTarjetas = document.createElement("div");
+                grupoTarjetas.classList.add("grupodetarjetas");
+                afiliadosContainer.appendChild(grupoTarjetas);
             }
 
+            // Crear tarjeta
             const tarjeta = document.createElement("div");
-            tarjeta.classList.add("tarjeta-afiliado"); // Clase de tu tarjeta con estilos aplicados
+            tarjeta.classList.add("tarjeta");
 
-            const direccionCompleta = `${afiliado.numero_direc} ${afiliado.nom_calle}, ${afiliado.nom_col}, ${afiliado.nom_ciudad}, ${afiliado.cp_copost}, ${afiliado.nom_estado}`;
+            // Icono
+            const icono = document.createElement("i");
+            icono.classList.add("fa", "fa-user");
 
-            tarjeta.innerHTML = `
-                <div class="icono-tarjeta">
-                    <i class="fas fa-user-circle"></i> <!-- Cambia el icono si quieres -->
-                </div>
-                <div class="info-tarjeta">
-                    <h3>${afiliado.nom_user}</h3>
-                    <p><strong>Correo:</strong> ${afiliado.correo_user}</p>
-                    <p><strong>Dirección:</strong> ${direccionCompleta}</p>
-                    <p><strong>Estado del dispositivo:</strong> -- </p> <!-- Aquí pones el estado si luego lo tienes -->
-                </div>
-            `;
+            // Contenedor de texto
+            const textoTarjeta = document.createElement("div");
+            textoTarjeta.classList.add("textotarjeta");
 
-            groupContainer.appendChild(tarjeta);
+            // Nombre
+            const nombre = document.createElement("h2");
+            nombre.textContent = afiliado.nom_user;
+
+            // Correo
+            const correo = document.createElement("p");
+            correo.textContent = afiliado.correo_user;
+
+            // Dirección concatenada
+            const direccion = document.createElement("p");
+            direccion.textContent = `${afiliado.numero_direc} ${afiliado.nom_calle}, ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
+
+            // Estado del dispositivo
+            const estadoLabel = document.createElement("p");
+            estadoLabel.textContent = "Estado del dispositivo:";
+
+            const estado = document.createElement("p");
+            const estadoIcono = document.createElement("i");
+            estadoIcono.classList.add("fa", "fa-circle");
+            estado.appendChild(estadoIcono);
+
+            // Por ahora asumiremos que todos son "Activo" porque no veo campo de estado en el backend,
+            // si me confirmas cómo viene el estado real te lo agrego dinámico.
+            estado.innerHTML += " Activo";
+
+            // Añadir todo al contenedor de texto
+            textoTarjeta.appendChild(nombre);
+            textoTarjeta.appendChild(correo);
+            textoTarjeta.appendChild(direccion);
+            textoTarjeta.appendChild(estadoLabel);
+            textoTarjeta.appendChild(estado);
+
+            // Añadir icono y texto a la tarjeta
+            tarjeta.appendChild(icono);
+            tarjeta.appendChild(textoTarjeta);
+
+            // Añadir tarjeta al grupo
+            grupoTarjetas.appendChild(tarjeta);
         });
+
 
     } catch (error) {
         console.error("Error:", error);
