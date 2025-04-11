@@ -28,7 +28,8 @@
     display: flex;
     opacity: 1; /* Empieza oculto */
     visibility: visible; /* Inicia invisibilidad */
-    transform: translateX(-50%) translateY(0); /* Se desplaza a su posición final */
+
+    transform: translateX(-50%) translateY(20); /* Se desplaza a su posición final */
 }
 #alertamodal::backdrop {
     background-color: transparent;
