@@ -1,28 +1,27 @@
-
 #alertamodal {
     position: fixed;
-    display:flex;
-    /* Elimina display: none, pero seguimos controlando visibilidad */
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: start;
-    margin: 0%;
-    transform: translateX(-50%) translateY(-20px); /* Inicia un poco hacia arriba */
+    margin: 0;
+    transform: translateX(-50%) translateY(-20px);
     width: 360px;
-    height: auto;
     padding: 24px;
-    flex-shrink: 0;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0px 16px 20px -8px rgba(3, 5, 18, 0.10);
     left: 50%;
     top: 19px;
     border-left: 12px solid black;
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Añadimos el retraso para visibility */
-    z-index: 999; 
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+    z-index: 999;
     box-sizing: content-box;
+    border: none; /* (Importante: puede necesitar quitar bordes predeterminados del <dialog>) */
 }
 
+/* Nuevo: para el contenido adentro, usa flex */
+#alertamodal > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Opcional, para separación */
+}
 .alertcontent {
     display: flex;
     flex-direction: column;
