@@ -26,6 +26,7 @@
     display: flex;
     transform: translateX(-50%) translateY(0); /* Se mueve a su posición original */
     transition: opacity 0.3s ease, transform 0.3s ease; /* Restablecemos la transición normal */
+    top: 19px;
 }
 #alertamodal::backdrop {
     background-color: transparent;
