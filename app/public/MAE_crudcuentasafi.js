@@ -122,7 +122,7 @@ let alertaTipoActual = "";
 
 function isAlertVisible() {
     const alertBox = document.getElementById('alertamodal');
-    return alertBox && alertBox.open; // Usamos 'open' de <dialog> para saber si está visible
+    return alertBox && alertBox.style.visibility === 'visible';
 }
 
 function mostraralerta(type, message) {
@@ -153,7 +153,7 @@ function mostrarNuevaAlerta(type, message) {
     const cancelarButton = alertBox.querySelector('.cancelar');
 
     // Limpiar clases anteriores
-    alertBox.className = 'modalalert'; // Clase base
+    alertBox.className = 'modalalert';
     alertIcon.className = 'fa-solid';
     if (cancelarButton) cancelarButton.style.display = 'none';
 
@@ -162,7 +162,7 @@ function mostrarNuevaAlerta(type, message) {
         info:    { clase: 'alert-info',    icon: 'fa-circle-info',      titulo: 'Información', color: '#4B85F5', aceptarColor: '#6C7D7D', aceptarBold: '400' },
         warning: { clase: 'alert-warning', icon: 'fa-circle-exclamation', titulo: 'Advertencia', color: '#FDCD0F', aceptarColor: '#FDCD0F', aceptarBold: '700' },
         error:   { clase: 'alert-error',   icon: 'fa-circle-xmark',      titulo: 'Error',        color: '#F04349', aceptarColor: '#6C7D7D', aceptarBold: '400' },
-        success: { clase: 'alert-success', icon: 'fa-circle-check',      titulo: 'Éxito',        color: '#01E17B', aceptarColor: '#6C7D7D', aceptarBold: '400' },
+        success: { clase: 'alert-success', icon: 'fa-circle-check',       titulo: 'Éxito',        color: '#01E17B', aceptarColor: '#6C7D7D', aceptarBold: '400' },
     };
 
     const config = tipos[type] || tipos.info;
@@ -179,10 +179,9 @@ function mostrarNuevaAlerta(type, message) {
     alertContent.textContent = message;
     alertaTipoActual = type;
 
-    if (!alertBox.open) {
-        alertBox.showModal(); // Abrimos el dialog si no está abierto
-    }
-
+    // Mostrar alerta
+    alertBox.style.visibility = 'visible';
+    alertBox.style.opacity = '1';
     console.log("Alerta mostrada correctamente");
 
     if (type !== 'warning' && type !== 'confirmation') {
@@ -218,12 +217,14 @@ function cerraralerta(callback) {
         return;
     }
 
-    alertBox.close(); // Cerramos el dialog
-
-    alertaTipoActual = "";
-    console.log("Alerta cerrada y oculta");
-    clearTimeout(alertaTimeout);
-    if (callback) callback();
+    alertBox.style.opacity = '0';
+    setTimeout(() => {
+        alertBox.style.visibility = 'hidden';
+        console.log("Alerta cerrada y oculta");
+        alertaTipoActual = "";
+        clearTimeout(alertaTimeout);
+        if (callback) callback();
+    }, 300); // Esperamos la animación
 }
 
 window.addEventListener('load', () => {
