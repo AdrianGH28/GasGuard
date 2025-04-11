@@ -21,7 +21,6 @@
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Añadimos el retraso para visibility */
     z-index: 999; 
     box-sizing: content-box;
-    visibility: hidden;
 }
 
 .alertcontent {
