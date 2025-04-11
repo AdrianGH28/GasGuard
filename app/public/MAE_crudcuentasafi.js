@@ -124,11 +124,13 @@ let alertaTipoActual = "";
 function isAlertVisible() {
     const alertBox = document.getElementById('alertamodal');
     return alertBox.classList.contains('show');
+
 }
 
 function mostraralerta(type, message) {
     console.log("mostraralerta:", type, message);
     clearTimeout(alertaTimeout);
+    const alerta = document.querySelector('#alertamodal');
     
     if (isAlertVisible()) {
         console.log("Alerta ya visible, cerrando la anterior...");
