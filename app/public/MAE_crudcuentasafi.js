@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Dirección concatenada
             const direccion = document.createElement("p");
-            direccion.textContent = `${afiliado.numero_direc} ${afiliado.nom_calle}, ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
+            direccion.textContent = `${afiliado.nom_calle} ${afiliado.numero_direc} , ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
 
             // Estado del dispositivo
             const estadoLabel = document.createElement("p");
