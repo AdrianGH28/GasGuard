@@ -235,42 +235,5 @@ window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity='1';
 });
-document.getElementById('enviar-correov-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    
-    const correo = document.getElementById('correo').value;
-    console.log("Correo ingresado:", correo);
 
-    // Validación: evitar campos vacíos
-    if (!correo) {
-        mostraralerta('error', 'El campo de correo no puede estar vacío.');
-        document.getElementById('correo').focus();
-        return;
-    }
-
-    try {
-        // Enviar el correo al backend
-        const response = await fetch('/api/enviar-correo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo })
-        });
-
-        const result = await response.json();
-
-        if (result.status === "ok") {
-            // Guardar el correo en localStorage
-            localStorage.setItem('resetEmail', correo);
-            console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
-
-            
-        } else {
-            document.querySelector('.error').classList.remove('escondido');
-            document.querySelector('.error').textContent = result.message;
-        }
-    } catch (error) {
-        console.error("Error al enviar correo:", error);
-        mostraralerta('error', 'Error en el servidor. Intenta nuevamente.');
-    }
-});
 //Aqui tratare de generar los containers de las cuentas afiliadas dinamicamente, o sea conectado al back
