@@ -104,7 +104,7 @@ app.post("/api/enviar-correo", authentication.enviaCorreo);
 app.post("/api/verifica-contra-login", authentication.verificaCorreoLogin);
 app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
-app.post("/api/registro-afiliados", authentication.registroAfiliados);
+app.post("/api/registrar-afiliado", authorization.proteccion, authentication.registrarAfiliado);
 
 app.get("/api/user-info", authentication.getUserInfo);
 
@@ -255,6 +255,52 @@ app.post("/api/logout", (req, res) => {
 });
 
 
+// Ruta para obtener las cuentas afiliadas de la empresa logueada
+app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
+    try {
+        const idEmpresa = req.usuario.id_user; // suponiendo que el middleware agrega el id del usuario logueado
+
+        const [rows] = await pool.execute(`
+            SELECT 
+                musuario.id_user,
+                musuario.nom_user,
+                musuario.correo_user,
+                ddireccion.numero_direc,
+                dcalle.nom_calle,
+                ccolonia.nom_col,
+                cciudad.nom_ciudad,
+                ccpostal.cp_copost,
+                cestado.nom_estado
+            FROM 
+                musuario
+            JOIN 
+                ddireccion ON musuario.id_direccion = ddireccion.id_direccion
+            JOIN 
+                dcalle ON ddireccion.id_calle = dcalle.id_calle
+            JOIN 
+                ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
+            JOIN 
+                cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN 
+                ccpostal ON ddireccion.id_copost = ccpostal.id_copost
+            JOIN 
+                cestado ON ddireccion.id_estado = cestado.id_estado
+            WHERE 
+                musuario.rol_user = 'afiliado'
+                AND musuario.id_relempr = ?
+        `, [idEmpresa]);
+
+        if (rows.length === 0) {
+            return res.status(404).send({ status: "Error", message: "No se encontraron cuentas afiliadas" });
+        }
+
+        res.send({ status: "ok", data: rows });
+
+    } catch (error) {
+        console.error('Error al obtener las cuentas afiliadas:', error);
+        return res.status(500).send({ status: "Error", message: "Error al obtener las cuentas afiliadas" });
+    }
+});
 
 
 // Ruta para obtener la lista de dispositivos
