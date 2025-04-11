@@ -20,6 +20,9 @@
     box-sizing: content-box;
     border: none; /* (Importante: puede necesitar quitar bordes predeterminados del <dialog>) */
 }
+#alertamodal:open {
+    display: flex;
+}
 
 .alertcontent {
     display: flex;
