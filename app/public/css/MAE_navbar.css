@@ -227,9 +227,18 @@ nav a.active:hover .animation {
     .logo-container img {
         width: 5%;
     }
+    .container-items {
+        gap: 40px !important;
+    }
+
+    .user-container {
+        font-size: 1em;
+    }
+
 }
 
 @media screen and (max-width: 768px) {
+    
     nav {
         flex-direction: column;
         align-items: center;
@@ -276,12 +285,46 @@ nav a.active:hover .animation {
     .container-items.active {
         display: flex;
     }
+    .logo-container {
+        position: static;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .logo-container img {
+        width: 8%;
+        display: block;
+    }
+
+    .container-items {
+        flex-direction: column;
+        gap: 20px !important;
+        margin-top: 10px;
+        display: none;
+    }
+
+    .user-container {
+        position: static;
+        margin-top: 10px;
+        justify-content: center;
+    }
+
 }
 
 @media screen and (max-width: 480px) {
     nav a {
         font-size: 0.8em;
         padding: 8px 0;
+    }
+    .logo-text {
+        font-size: 1em;
+    }
+
+    .user-container i {
+        font-size: 25px;
+        padding-left: 10px;
     }
 }
 
