@@ -18,22 +18,10 @@
     left: 50%;
     top: 19px;
     border-left: 12px solid black;
-    opacity: 0; /* Inicia oculto */
-    visibility: hidden; /* Se asegura de que no sea visible */
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s; /* Añadimos el retraso para visibility */
-    z-index: 10; 
+    z-index: 999; 
     box-sizing: content-box;
 }
-
-#alertamodal.show {
-    display: flex;
-    opacity: 1; /* Se hace visible */
-    visibility: visible; /* Hace el contenedor visible */
-    transform: translateX(-50%) translateY(0); /* Se mueve a su posición original */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Restablecemos la transición normal */
-}
-
-
 
 .alertcontent {
     display: flex;

@@ -122,7 +122,7 @@ let alertaTipoActual = "";
 
 function isAlertVisible() {
     const alertBox = document.getElementById('alertamodal');
-    return alertBox && alertBox.classList.contains('show'); // Ahora usamos la clase 'show' para saber si está visible
+    return alertBox && alertBox.open; // Usamos 'open' de <dialog> para saber si está visible
 }
 
 function mostraralerta(type, message) {
@@ -153,8 +153,7 @@ function mostrarNuevaAlerta(type, message) {
     const cancelarButton = alertBox.querySelector('.cancelar');
 
     // Limpiar clases anteriores
-    alertBox.className = '';
-    alertBox.classList.add('modalalert'); // Clase base
+    alertBox.className = 'modalalert'; // Clase base
     alertIcon.className = 'fa-solid';
     if (cancelarButton) cancelarButton.style.display = 'none';
 
@@ -163,7 +162,7 @@ function mostrarNuevaAlerta(type, message) {
         info:    { clase: 'alert-info',    icon: 'fa-circle-info',      titulo: 'Información', color: '#4B85F5', aceptarColor: '#6C7D7D', aceptarBold: '400' },
         warning: { clase: 'alert-warning', icon: 'fa-circle-exclamation', titulo: 'Advertencia', color: '#FDCD0F', aceptarColor: '#FDCD0F', aceptarBold: '700' },
         error:   { clase: 'alert-error',   icon: 'fa-circle-xmark',      titulo: 'Error',        color: '#F04349', aceptarColor: '#6C7D7D', aceptarBold: '400' },
-        success: { clase: 'alert-success', icon: 'fa-circle-check',       titulo: 'Éxito',        color: '#01E17B', aceptarColor: '#6C7D7D', aceptarBold: '400' },
+        success: { clase: 'alert-success', icon: 'fa-circle-check',      titulo: 'Éxito',        color: '#01E17B', aceptarColor: '#6C7D7D', aceptarBold: '400' },
     };
 
     const config = tipos[type] || tipos.info;
@@ -180,7 +179,10 @@ function mostrarNuevaAlerta(type, message) {
     alertContent.textContent = message;
     alertaTipoActual = type;
 
-    alertBox.classList.add('show'); // AÑADIMOS 'show' para hacer visible
+    if (!alertBox.open) {
+        alertBox.showModal(); // Abrimos el dialog si no está abierto
+    }
+
     console.log("Alerta mostrada correctamente");
 
     if (type !== 'warning' && type !== 'confirmation') {
@@ -210,22 +212,18 @@ function cerraralerta(callback) {
     console.log("Iniciando cierre de alerta");
     const alertBox = document.getElementById('alertamodal');
 
-    if (!isAlertVisible()) { // Aquí usamos isAlertVisible para ser consistentes
+    if (!isAlertVisible()) {
         console.log("La alerta ya está cerrada");
         if (callback) callback();
         return;
     }
 
-    alertBox.classList.remove('show'); // QUITAMOS 'show' para ocultar
-    alertBox.classList.add('hide');
+    alertBox.close(); // Cerramos el dialog
 
-    setTimeout(() => {
-        alertBox.classList.remove('hide'); // Quitamos hide después
-        alertaTipoActual = "";
-        console.log("Alerta cerrada y oculta");
-        clearTimeout(alertaTimeout);
-        if (callback) callback();
-    }, 300); // tiempo para permitir animación
+    alertaTipoActual = "";
+    console.log("Alerta cerrada y oculta");
+    clearTimeout(alertaTimeout);
+    if (callback) callback();
 }
 
 window.addEventListener('load', () => {
