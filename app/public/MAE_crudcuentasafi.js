@@ -89,6 +89,7 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
             // Esperar a que la animación termine antes de redirigir
             cerraralerta();
             modal.close();
+            location.reload();
         // Si quieres cerrar el modal automáticamente:
 
     } catch (err) {
