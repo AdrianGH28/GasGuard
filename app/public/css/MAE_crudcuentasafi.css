@@ -581,7 +581,15 @@ input:not(:placeholder-shown) {
     transition: 0.5s ease all;
     pointer-events: none;
 }
-
+.search-bar:focus{
+    border: none;
+    background-color: rgba(0, 0, 0, 0.04);
+}
+input:not(:placeholder-shown) {
+    border: none;
+    background-color: rgba(0, 0, 0, 0.04);
+    background-color: rgba(0, 0, 0, 0.04);
+}
 .barra {
     display: none; /* Eliminado porque ahora se usa el borde del input */
 }
