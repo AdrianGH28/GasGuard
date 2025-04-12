@@ -1,8 +1,25 @@
 document.addEventListener("DOMContentLoaded", function() {
     const userContainer = document.getElementById("user-container");
-    const hamburger = document.getElementById('hamburger');
     const navLinks = document.querySelector('.container-items');
     const currentPage = window.location.pathname.split("/").pop(); // solo el nombre final
+
+    const hamburger = document.querySelector('.hamburger');
+    const containerItems = document.querySelector('.container-items');
+
+// Verificamos que ambos existan
+if (hamburger && containerItems) {
+    hamburger.addEventListener('click', () => {
+        console.log('Hamburguesa clickeada!');
+
+        hamburger.classList.toggle('active');
+        containerItems.classList.toggle('active');
+
+        console.log('Clases actuales en hamburger:', hamburger.classList);
+        console.log('Clases actuales en containerItems:', containerItems.classList);
+    });
+} else {
+    console.log('No se encontró el ícono de hamburguesa o el contenedor de items');
+}
 
     // Mapeo de IDs a sus respectivas páginas
     const navItems = {
@@ -55,11 +72,4 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Menú hamburguesa
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-    }
 });
