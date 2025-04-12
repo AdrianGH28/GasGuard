@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
     const userContainer = document.getElementById("user-container");
-    const hamburger = document.getElementById("hamburger");
-    const containerItems = document.querySelector('.container-items');
     const currentPage = window.location.pathname.split("/").pop(); // solo el nombre final
 
     // Mapeo de IDs a sus respectivas páginas
@@ -53,11 +51,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Menú hamburguesa
-    if (hamburger && containerItems) {
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            containerItems.classList.toggle('active');
-        });
-    }
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.querySelector('.container-items');
+
+    hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+    });
+
 });
