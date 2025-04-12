@@ -11,9 +11,11 @@ if (hamburger && containerItems) {
     hamburger.addEventListener('click', () => {
         console.log('Hamburguesa clickeada!');
 
+        // Toggle de la clase 'active' en la hamburguesa y el menú
         hamburger.classList.toggle('active');
         containerItems.classList.toggle('active');
 
+        // Log para ver las clases actuales
         console.log('Clases actuales en hamburger:', hamburger.classList);
         console.log('Clases actuales en containerItems:', containerItems.classList);
     });
