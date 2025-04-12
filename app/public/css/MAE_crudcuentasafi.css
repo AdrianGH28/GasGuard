@@ -583,12 +583,11 @@ input:not(:placeholder-shown) {
 }
 .search-bar:focus{
     border: none;
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: transparent;
 }
 input:not(:placeholder-shown) {
     border: none;
-    background-color: rgba(0, 0, 0, 0.04);
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: transparent;
 }
 .barra {
     display: none; /* Eliminado porque ahora se usa el borde del input */
