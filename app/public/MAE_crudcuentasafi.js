@@ -1,4 +1,7 @@
-
+window.addEventListener('load', () => {
+    const body = document.body;
+    body.style.opacity='1';
+});
 const modal = document.querySelector('#modal');
 const pageContainer = document.querySelector('.page-container');
 const addca = document.getElementById('anadircuenta');

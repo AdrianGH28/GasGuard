@@ -1,3 +1,7 @@
+body {
+    opacity: 0;
+    transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
+}
 #alertamodal {
     position: fixed;
     flex-direction: row;
@@ -20,7 +24,6 @@
     z-index: 999;
     box-sizing: content-box;
     height: fit-content;  /* Asegura que la altura sea solo lo necesario */
-
     opacity: 0; /* Empieza oculto */
     visibility: hidden; /* Inicia invisibilidad */
 }

@@ -11,6 +11,15 @@ document.addEventListener("DOMContentLoaded", function() {
         'iraldashboard': 'maedashboard'
     };
 
+    // Función para desvanecer y redirigir
+    function fadeAndRedirect(url) {
+        document.body.style.transition = 'opacity 0.5s'; // Transición suave
+        document.body.style.opacity = '0'; // Comenzar desvanecimiento
+        setTimeout(() => {
+            window.location.href = url;
+        }, 500); // Después de 500ms redirigir
+    }
+
     // Activar ítem de navegación correcto
     Object.entries(navItems).forEach(([id, page]) => {
         const element = document.getElementById(id);
@@ -20,6 +29,12 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 element.classList.remove('active');
             }
+
+            // Click con transición
+            element.addEventListener("click", function(e) {
+                e.preventDefault(); // Prevenir redirección inmediata
+                fadeAndRedirect(this.href);
+            });
         }
     });
 
@@ -31,9 +46,10 @@ document.addEventListener("DOMContentLoaded", function() {
             userContainer.classList.remove("active");
         }
 
-        // Click para redirigir
-        userContainer.addEventListener("click", function() {
-            window.location.href = "/maeseleccioninfo";
+        // Click con transición
+        userContainer.addEventListener("click", function(e) {
+            e.preventDefault(); // Prevenir redirección inmediata
+            fadeAndRedirect("/maeseleccioninfo");
         });
     }
 
