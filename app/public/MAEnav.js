@@ -1,28 +1,32 @@
 document.addEventListener("DOMContentLoaded", function() {
     const userContainer = document.getElementById("user-container");
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.querySelector('.container-items');
     const currentPage = window.location.pathname.split("/").pop(); // solo el nombre final
 
     // Mapeo de IDs a sus respectivas páginas
     const navItems = {
-        'iralcrud': 'maecrudcuentasafi',
-        'iralhistorial': 'maevisualizarrep',
-        'iraldashboard': 'maedashboard'
+        'iralcrud': '/maecrudcuentasafi',
+        'iralhistorial': '/maevisualizarrep',
+        'iraldashboard': '/maedashboard'
     };
 
     // Función para desvanecer y redirigir
     function fadeAndRedirect(url) {
-        document.body.style.transition = 'opacity 0.5s'; // Transición suave
-        document.body.style.opacity = '0'; // Comenzar desvanecimiento
+        document.body.style.transition = 'opacity 0.5s';
+        document.body.style.opacity = '0';
         setTimeout(() => {
             window.location.href = url;
-        }, 500); // Después de 500ms redirigir
+        }, 500);
     }
 
     // Activar ítem de navegación correcto
-    Object.entries(navItems).forEach(([id, page]) => {
+    Object.entries(navItems).forEach(([id, url]) => {
         const element = document.getElementById(id);
         if (element) {
-            if (currentPage === page) {
+            // Activar clase si es la página actual
+            const pageName = url.split("/").pop();
+            if (currentPage === pageName) {
                 element.classList.add('active');
             } else {
                 element.classList.remove('active');
@@ -30,8 +34,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Click con transición
             element.addEventListener("click", function(e) {
-                e.preventDefault(); // Prevenir redirección inmediata
-                fadeAndRedirect(this.href);
+                e.preventDefault();
+                fadeAndRedirect(url);
             });
         }
     });
@@ -46,17 +50,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Click con transición
         userContainer.addEventListener("click", function(e) {
-            e.preventDefault(); // Prevenir redirección inmediata
+            e.preventDefault();
             fadeAndRedirect("/maeseleccioninfo");
         });
     }
 
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.querySelector('.container-items');
-
-    hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navLinks.classList.toggle('active');
-    });
-
+    // Menú hamburguesa
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
 });
