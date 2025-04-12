@@ -5,17 +5,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const hamburger = document.querySelector('.hamburger');
 
-// Verificamos que ambos existan
-if (hamburger && navLinks) {
     hamburger.addEventListener('click', () => {
-        console.log('Hamburguesa clickeada!');
         hamburger.classList.toggle('active');
         navLinks.classList.toggle('active');
-        
-        console.log('Clases actuales en hamburger:', hamburger.classList);
-        console.log('Clases actuales en containerItems:', navLinks.classList);
     });
-}
 
     // Mapeo de IDs a sus respectivas páginas
     const navItems = {
