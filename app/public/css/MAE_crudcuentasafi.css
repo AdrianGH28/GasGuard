@@ -585,7 +585,7 @@ input:not(:placeholder-shown) {
     border: none;
     background-color: transparent;
 }
-input:not(:placeholder-shown) {
+.search-bar:not(:placeholder-shown) {
     border: none;
     background-color: transparent;
 }
