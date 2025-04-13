@@ -1,4 +1,273 @@
 window.onload = function() {
+    // Llama a la función para obtener el valor del sensor y actualizar la página inicialmente
+    getAndDisplaySensorValue();
+
+    // Configura un temporizador para actualizar periódicamente el valor del sensor y la gráfica
+    setInterval(getAndDisplaySensorValue, 5000); // Actualiza cada 5 segundos (5000 milisegundos)
+
+    // Función para obtener y mostrar el valor del sensor
+    function getAndDisplaySensorValue() {
+        getSensorValue((sensorValue) => {
+            const now = new Date();
+            const dateString = now.toISOString().split('T')[0];
+            const timeString = now.toTimeString().split(' ')[0];
+
+            document.getElementById('sensorValue').textContent = "Valor del sensor: " + sensorValue;
+            addData(sensorValue); // Añade el valor del sensor al gráfico de línea
+            updateGauge(sensorValue); // Actualiza el medidor con el nuevo valor del sensor
+
+            if (sensorValue !== null) {
+                hideLoadingModal();
+                if (sensorValue > 1500) {
+                    showModal(sensorValue, dateString, timeString);
+                }
+
+                // Enviar datos al servidor
+                sendDataToServer(sensorValue, dateString, timeString);
+            } else {
+                showLoadingModal();
+            }
+        });
+    }
+
+    function updateGauge(sensorValue) {
+        const gaugePercentage = (sensorValue / 4000) * 100;
+
+        // Actualiza el primer valor del array 'data' en el objeto 'dataGauge' con 'sensorValue'
+        dataGauge.datasets[0].data[0] = sensorValue;
+        // Actualiza el segundo valor del array 'data' en el objeto 'dataGauge' con la diferencia entre 4000 y 'sensorValue'
+        dataGauge.datasets[0].data[1] = 4000 - sensorValue;
+    
+        // Actualiza la configuración del medidor para reflejar el porcentaje calculado
+        configGauge.options.rotation = -gaugePercentage * 1.8; // 180 grados = 100%, por lo tanto, 1.8 grados por cada 1%
+    
+        // Actualiza el gráfico de medidor
+        myGaugeChart.update();
+    }
+
+    function getSensorValue(callback) {
+        fetch('/api/sensor-value')
+            .then(response => response.json())
+            .then(data => {
+                let sensorValue = data.sensorValue;
+                console.log('Sensor value:', sensorValue);
+
+                if (sensorValue !== null) {
+                    callback(sensorValue);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching sensor data:', error);
+            });
+    }
+
+    // Función para mostrar el valor del sensor en el medidor
+    function showLoadingModal() {
+        document.getElementById("loadingModal").style.display = "block";
+    }
+
+    function hideLoadingModal() {
+        document.getElementById("loadingModal").style.display = "none";
+    }
+
+    function showModal(sensorValue, date, time) {
+        var modal = document.getElementById("myModal");
+        var modalValue = document.getElementById("modalValue");
+        var modalDate = document.getElementById("modalDate");
+        var modalTime = document.getElementById("modalTime");
+
+        modalValue.textContent = "Valor del sensor: " + sensorValue;
+        modalDate.textContent = "Fecha: " + date;
+        modalTime.textContent = "Hora: " + time;
+
+        modal.style.display = "block";
+        const closeModalBtn = document.querySelectorAll('.closeModalBtn');
+        closeModalBtn.forEach(btn => btn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        }));
+
+        var sensorValueElement = document.getElementById("sensorValue");
+        sensorValueElement.textContent = "Valor del sensor: " + sensorValue;
+    }
+
+    function sendDataToServer(sensorValue, date, time) {
+        console.log('Sending data to server:', { valor: sensorValue, fecha: date, hora: time });
+    
+        fetch('/guardar-datos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                valor: sensorValue,
+                fecha: date,
+                hora: time,
+                id_dispositivo: 1, // Supongo que el id_dispositivo es fijo en 1 según tu código
+                id_presenciadegas: sensorValue > 1500 ? 2 : 1 // Determina el id_presenciadegas según el valor del sensor
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Error from server:', text);
+                    throw new Error(text || 'Error al enviar los datos al servidor');
+                });
+            }
+            console.log('Datos enviados correctamente al servidor');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Gráfico 1: Línea
+    const ctxLine = document.getElementById('myLineChart').getContext('2d');
+    const dataLine = {
+        labels: [],
+        datasets: [{
+            label: 'ppm',
+            data: [],
+            backgroundColor: 'rgba(237, 19, 26, 1)',
+            borderColor: 'rgba(237, 19, 26, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    const originalDataLine = {
+        labels: [],
+        datasets: [{
+            label: 'ppm',
+            data: []
+        }]
+    };
+
+    const configLine = {
+        type: 'line',
+        data: dataLine,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    const myLineChart = new Chart(ctxLine, configLine);
+
+    function addData(sensorValue) {
+        const now = new Date();
+        const timeString = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+
+        originalDataLine.labels.push(now);
+        originalDataLine.datasets[0].data.push(sensorValue);
+
+        if (originalDataLine.labels.length > 10) {
+            originalDataLine.labels.shift();
+            originalDataLine.datasets[0].data.shift();
+        }
+
+        updateChart();
+    }
+
+    function updateChart() {
+        dataLine.labels = originalDataLine.labels.map(label => label.getHours() + ':' + label.getMinutes() + ':' + label.getSeconds());
+        dataLine.datasets[0].data = [...originalDataLine.datasets[0].data];
+        myLineChart.update();
+    }
+
+    // Gráfico 2: Gauge
+    const ctxGauge = document.getElementById('myChart').getContext('2d');
+    const gradientSegment = ctxGauge.createLinearGradient(0, 0, 700, 0);
+    gradientSegment.addColorStop(0, 'red');
+    gradientSegment.addColorStop(1, 'red');
+    const dataGauge = {
+        labels: ['Score', 'Gray Area'],
+        datasets: [{
+            label: 'Weekly Sales',
+            data: [0, 4000], // Inicializa con 0, el valor se actualizará dinámicamente
+            backgroundColor: [
+                gradientSegment,
+                'rgba(211, 211, 211, 0.2)' // Cambia el color de la barra gris a un gris más claro
+            ],
+            borderColor: [
+                'rgba(211, 211, 211, 0.2)' // Sin bordes para la barra gris
+            ],
+            borderWidth: 0,
+            cutout: '90%',
+            circumference: 180,
+            rotation: 270,
+        }]
+    };
+
+    const gaugeChartText = {
+        id: 'gaugeChartText',
+        afterDatasetsDraw(chart, args, pluginOptions) {
+            const { ctx, data, chartArea: { top, bottom, left, right, width, height }, scales: { r } } = chart;
+            ctx.save();
+            const xCoor = chart.getDatasetMeta(0).data[0].x;
+            const yCoor = chart.getDatasetMeta(0).data[0].y;
+            const score = data.datasets[0].data[0];
+            let rating;
+            
+            if (score < 1000) {
+                rating = 'OK';
+            } else if (score >= 1000 && score < 1500) {
+                rating = 'Cuidado';
+            } else if (score >= 1500) {
+                rating = 'PELIGRO';
+            }
+
+            function textLabel(text, x, y, fontSize, textBaseLine, textAlign) {
+                ctx.font = `${fontSize}px sans-serif`;
+                ctx.fillStyle = 'black'; // Cambia el color del texto a negro
+                ctx.textBaseline = textBaseLine;
+                ctx.textAlign = textAlign;
+                ctx.fillText(text, x, y);
+            }
+
+            textLabel('0', left, yCoor + 20, 20, 'top', 'left');
+            textLabel('4000', right, yCoor + 20, 20, 'top', 'right'); // Agrega el label de 4000 en el lado derecho
+            textLabel(score, xCoor, yCoor, 100, 'bottom', 'center');
+            textLabel(rating, xCoor, yCoor - 120, 30, 'bottom', 'center');
+            ctx.restore();
+        }
+    };
+
+    const configGauge = {
+        type: 'doughnut',
+        data: dataGauge,
+        options: {
+            aspectRatio: 1.5,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false
+                }
+            }
+        },
+        plugins: [gaugeChartText]
+    };
+
+    const myGaugeChart = new Chart(ctxGauge, configGauge);
+
+    // Instantly assign Chart.js version
+    const chartVersion = document.getElementById('chartVersion');
+    chartVersion.innerText = Chart.version;
+};
+
+
+
+
+
+
+
+
+
+/*
+window.onload = function() {
     showLoadingModal();
     window.feed = function(callback) {
         var ticks = [];
@@ -381,3 +650,4 @@ window.onload = function() {
 
 };
 //CHART DEL MODAL
+*/
