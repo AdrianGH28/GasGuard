@@ -263,6 +263,108 @@ export const registrarAfiliado = async (req, res) => {
             return res.status(400).send({ status: "Error", message: "Este correo ya está registrado" });
         }
 
+        // Hashear contraseña
+        const salt = await bcryptjs.genSalt(5);
+        const hashPassword = await bcryptjs.hash(password, salt);
+
+        // Insertar o recuperar ID de colonia
+        const [coloniaResult] = await pool.execute('SELECT id_colonia FROM ccolonia WHERE nom_col = ?', [colonia]);
+        const id_colonia = coloniaResult.length > 0
+            ? coloniaResult[0].id_colonia
+            : (await pool.execute('INSERT INTO ccolonia (nom_col) VALUES (?)', [colonia]))[0].insertId;
+
+        // Insertar o recuperar ID de calle
+        const [calleResult] = await pool.execute('SELECT id_calle FROM dcalle WHERE nom_calle = ?', [calle]);
+        const id_calle = calleResult.length > 0
+            ? calleResult[0].id_calle
+            : (await pool.execute('INSERT INTO dcalle (nom_calle) VALUES (?)', [calle]))[0].insertId;
+
+        // Insertar o recuperar ID de ciudad
+        const [ciudadResult] = await pool.execute('SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ?', [ciudad]);
+        const id_ciudad = ciudadResult.length > 0
+            ? ciudadResult[0].id_ciudad
+            : (await pool.execute('INSERT INTO cciudad (nom_ciudad) VALUES (?)', [ciudad]))[0].insertId;
+
+        // Insertar o recuperar ID de estado
+        const [estadoResult] = await pool.execute('SELECT id_estado FROM cestado WHERE nom_estado = ?', [estado]);
+        const id_estado = estadoResult.length > 0
+            ? estadoResult[0].id_estado
+            : (await pool.execute('INSERT INTO cestado (nom_estado) VALUES (?)', [estado]))[0].insertId;
+
+        // Insertar o recuperar ID de código postal
+        const [cpResult] = await pool.execute('SELECT id_copost FROM ccpostal WHERE cp_copost = ?', [cp]);
+        const id_copost = cpResult.length > 0
+            ? cpResult[0].id_copost
+            : (await pool.execute('INSERT INTO ccpostal (cp_copost) VALUES (?)', [cp]))[0].insertId;
+
+        // Insertar dirección
+        const [direccionResult] = await pool.execute(
+            'INSERT INTO ddireccion (numero_direc, id_colonia, id_calle, id_ciudad, id_estado, id_copost) VALUES (?, ?, ?, ?, ?, ?)',
+            [numero, id_colonia, id_calle, id_ciudad, id_estado, id_copost]
+        );
+        const id_direccion = direccionResult.insertId;
+
+        // Insertar usuario afiliado
+        await pool.execute(
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
+        );
+
+        console.log("Usuario afiliado registrado correctamente");
+
+        // Enviar la contraseña al correo
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
+
+        const mailOptions = {
+            from: 'gasguardad1@gmail.com',
+            to: correo,
+            subject: 'Registro exitoso en GasGuard',
+            text: `Hola ${nombre}, tu cuenta ha sido creada exitosamente. Tu contraseña es: ${password}`
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("Correo enviado con la contraseña al usuario afiliado");
+
+        return res.status(201).send({ status: "ok", message: `Afiliado ${nombre} registrado con éxito` });
+
+    } catch (error) {
+        console.error("Error al registrar afiliado:", error);
+        return res.status(500).send({ status: "Error", message: "Error en el registro del afiliado" });
+    }
+};
+/*--------CUENTAS AFILIADAS CON CUENTAS RESTANTES */
+/*
+export const registrarAfiliado = async (req, res) => {
+    console.log("Solicitud recibida para registrar afiliado");
+    const { nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass } = req.body;
+    const idEmpresa = req.user.id_user;
+
+    // Validaciones básicas
+    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
+        return res.status(400).send({ status: "Error", message: "Todos los campos son obligatorios" });
+    }
+
+    if (password.length < 8 || password.length > 12) {
+        return res.status(400).send({ status: "Error", message: "La contraseña debe tener entre 8 y 12 caracteres" });
+    }
+
+    if (password !== confpass) {
+        return res.status(400).send({ status: "Error", message: "Las contraseñas no coinciden" });
+    }
+
+    try {
+        // Verificar si el correo ya existe
+        const [rows] = await pool.execute('SELECT correo_user FROM musuario WHERE correo_user = ?', [correo]);
+        if (rows.length > 0) {
+            return res.status(400).send({ status: "Error", message: "Este correo ya está registrado" });
+        }
+
         // Agrega esto dentro del try, después de verificar el correo
         // Verificar cuentas restantes antes de registrar
         const [[empresa]] = await pool.execute(
@@ -360,7 +462,7 @@ export const registrarAfiliado = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error en el registro del afiliado" });
     }
 };
-
+*/
 /*
 
 

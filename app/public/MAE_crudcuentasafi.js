@@ -1,7 +1,39 @@
+/*
+window.addEventListener('load', async () => {
+    const body = document.body;
+    body.style.opacity = '1';
+
+    try {
+        const res = await fetch("/api/cuentas-restantes");
+        const data = await res.json();
+
+        if (res.ok) {
+            const countSpan = document.getElementById('remaining-count');
+            const btnAñadir = document.getElementById('anadircuenta');
+
+            // Mostrar las cuentas disponibles
+            countSpan.textContent = data.cuentasDisponibles;
+
+            // Si no hay disponibles, desactivar botón
+            if (data.cuentasDisponibles <= 0) {
+                btnAñadir.classList.add('disabled'); // puedes darle estilo en CSS si quieres
+                btnAñadir.style.pointerEvents = 'none';
+                btnAñadir.style.opacity = '0.5';
+                btnAñadir.title = "Ya no puedes añadir más cuentas";
+            }
+        } else {
+            console.warn("Error al obtener cuentas restantes:", data.message);
+        }
+    } catch (err) {
+        console.error("Error al consultar cuentas restantes:", err);
+    }
+});
+*/
 window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity='1';
 });
+
 
 const modal = document.querySelector('#modal');
 const pageContainer = document.querySelector('.page-container');
