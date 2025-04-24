@@ -182,6 +182,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
+document.getElementById("searchInput").addEventListener("input", function () {
+    const valorBusqueda = this.value.toLowerCase();
+    const tarjetas = document.querySelectorAll(".tarjeta");
+
+    tarjetas.forEach(tarjeta => {
+        const nombre = tarjeta.querySelector("h2").textContent.toLowerCase();
+        if (nombre.includes(valorBusqueda)) {
+            tarjeta.style.display = "flex"; 
+        } else {
+            tarjeta.style.display = "none";
+        }
+    });
+});
+
+
 let alertaTimeout;
 let alertaTipoActual = "";
 
