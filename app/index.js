@@ -115,7 +115,7 @@ app.post("/api/verifica-contra-login", authentication.verificaCorreoLogin);
 app.post("/api/enviar-correo-login", authentication.enviaCorreoLogin);
 app.post("/api/reset-password", authentication.resetPassword);
 app.post("/api/registrar-afiliado", authorization.proteccion, authentication.registrarAfiliado);
-
+app.post("/api/cuentas-restantes", authorization.proteccion, authentication.obtenerCuentasRestantes);
 
 app.post("/api/repagoempresa", authentication.repagoempresa);
 app.post("/api/obtener-precio-empr", authentication.Obtenerprecioempr);
@@ -320,6 +320,36 @@ app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
     }
 });
 
+// Obtener el número máximo de afiliados y los que ya tiene la empresa
+app.get("/api/cuentas-restantes", authorization.proteccion, async (req, res) => {
+    try {
+        const idEmpresa = req.user.id_user;
+
+        const [rows] = await pool.execute(`
+            SELECT 
+                cnumafil.id_nmafil,       -- máximo permitido por el plan
+                musuario.afilocup_user    -- cuántos ya tiene registrados
+            FROM musuario
+            JOIN msuscripcion ON musuario.id_susc = msuscripcion.id_susc
+            JOIN cplan ON msuscripcion.id_plan = cplan.id_plan
+            JOIN cnumafil ON cplan.id_nmafil = cnumafil.id_nmafil
+            WHERE musuario.id_user = ?
+        `, [idEmpresa]);
+
+        if (rows.length === 0) {
+            return res.status(404).send({ status: "Error", message: "No se encontraron datos de afiliación" });
+        }
+
+        const { id_nmafil, afilocup_user } = rows[0];
+        const cuentasRestantes = id_nmafil - afilocup_user;
+
+        res.send({ status: "ok", maximo: id_nmafil, ocupados: afilocup_user, restantes: cuentasRestantes });
+
+    } catch (error) {
+        console.error('Error al obtener las cuentas restantes:', error);
+        return res.status(500).send({ status: "Error", message: "Error interno del servidor" });
+    }
+});
 
 
 // Ruta para obtener la lista de dispositivos
