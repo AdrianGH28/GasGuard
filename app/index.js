@@ -83,6 +83,14 @@ app.get("/maeinfocuenta", authorization.proteccion, (req, res) => res.sendFile(_
 app.get("/maecrudcuentasafi", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAE_crudcuentasafi.html"));
 app.get("/maevisualizarrep", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAE_visualizarrep.html"));
 app.get("/maedashboard", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAE_dashboard.html"));
+app.get("/mcaseleccioninfo", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MCA_seleccioninfo.html"));
+app.get("/mcainfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MCA_infocuenta.html"));
+app.get("/mgtseleccioninfo", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_seleccioninfo.html"));
+app.get("/mgtinfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_infocuenta.html"));
+app.get("/maaseleccioninfo", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_seleccioninfo.html"));
+app.get("/maainfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_infocuenta.html"));
+
+
 app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/dispositivos.html"));
 app.get("/usuario", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/usuario.html"));
 app.get("/historial", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/historial.html"));
