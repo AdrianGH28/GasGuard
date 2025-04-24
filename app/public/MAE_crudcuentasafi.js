@@ -196,6 +196,39 @@ document.getElementById("searchInput").addEventListener("input", function () {
     });
 });
 
+document.getElementById("eliminarcuentas").addEventListener("click", function () {
+    const boton = document.getElementById("eliminarcuentas");
+    const iconotarjetas = document.querySelectorAll('.fa');
+
+    if (boton.classList.contains('fa-user-minus')) {
+        // Cambiar todos los íconos de usuario a xmark
+        iconotarjetas.forEach(icono => {
+            if (icono.classList.contains('fa-user')) {
+                icono.classList.remove('fa-user');
+                icono.classList.add('fa-user-xmark');
+            }
+        });
+
+        // Cambiar ícono del botón
+        boton.classList.remove('fa-user-minus');
+        boton.classList.add('fa-xmark');
+
+    } else {
+        // Volver todos los íconos a usuario
+        iconotarjetas.forEach(icono => {
+            if (icono.classList.contains('fa-user-xmark')) {
+                icono.classList.remove('fa-user-xmark');
+                icono.classList.add('fa-user');
+            }
+        });
+
+        // Cambiar ícono del botón de vuelta
+        boton.classList.remove('fa-xmark');
+        boton.classList.add('fa-user-minus');
+    }
+});
+
+
 
 let alertaTimeout;
 let alertaTipoActual = "";
