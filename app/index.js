@@ -264,7 +264,7 @@ app.post("/api/logout", (req, res) => {
 // Ruta para obtener las cuentas afiliadas de la empresa logueada
 app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
     try {
-        console.log("Usuario autenticado:", req.user); // 👀 aquí se verá el contenido del token
+        console.log("Usuario autenticado:", req.user);
 
         const idEmpresa = req.user.id_user;
         const [rows] = await pool.execute(`
@@ -292,13 +292,16 @@ app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
                 ccpostal ON ddireccion.id_copost = ccpostal.id_copost
             JOIN 
                 cestado ON ddireccion.id_estado = cestado.id_estado
+            JOIN 
+                cestadocuenta ON musuario.id_estcuenta = cestadocuenta.id_estcuenta
             WHERE 
                 musuario.rol_user = 'afiliado'
                 AND musuario.id_relempr = ?
+                AND cestadocuenta.nom_estcuenta = 'activa'
         `, [idEmpresa]);
 
         if (rows.length === 0) {
-            return res.status(404).send({ status: "Error", message: "No se encontraron cuentas afiliadas" });
+            return res.status(404).send({ status: "Error", message: "No se encontraron cuentas afiliadas activas" });
         }
 
         res.send({ status: "ok", data: rows });
@@ -308,6 +311,7 @@ app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error al obtener las cuentas afiliadas" });
     }
 });
+
 
 
 // Ruta para obtener la lista de dispositivos
@@ -382,49 +386,6 @@ app.get("/api/histor", async (req, res) => {
     }
 });
 
-app.post('/guardar-datos', async (req, res) => {
-    console.log('Recibida una solicitud para guardar datos:', req.body);
-
-    const { plot0, date, time } = req.body;
-    let id_presenciadegas = plot0 > 50 ? 2 : 1;
-
-    try {
-        // Verify id_dispositivo exists
-        console.log('Checking if id_dispositivo = 1 exists...');
-        const [deviceRows] = await conexion.execute('SELECT * FROM mdispositivo WHERE id_dispositivo = 1');
-        console.log('Device Rows:', deviceRows);
-        if (deviceRows.length === 0) {
-            console.log('Error: id_dispositivo no existe');
-            return res.status(400).send('Error: id_dispositivo no existe');
-        }
-
-        // Verify id_presenciadegas exists
-        console.log(`Checking if id_presenciadegas = ${id_presenciadegas} exists...`);
-        const [presenceRows] = await conexion.execute('SELECT * FROM mpresenciadegas WHERE id_presenciadegas = ?', [id_presenciadegas]);
-        console.log('Presence Rows:', presenceRows);
-        if (presenceRows.length === 0) {
-            console.log('Error: id_presenciadegas no existe');
-            return res.status(400).send('Error: id_presenciadegas no existe');
-        }
-
-        // Insert data into the database
-        console.log('Inserting data into dregistro...');
-        const query = 'INSERT INTO dregistro (fecha, hora, resistencia, id_dispositivo, id_presenciadegas, des_reg) VALUES (?, ?, ?, ?, ?, ?)';
-        const [result] = await conexion.execute(query, [date, time, plot0, 1, id_presenciadegas, 'Valor predeterminado']);
-        console.log('Insert Result:', result);
-
-        if (result.affectedRows === 0) {
-            console.log('No se insertaron filas en la base de datos');
-            return res.status(500).send('Error al insertar datos en la base de datos');
-        }
-
-        console.log('Datos insertados correctamente en la base de datos');
-        res.status(200).send('Datos insertados correctamente en la base de datos');
-    } catch (error) {
-        console.error('Error al insertar datos en la base de datos:', error.message);
-        res.status(500).send('Error al insertar datos en la base de datos');
-    }
-});
 
 
 app.post('/api/reenvio-codigo', async (req, res) => {
@@ -905,5 +866,97 @@ app.delete("/api/trabajadoresadmin/:idCliente", authorization.proteccion, async 
     } catch (error) {
         console.error('Error al eliminar el trabajador:', error);
         return res.status(500).send({ status: "Error", message: "Error al eliminar el trabajador" });
+    }
+});
+
+app.post('/api/sensor-data', async (req, res) => {
+    try {
+        const { resistencia } = req.body;
+
+        if (typeof resistencia !== 'number') {
+            return res.status(400).json({ status: 'Error', message: 'Valor inválido de resistencia' });
+        }
+
+        const fechaActual = new Date();
+        const fecha = fechaActual.toISOString().split('T')[0]; // YYYY-MM-DD
+        const hora = fechaActual.toTimeString().split(' ')[0]; // HH:MM:SS
+
+        const des_reg = 'Lectura automática desde ESP32';
+        const id_dispositivo = 1;
+
+        await pool.execute(
+            'INSERT INTO dregistro (fecha, hora, des_reg, resistencia, id_dispositivo) VALUES (?, ?, ?, ?, ?)',
+            [fecha, hora, des_reg, resistencia, id_dispositivo]
+        );
+
+        res.status(200).json({ status: 'OK', message: 'Registro guardado exitosamente' });
+    } catch (error) {
+        console.error('Error al guardar el valor del sensor:', error);
+        res.status(500).json({ status: 'Error', message: 'Error interno del servidor' });
+    }
+});
+
+app.get('/api/sensor-value', async (req, res) => {
+    try {
+        const [rows] = await pool.execute(
+            'SELECT resistencia, fecha, hora FROM dregistro ORDER BY id_registro DESC LIMIT 1'
+        );
+
+        if (rows.length > 0) {
+            const { resistencia, fecha, hora } = rows[0];
+            res.json({ resistencia, fecha, hora });
+        } else {
+            res.json({ resistencia: null, fecha: null, hora: null });
+        }
+    } catch (error) {
+        console.error('Error al obtener el valor del sensor:', error);
+        res.status(500).json({ status: 'Error', message: 'Error al obtener los datos del sensor' });
+    }
+});
+
+
+
+
+app.post('/guardar-datos', async (req, res) => {
+    console.log('Recibida una solicitud para guardar datos:', req.body);
+
+    const { plot0, date, time } = req.body;
+    let id_presenciadegas = plot0 > 50 ? 2 : 1;
+
+    try {
+        // Verify id_dispositivo exists
+        console.log('Checking if id_dispositivo = 1 exists...');
+        const [deviceRows] = await conexion.execute('SELECT * FROM mdispositivo WHERE id_dispositivo = 1');
+        console.log('Device Rows:', deviceRows);
+        if (deviceRows.length === 0) {
+            console.log('Error: id_dispositivo no existe');
+            return res.status(400).send('Error: id_dispositivo no existe');
+        }
+
+        // Verify id_presenciadegas exists
+        console.log(`Checking if id_presenciadegas = ${id_presenciadegas} exists...`);
+        const [presenceRows] = await conexion.execute('SELECT * FROM mpresenciadegas WHERE id_presenciadegas = ?', [id_presenciadegas]);
+        console.log('Presence Rows:', presenceRows);
+        if (presenceRows.length === 0) {
+            console.log('Error: id_presenciadegas no existe');
+            return res.status(400).send('Error: id_presenciadegas no existe');
+        }
+
+        // Insert data into the database
+        console.log('Inserting data into dregistro...');
+        const query = 'INSERT INTO dregistro (fecha, hora, resistencia, id_dispositivo, id_presenciadegas, des_reg) VALUES (?, ?, ?, ?, ?, ?)';
+        const [result] = await conexion.execute(query, [date, time, plot0, 1, id_presenciadegas, 'Valor predeterminado']);
+        console.log('Insert Result:', result);
+
+        if (result.affectedRows === 0) {
+            console.log('No se insertaron filas en la base de datos');
+            return res.status(500).send('Error al insertar datos en la base de datos');
+        }
+
+        console.log('Datos insertados correctamente en la base de datos');
+        res.status(200).send('Datos insertados correctamente en la base de datos');
+    } catch (error) {
+        console.error('Error al insertar datos en la base de datos:', error.message);
+        res.status(500).send('Error al insertar datos en la base de datos');
     }
 });

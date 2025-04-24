@@ -44,14 +44,13 @@ window.onload = function() {
         // Actualiza el gráfico de medidor
         myGaugeChart.update();
     }
-
     function getSensorValue(callback) {
         fetch('/api/sensor-value')
             .then(response => response.json())
             .then(data => {
-                let sensorValue = data.sensorValue;
+                let sensorValue = data.resistencia; // <-- CAMBIADO
                 console.log('Sensor value:', sensorValue);
-
+    
                 if (sensorValue !== null) {
                     callback(sensorValue);
                 }
@@ -60,7 +59,7 @@ window.onload = function() {
                 console.error('Error fetching sensor data:', error);
             });
     }
-
+    
     // Función para mostrar el valor del sensor en el medidor
     function showLoadingModal() {
         document.getElementById("loadingModal").style.display = "block";
