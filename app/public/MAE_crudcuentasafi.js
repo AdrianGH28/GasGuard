@@ -399,7 +399,7 @@ document.addEventListener("click", async function (e) {
                 if (tarjeta) tarjeta.remove();
 
                 // Actualiza el contador
-                await actualizarCuentasRestantes();
+                //await actualizarCuentasRestantes();
             } else {
                 alert("Error: " + result.message);
             }
