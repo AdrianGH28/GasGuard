@@ -1,3 +1,7 @@
+window.addEventListener('load', () => {
+    const body = document.body;
+    body.style.opacity='1';
+});
 document.addEventListener("DOMContentLoaded", async function () {
 
     document.getElementById("logout-btn").addEventListener("click", async () => {

@@ -9,6 +9,10 @@ body {
     box-sizing: border-box;
     justify-content: center; /* Centra horizontalmente el nav */
 }
+body {
+  opacity: 0;
+  transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
+}
 
 /* Estilo para el contenedor de Usuario */
 .user-container {
