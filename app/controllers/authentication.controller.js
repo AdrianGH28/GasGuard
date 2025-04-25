@@ -1026,6 +1026,58 @@ export const obtenerCuentasRestantes = async (req, res) => {
     }
 };
 
+export const desactivarAfiliado = async (req, res) => {
+    const { idAfiliado } = req.body;
+
+    try {
+        // 1. Obtener el id del estado 'inactiva'
+        const [[estado]] = await pool.execute(`
+            SELECT id_estcuenta 
+            FROM cestadocuenta 
+            WHERE nom_estcuenta = 'inactiva'
+        `);
+
+        if (!estado) {
+            return res.status(500).send({ status: "Error", message: "No se encontró el estado 'inactiva'" });
+        }
+
+        const idEstadoInactiva = estado.id_estcuenta;
+
+        // 2. Obtener el id de la empresa que registró al afiliado
+        const [[afiliado]] = await pool.execute(`
+            SELECT id_relempr 
+            FROM musuario 
+            WHERE id_user = ?
+        `, [idAfiliado]);
+
+        if (!afiliado || !afiliado.id_relempr) {
+            return res.status(404).send({ status: "Error", message: "Afiliado no encontrado o sin empresa asociada" });
+        }
+
+        const idEmpresa = afiliado.id_relempr;
+
+        // 3. Actualizar el estado del afiliado a 'inactiva'
+        await pool.execute(`
+            UPDATE musuario 
+            SET id_estcuenta = ? 
+            WHERE id_user = ?
+        `, [idEstadoInactiva, idAfiliado]);
+
+        // 4. Disminuir el contador de afiliados ocupados de la empresa
+        await pool.execute(`
+            UPDATE musuario 
+            SET afilocup_user = afilocup_user - 1 
+            WHERE id_user = ?
+        `, [idEmpresa]);
+
+        res.status(200).send({ status: "ok", message: "Afiliado desactivado correctamente" });
+
+    } catch (error) {
+        console.error("Error al desactivar afiliado:", error);
+        res.status(500).send({ status: "Error", message: "Error al desactivar afiliado" });
+    }
+};
+
 
 export const methods = {
     login,
@@ -1042,5 +1094,6 @@ export const methods = {
     getUserInfo,
     repagoempresa,
     Obtenerprecioempr,
-    obtenerCuentasRestantes
+    obtenerCuentasRestantes,
+    desactivarAfiliado
 };

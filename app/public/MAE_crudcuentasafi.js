@@ -29,6 +29,88 @@ window.addEventListener('load', async () => {
     }
 });
 */
+/*
+document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.querySelector('#nombre').value;
+    const cp = document.querySelector('#cp').value;
+    const ciudad = document.querySelector('#ciudad').value;
+    const colonia = document.querySelector('#colonia').value;
+    const calle = document.querySelector('#calle').value;
+    const numero = document.querySelector('#numero').value;
+    const estado = document.querySelector('#estado').value;
+    const correo = document.querySelector('#correo').value;
+    const password = document.querySelector('#password').value;
+    const confpass = document.querySelector('#conf-pass').value;
+    const submitBtn = document.querySelector('button[type="submit"]');
+
+    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
+        mostraralerta('info', "Todos los campos son obligatorios.");
+        return;
+    }
+
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const regexNums = /^[0-9]+$/;
+
+    if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
+        mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
+        return;
+    }
+
+    if (!regexNums.test(cp) || cp.length !== 5) {
+        mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
+        return;
+    }
+
+    if (!regexNums.test(numero)) {
+        mostraralerta('error', "El número debe contener solo caracteres numéricos.");
+        return;
+    }
+
+    if (password.length < 8 || password.length > 12) {
+        mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
+        return;
+    }
+
+    if (password !== confpass) {
+        mostraralerta('error', "Las contraseñas no coinciden.");
+        return;
+    }
+
+    try {
+        const res = await fetch("/api/registrar-afiliado", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            mostraralerta('error', data.message || "Error al registrar afiliado.");
+            return;
+        }
+
+        mostraralerta('success', data.message || "Afiliado registrado correctamente.");
+
+        await esperar(3000); // Espera 4 segundos
+            // Esperar a que la animación termine antes de redirigir
+            cerraralerta();
+            modal.close();
+            location.reload();
+        // Si quieres cerrar el modal automáticamente:
+    await actualizarCuentasRestantes();
+    } catch (err) {
+        console.error(err);
+        mostraralerta('error', "Error de conexión con el servidor.");
+    }
+});
+*/
 window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity='1';
@@ -130,6 +212,8 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
         mostraralerta('error', "Error de conexión con el servidor.");
     }
 });
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         
@@ -162,6 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Icono
             const icono = document.createElement("i");
             icono.classList.add("fa", "fa-user");
+            icono.setAttribute("data-id", afiliado.id_user); 
 
             // Contenedor de texto
             const textoTarjeta = document.createElement("div");
@@ -227,7 +312,37 @@ document.getElementById("searchInput").addEventListener("input", function () {
         }
     });
 });
+/*
+async function actualizarCuentasRestantes() {
+    try {
+        const res = await fetch("/api/cuentas-restantes");
+        const data = await res.json();
 
+        if (res.ok) {
+            const countSpan = document.getElementById('remaining-count');
+            const btnAñadir = document.getElementById('anadircuenta');
+
+            countSpan.textContent = data.cuentasDisponibles;
+
+            if (data.cuentasDisponibles <= 0) {
+                btnAñadir.classList.add('disabled');
+                btnAñadir.style.pointerEvents = 'none';
+                btnAñadir.style.opacity = '0.5';
+                btnAñadir.title = "Ya no puedes añadir más cuentas";
+            } else {
+                btnAñadir.classList.remove('disabled');
+                btnAñadir.style.pointerEvents = 'auto';
+                btnAñadir.style.opacity = '1';
+                btnAñadir.title = "";
+            }
+        }
+    } catch (error) {
+        console.error("Error actualizando cuentas restantes:", error);
+    }
+}
+
+window.addEventListener('load', actualizarCuentasRestantes);
+*/
 document.getElementById("eliminarcuentas").addEventListener("click", function () {
     const boton = document.getElementById("eliminarcuentas");
     const iconotarjetas = document.querySelectorAll('.fa');
@@ -257,6 +372,42 @@ document.getElementById("eliminarcuentas").addEventListener("click", function ()
         // Cambiar ícono del botón de vuelta
         boton.classList.remove('fa-xmark');
         boton.classList.add('fa-user-minus');
+    }
+});
+document.addEventListener("click", async function (e) {
+    if (e.target.classList.contains("fa-user-xmark")) {
+        const idAfiliado = e.target.getAttribute("data-id");
+
+        if (!confirm("¿Estás seguro que deseas desactivar esta cuenta afiliada?")) return;
+
+        try {
+            const res = await fetch("/api/desactivar-afiliado", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ idAfiliado })
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                alert("Cuenta desactivada correctamente");
+
+                // Elimina visualmente la tarjeta
+                const tarjeta = e.target.closest(".tarjeta-afiliado");
+                if (tarjeta) tarjeta.remove();
+
+                // Actualiza el contador
+                await actualizarCuentasRestantes();
+            } else {
+                alert("Error: " + result.message);
+            }
+
+        } catch (error) {
+            console.error("Error al desactivar:", error);
+            alert("Error al desactivar afiliado");
+        }
     }
 });
 
