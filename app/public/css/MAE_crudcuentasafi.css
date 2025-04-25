@@ -213,9 +213,11 @@ line-height: normal;
 .fa.fa-user-xmark{
     font-size: 80px;
     color:rgba(0, 0, 0, 0.42);
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 .fa.fa-user-xmark:hover{
     color:rgba(255, 0, 0, 0.70);
+    transform: scale(1.1);
 }
 
 .search-container {
