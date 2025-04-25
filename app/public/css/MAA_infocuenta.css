@@ -1,6 +1,9 @@
 /* Importación de la fuente en el CSS */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
-
+body {
+  opacity: 0;
+  transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
+}
 body {
     font-family: 'Montserrat', sans-serif;
     padding: 0;

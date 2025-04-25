@@ -1,4 +1,8 @@
 // Agrega esto antes de cerrar el </body>
+window.addEventListener('load', () => {
+    const body = document.body;
+    body.style.opacity='1';
+});
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Botón de menú para móviles
     const menuToggle = document.createElement('div');
