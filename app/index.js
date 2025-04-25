@@ -891,11 +891,10 @@ app.post('/api/sensor-data', async (req, res) => {
         const hora = fechaActual.toTimeString().split(' ')[0]; // HH:MM:SS
 
         const des_reg = 'Lectura automática desde ESP32';
-        const id_dispositivo = 1;
 
         await pool.execute(
-            'INSERT INTO dregistro (fecha, hora, des_reg, resistencia, id_dispositivo) VALUES (?, ?, ?, ?, ?)',
-            [fecha, hora, des_reg, resistencia, id_dispositivo]
+            'INSERT INTO dregistro (fecha, hora, des_reg, resistencia) VALUES (?, ?, ?, ?)',
+            [fecha, hora, des_reg, resistencia]
         );
 
         res.status(200).json({ status: 'OK', message: 'Registro guardado exitosamente' });
@@ -904,6 +903,7 @@ app.post('/api/sensor-data', async (req, res) => {
         res.status(500).json({ status: 'Error', message: 'Error interno del servidor' });
     }
 });
+
 
 app.get('/api/sensor-value', async (req, res) => {
     try {
