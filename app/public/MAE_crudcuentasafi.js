@@ -374,6 +374,43 @@ document.getElementById("eliminarcuentas").addEventListener("click", function ()
         boton.classList.add('fa-user-minus');
     }
 });
+
+document.addEventListener("click", async function (e) {
+    if (e.target.classList.contains("fa-user-xmark")) {
+        const idAfiliado = e.target.getAttribute("data-id");
+
+        if (!confirm("¿Estás seguro que deseas desactivar esta cuenta afiliada?")) return;
+
+        try {
+            const res = await fetch("/api/desactivar-afiliado", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ idAfiliado })
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                alert("Cuenta desactivada correctamente");
+
+                // Recarga la página para reflejar los cambios
+                location.reload(); // 🔁 Esto recarga la página
+            } else {
+                alert("Error: " + result.message);
+            }
+
+        } catch (error) {
+            console.error("Error al desactivar:", error);
+            alert("Error al desactivar afiliado");
+        }
+    }
+});
+
+
+//DESACTIVAR AFILIADO CON CUENTAS RESTANTES
+/*
 document.addEventListener("click", async function (e) {
     if (e.target.classList.contains("fa-user-xmark")) {
         const idAfiliado = e.target.getAttribute("data-id");
@@ -399,7 +436,7 @@ document.addEventListener("click", async function (e) {
                 if (tarjeta) tarjeta.remove();
 
                 // Actualiza el contador
-                //await actualizarCuentasRestantes();
+                await actualizarCuentasRestantes();
             } else {
                 alert("Error: " + result.message);
             }
@@ -410,7 +447,7 @@ document.addEventListener("click", async function (e) {
         }
     }
 });
-
+*/
 
 
 let alertaTimeout;
