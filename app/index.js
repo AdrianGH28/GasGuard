@@ -878,7 +878,7 @@ app.delete("/api/trabajadoresadmin/:idCliente", authorization.proteccion, async 
     }
 });
 
-app.post('/api/sensor-data', async (req, res) => {
+app.post('/api/sensor-value', async (req, res) => {
     try {
         const { resistencia } = req.body;
 

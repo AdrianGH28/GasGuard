@@ -48,7 +48,7 @@ window.onload = function() {
         fetch('/api/sensor-value')
             .then(response => response.json())
             .then(data => {
-                let sensorValue = data.resistencia; // <-- CAMBIADO
+                let sensorValue = data.resistencia; 
                 console.log('Sensor value:', sensorValue);
     
                 if (sensorValue !== null) {
