@@ -4,12 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-    <link rel="stylesheet" href="/css/MISYR_repagoempresa.css">
+    <title>Suscripción Empresarial</title>
+    <link rel="stylesheet" href="/css/repagoempresa.css">
     <link rel="stylesheet" href="/css/backgroundvideo.css">
     <link rel="stylesheet" href="/css/headersencillo.css">
     <link rel="stylesheet" href="/css/alertas.css">
-    <script src="MISYR_repagoempresa.js" defer></script>
+    <!-- Cargar Stripe primero -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Cargar el script una sola vez después de Stripe -->
+    <script src="repagoempresa.js" defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
     <link rel="icon" href="images/logotipo.png" type="image/png">
@@ -26,7 +29,7 @@
             </div>
             <div class="alertcontentcont">Los cambios no se verán reflejados</div>
             <div class="alertactionscont">
-                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="aceptar" id="aceptarbtnalerta">Aceptar</button>
                 <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
             </div>
         </div>
@@ -57,6 +60,8 @@
             </a>
         </div>
     </nav>
+    
+    <!-- Main Content -->
     <main>
         <div class="contenedor-general">
             <div class="contenedor-p">
@@ -66,32 +71,39 @@
                         <p>Realiza tu pago</p>
                     </div>
                 </div>
-                <form id="form" action="">
+                
+                <!-- Formulario de Pago -->
+                <form id="pagos-form">
+                    <!-- Detalles de la suscripción -->
                     <div class="form">
-
                         <div class="contenedor">
                             <div class="contenedor1">
-                                <div class="inputflex">
+                                <div class="inputflex">    
                                     <div class="grupo">
-                                        <label for="subscription" id="labeldisp">Suscripción:</label>
-                                        <select id="subscription">
-                                            <option value="mensual">Mensual</option>
-                                            <option value="semestral">Semestral</option>
-                                            <option value="anual">Anual</option>
-                                        </select>
-                                        <span class="barra"></span>
+                                                <label for="email">Correo</label>
+                                                <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required />
+                                    </div>
+                                </div>
+                                <div class="inputflex">             
+                                    <div class="grupo">
+                                                <label for="subscription">Tipo de plan</label>
+                                                    <select id="subscription" required>
+                                                        <option value="selectop">Selecciona un plan</option>
+                                                        <option value="mensual">Mensual</option>
+                                                        <option value="semestral">Semestral (10% descuento)</option>
+                                                        <option value="anual">Anual (20% descuento)</option>
+                                                    </select>
+                                    </div>
+                                </div>    
+                                <div class="inputflex">         
+                                    <div class="grupo">
+                                                <label for="disp">No. de afiliados</label>
+                                                <input type="number" id="disp" min="1" max="20" placeholder="1-20 afiliados" required />
                                     </div>
                                 </div>
                                 <div class="inputflex">
-                                    <div class="grupo">
-                                        <label for="disp" id="labeldisp">No. de dispositivos:</label>
-                                        <input type="number" name="disp" id="disp" min="2" max="20">
-                                        <span class="barra"></span>
-                                    </div>
-                                </div>
-                                <div class="inputflex">
-                                    <div class="centrado">
-                                        <button type="button" class="button" onclick="calcularMonto()" id="monto">Calcular Monto</button>
+                                    <div class="centrado">             
+                                        <button type="button" id="monto" class="calculate-btn">Calcular Monto</button>
                                     </div>
                                 </div>
                             </div>
@@ -103,35 +115,43 @@
                             <div class="contenedor1">
                                 <div class="input-entero">
                                     <div class="textcont">
-                                        <p>Monto a pagar: <span id="montoPagar">$0</span> MXN</p>
+                                        <p>Total a pagar: <span id="montoPagar" class="price">$0.00 MXN</span></p>
                                     </div>
                                 </div>
-                                <div class="input-entero">
-                                    <div class="textcont">
-                                        <p>Método de pago</p>
+                    
+                                <!-- Detalles de pago -->
+                                <div class="form-section payment-section">
+                                    <div class="form-group">
+                                        <label for="cardholder-name">Nombre del titular</label>
+                                        <input type="text" id="cardholder-name" class="form-control" placeholder="Nombre como aparece en la tarjeta" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="card-element">Tarjeta de crédito o débito</label>
+                                        <div id="card-element" class="form-control"></div>
+                                        <div id="card-errors" class="error-message" role="alert"></div>
                                     </div>
                                 </div>
-                                <div class="input-entero">
-                                    <div class="grupo">
-                                        <button type="button"class="paypal-btn" onclick="payWithPayPal()">
-                                            <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
-                                                alt="PayPal">Pagar con PayPal
-                                        </button>
+                                <div class="inputflex">
+                                    <div class="centrado"> 
+                                        <button type="submit" id="submit-button" class="submit-btn" disabled>Pagar ahora</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button class="" id="submitbtn" type="submit">Pagar</button>
-                        <p class="error escondido">Error al registrarse</p>
+                        <div id="payment-message" class="message-container"></div>
                     </div>
                 </form>
             </div>
         </div>
     </main>
 
-</body>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 GasGuard. Todos los derechos reservados.</p>
+        </div>
+    </footer>
 
-</html>
 </body>
 
 </html>
