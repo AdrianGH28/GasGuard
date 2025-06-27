@@ -175,6 +175,7 @@ async function actualizarCuentasRestantes() {
 
 window.addEventListener('load', actualizarCuentasRestantes);
 */
+/*
 document.getElementById("eliminarcuentas").addEventListener("click", function () {
     const boton = document.getElementById("eliminarcuentas");
     const iconotarjetas = document.querySelectorAll('.fa');
@@ -239,7 +240,7 @@ document.addEventListener("click", async function (e) {
         }
     }
 });
-
+*/
 
 //DESACTIVAR AFILIADO CON CUENTAS RESTANTES
 /*
