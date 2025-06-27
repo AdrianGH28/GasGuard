@@ -295,23 +295,23 @@ line-height: normal;
     color:rgba(255, 0, 0, 0.70);
 }
 /* Scrollbar personalizada SOLO dentro de containercuentas */
-.containercuentas::-webkit-scrollbar {
+.containerreportes::-webkit-scrollbar {
     width: 8px; /* Ancho del scroll */
   }
   
-  .containercuentas::-webkit-scrollbar-track {
+  .containerreportes::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05); /* Color del fondo del scroll */
     border-radius: 10px;
   }
   
-  .containercuentas::-webkit-scrollbar-thumb {
+  .containerreportes::-webkit-scrollbar-thumb {
     background-color: #FA0000; /* Color del "thumb" (lo que arrastras) */
     border-radius: 10px;
     border: 2px solid transparent; /* Opcional: borde para que no se vea tan grueso */
     background-clip: content-box; /* Hace que el borde transparente funcione */
   }
   
-  .containercuentas::-webkit-scrollbar-thumb:hover {
+  .containerreportes::-webkit-scrollbar-thumb:hover {
     background-color: #c40000; /* Un rojo más oscuro cuando pasas el mouse */
   }
   h2{
