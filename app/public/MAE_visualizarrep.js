@@ -19,87 +19,6 @@ cerrarmodal.addEventListener('click', () => {
 function esperar(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nombre = document.querySelector('#nombre').value;
-    const cp = document.querySelector('#cp').value;
-    const ciudad = document.querySelector('#ciudad').value;
-    const colonia = document.querySelector('#colonia').value;
-    const calle = document.querySelector('#calle').value;
-    const numero = document.querySelector('#numero').value;
-    const estado = document.querySelector('#estado').value;
-    const correo = document.querySelector('#correo').value;
-    const password = document.querySelector('#password').value;
-    const confpass = document.querySelector('#conf-pass').value;
-    const submitBtn = document.querySelector('button[type="submit"]');
-
-    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
-        mostraralerta('info', "Todos los campos son obligatorios.");
-        return;
-    }
-
-    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const regexNums = /^[0-9]+$/;
-
-    if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
-        mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
-        return;
-    }
-
-    if (!regexNums.test(cp) || cp.length !== 5) {
-        mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
-        return;
-    }
-
-    if (!regexNums.test(numero)) {
-        mostraralerta('error', "El número debe contener solo caracteres numéricos.");
-        return;
-    }
-
-    if (password.length < 8 || password.length > 12) {
-        mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
-        return;
-    }
-
-    if (password !== confpass) {
-        mostraralerta('error', "Las contraseñas no coinciden.");
-        return;
-    }
-
-    try {
-        const res = await fetch("/api/registrar-afiliado", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass
-            })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            mostraralerta('error', data.message || "Error al registrar afiliado.");
-            return;
-        }
-
-        mostraralerta('success', data.message || "Afiliado registrado correctamente.");
-
-        await esperar(3000); // Espera 4 segundos
-            // Esperar a que la animación termine antes de redirigir
-            cerraralerta();
-            modal.close();
-            location.reload();
-        // Si quieres cerrar el modal automáticamente:
-
-    } catch (err) {
-        console.error(err);
-        mostraralerta('error', "Error de conexión con el servidor.");
-    }
-});
-
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -109,21 +28,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (!res.ok) {
-            throw new Error("Error al obtener la información de las cuentas afiliadas");
+            throw new Error("Error al obtener la información de los reportes");
         }
 
         const resJson = await res.json();
-        const afiliados = resJson.data;
+        const reportes = resJson.data;
 
-        const afiliadosContainer = document.getElementById("containercuentas");
+        const reportesContainer = document.getElementById("containerreportes");
 
         let grupoTarjetas = null;
-        afiliados.forEach((afiliado, index) => {
+        reportes.forEach((reporte, index) => {
             // Crear nuevo grupo cada 4 tarjetas
             if (index % 4 === 0) {
                 grupoTarjetas = document.createElement("div");
                 grupoTarjetas.classList.add("grupodetarjetas");
-                afiliadosContainer.appendChild(grupoTarjetas);
+                reportesContainer.appendChild(grupoTarjetas);
             }
 
             // Crear tarjeta
@@ -133,24 +52,44 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Icono
             const icono = document.createElement("i");
             icono.classList.add("fa", "fa-user");
-            icono.setAttribute("data-id", afiliado.id_user); 
+            icono.setAttribute("data-id", reporte.nmticket_reporte); 
 
             // Contenedor de texto
             const textoTarjeta = document.createElement("div");
             textoTarjeta.classList.add("textotarjeta");
 
-            // Nombre
-            const nombre = document.createElement("h2");
-            nombre.textContent = afiliado.nom_user;
+            const nombreLabel = document.createElement("h2");
+            nombreLabel.textContent = "Rojo:";
 
+            const nombre = document.createElement("h2");
+            nombre.textContent = reporte.nmticket_reporte;
+
+            const encargLabel = document.createElement("p");
+            encargLabel.textContent = "Encargado:";
+
+            const encarg = document.createElement("p");
+            encarg.textContent = reporte.nombre_autor;
+
+            const feciniLabel = document.createElement("p");
+            feciniLabel.textContent = "Fecha de registro:";
+
+            const fecini = document.createElement("p");
+            fecini.textContent = reporte.fecini_reporte;
+
+            const fecfinLabel = document.createElement("p");
+            fecfinLabel.textContent = "Fecha de solución:";
+
+            const fecfin = document.createElement("p");
+            fecfin.textContent = reporte.fecfin_reporte;
+            /*
             // Correo
             const correo = document.createElement("p");
-            correo.textContent = afiliado.correo_user;
+            correo.textContent = reporte.correo_user;
 
             // Dirección concatenada
             const direccion = document.createElement("p");
-            direccion.textContent = `${afiliado.nom_calle} ${afiliado.numero_direc} , ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
-
+            direccion.textContent = `${repo.nom_calle} ${afiliado.numero_direc} , ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
+            */
             // Estado del dispositivo
             const estadoLabel = document.createElement("p");
             estadoLabel.textContent = "Estado del dispositivo:";
@@ -165,9 +104,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             estado.innerHTML += " Activo";
 
             // Añadir todo al contenedor de texto
+            textoTarjeta.appendChild(nombreLabel);
             textoTarjeta.appendChild(nombre);
+            textoTarjeta.appendChild(encargLabel);
+            textoTarjeta.appendChild(encarg);
+            textoTarjeta.appendChild(feciniLabel);
+            textoTarjeta.appendChild(fecini);
+            textoTarjeta.appendChild(fecfinLabel);
+            textoTarjeta.appendChild(fecfin);
+            /*
             textoTarjeta.appendChild(correo);
             textoTarjeta.appendChild(direccion);
+            */
             textoTarjeta.appendChild(estadoLabel);
             textoTarjeta.appendChild(estado);
 

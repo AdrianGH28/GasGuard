@@ -329,34 +329,40 @@ app.get("/api/reportesempre", authorization.proteccion, async (req, res) => {
 
         const idEmpresa = req.user.id_user;
         const [rows] = await pool.execute(`
-            SELECT 
+            SELECT
+                autor.nom_user AS nombre_autor,
+		        autor.correo_user AS correo_autor,
+                encargado.nom_user AS nombre_encargado,
+		        encargado.correo_user AS correo_encargado,
                 rp.nmticket_reporte,
 		        rp.estado_reporte,
-	    	    rp.descri_reporte,
+		        rp.descri_reporte,
 		        rp.fecini_reporte,
 		        rp.imagen_fuga,
 		        rp.fecfin_reporte,
 		        rp.pagado,
 		        tp.nom_tireporte
 		    FROM 
-			    mreporte rp
+		    	mreporte rp
 		    JOIN 
-			    ctiporeporte tp ON rp.id_tireporte = tp.id_tireporte
+		    	ctiporeporte tp ON rp.id_tireporte = tp.id_tireporte
 		    JOIN 
-			    musuario us ON rp.id_user = us.id_user
+		    	musuario AS autor ON rp.id_user = autor.id_user
+		    LEFT JOIN 
+		    	musuario AS encargado ON rp.id_reltecnico = encargado.id_user
 		    WHERE 
-			    us.id_relempr = ?
+			    autor.id_relempr = ?
         `, [idEmpresa]);
 
         if (rows.length === 0) {
-            return res.status(404).send({ status: "Error", message: "No se encontraron cuentas afiliadas activas" });
+            return res.status(404).send({ status: "Error", message: "No se encontraron reportes" });
         }
 
         res.send({ status: "ok", data: rows });
 
     } catch (error) {
-        console.error('Error al obtener las cuentas afiliadas:', error);
-        return res.status(500).send({ status: "Error", message: "Error al obtener las cuentas afiliadas" });
+        console.error('Error al obtener los reportes:', error);
+        return res.status(500).send({ status: "Error", message: "Error al obtener los reportes" });
     }
 });
 

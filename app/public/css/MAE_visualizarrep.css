@@ -263,7 +263,7 @@ line-height: normal;
 }
 
 
-.containercuentas {
+.containerreportes {
     width: 100%;
     max-height: calc(100vh - 200px); /* Ajusta el 250px según el tamaño de tu header/top */
     overflow-y: auto;
