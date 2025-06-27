@@ -323,6 +323,55 @@ app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
     }
 });
 
+app.get("/api/reportesempre", authorization.proteccion, async (req, res) => {
+    try {
+        console.log("Usuario autenticado:", req.user);
+
+        const idEmpresa = req.user.id_user;
+        const [rows] = await pool.execute(`
+            SELECT 
+                musuario.id_user,
+                musuario.nom_user,
+                musuario.correo_user,
+                ddireccion.numero_direc,
+                dcalle.nom_calle,
+                ccolonia.nom_col,
+                cciudad.nom_ciudad,
+                ccpostal.cp_copost,
+                cestado.nom_estado
+            FROM 
+                musuario
+            JOIN 
+                ddireccion ON musuario.id_direccion = ddireccion.id_direccion
+            JOIN 
+                dcalle ON ddireccion.id_calle = dcalle.id_calle
+            JOIN 
+                ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
+            JOIN 
+                cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN 
+                ccpostal ON ddireccion.id_copost = ccpostal.id_copost
+            JOIN 
+                cestado ON ddireccion.id_estado = cestado.id_estado
+            JOIN 
+                cestadocuenta ON musuario.id_estcuenta = cestadocuenta.id_estcuenta
+            WHERE 
+                musuario.rol_user = 'afiliado'
+                AND musuario.id_relempr = ?
+                AND cestadocuenta.nom_estcuenta = 'activa'
+        `, [idEmpresa]);
+
+        if (rows.length === 0) {
+            return res.status(404).send({ status: "Error", message: "No se encontraron cuentas afiliadas activas" });
+        }
+
+        res.send({ status: "ok", data: rows });
+
+    } catch (error) {
+        console.error('Error al obtener las cuentas afiliadas:', error);
+        return res.status(500).send({ status: "Error", message: "Error al obtener las cuentas afiliadas" });
+    }
+});
 
 
 // Ruta para obtener la lista de dispositivos
