@@ -76,11 +76,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             const fecini = document.createElement("p");
             fecini.textContent = reporte.fecini_reporte;
 
+            if (reporte.estado_reporte === "realizado") {
             const fecfinLabel = document.createElement("p");
             fecfinLabel.textContent = "Fecha de solución:";
 
             const fecfin = document.createElement("p");
             fecfin.textContent = reporte.fecfin_reporte;
+
+            textoTarjeta.appendChild(fecfinLabel);
+            textoTarjeta.appendChild(fecfin);
+            }
             /*
             // Correo
             const correo = document.createElement("p");
