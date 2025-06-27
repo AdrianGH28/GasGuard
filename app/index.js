@@ -330,35 +330,22 @@ app.get("/api/reportesempre", authorization.proteccion, async (req, res) => {
         const idEmpresa = req.user.id_user;
         const [rows] = await pool.execute(`
             SELECT 
-                musuario.id_user,
-                musuario.nom_user,
-                musuario.correo_user,
-                ddireccion.numero_direc,
-                dcalle.nom_calle,
-                ccolonia.nom_col,
-                cciudad.nom_ciudad,
-                ccpostal.cp_copost,
-                cestado.nom_estado
-            FROM 
-                musuario
-            JOIN 
-                ddireccion ON musuario.id_direccion = ddireccion.id_direccion
-            JOIN 
-                dcalle ON ddireccion.id_calle = dcalle.id_calle
-            JOIN 
-                ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
-            JOIN 
-                cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
-            JOIN 
-                ccpostal ON ddireccion.id_copost = ccpostal.id_copost
-            JOIN 
-                cestado ON ddireccion.id_estado = cestado.id_estado
-            JOIN 
-                cestadocuenta ON musuario.id_estcuenta = cestadocuenta.id_estcuenta
-            WHERE 
-                musuario.rol_user = 'afiliado'
-                AND musuario.id_relempr = ?
-                AND cestadocuenta.nom_estcuenta = 'activa'
+                rp.nmticket_reporte,
+		        rp.estado_reporte,
+	    	    rp.descri_reporte,
+		        rp.fecini_reporte,
+		        rp.imagen_fuga,
+		        rp.fecfin_reporte,
+		        rp.pagado,
+		        tp.nom_tireporte
+		    FROM 
+			    mreporte rp
+		    JOIN 
+			    ctiporeporte tp ON rp.id_tireporte = tp.id_tireporte
+		    JOIN 
+			    musuario us ON rp.id_user = us.id_user
+		    WHERE 
+			    us.id_relempr = ?
         `, [idEmpresa]);
 
         if (rows.length === 0) {
