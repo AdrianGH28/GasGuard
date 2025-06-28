@@ -14,19 +14,45 @@ function esperar(ms) {
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
+        console.log("Iniciando petición a la API...");
         
         const res = await fetch("https://gasguard-production.up.railway.app/api/reportesempre", {
-            credentials: "include" // esto permite que se envíen las cookies automáticamente
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
+        console.log("Status de respuesta:", res.status);
+
         if (!res.ok) {
-            throw new Error("Error al obtener la información de los reportes");
+            if (res.status === 401) {
+                console.error("No autenticado - redirigir al login");
+                alert("Sesión expirada. Por favor, inicia sesión nuevamente.");
+                // window.location.href = "/login"; // Descomenta si tienes página de login
+                return;
+            }
+            throw new Error(`Error ${res.status}: ${res.statusText}`);
         }
 
         const resJson = await res.json();
+        console.log("Datos recibidos:", resJson);
         const reportes = resJson.data;
 
         const reportesContainer = document.getElementById("containerreportes");
+        
+        if (!reportesContainer) {
+            console.error("No se encontró el contenedor 'containerreportes' en el HTML");
+            return;
+        }
+
+        // Limpiar contenedor antes de agregar nuevos reportes
+        reportesContainer.innerHTML = '';
+
+        if (!reportes || reportes.length === 0) {
+            reportesContainer.innerHTML = '<p>No se encontraron reportes</p>';
+            return;
+        }
 
         let grupoTarjetas = null;
         reportes.forEach((reporte, index) => {
@@ -50,69 +76,67 @@ document.addEventListener("DOMContentLoaded", async () => {
             const textoTarjeta = document.createElement("div");
             textoTarjeta.classList.add("textotarjeta");
 
+            // Número de ticket
             const nombreLabel = document.createElement("h2");
-            nombreLabel.textContent = "Rojo:";
+            nombreLabel.textContent = "Ticket:";
 
             const nombre = document.createElement("h2");
             nombre.textContent = reporte.nmticket_reporte;
 
+            // Autor del reporte
             const encargLabel = document.createElement("p");
-            encargLabel.textContent = "Encargado:";
+            encargLabel.textContent = "Autor:";
 
             const encarg = document.createElement("p");
             encarg.textContent = reporte.nombre_autor;
 
+            // Fecha de inicio
             const feciniLabel = document.createElement("p");
             feciniLabel.textContent = "Fecha de registro:";
 
             const fecini = document.createElement("p");
             fecini.textContent = reporte.fecini_reporte;
 
-            if (reporte.estado_reporte === "realizado") {
-            const fecfinLabel = document.createElement("p");
-            fecfinLabel.textContent = "Fecha de solución:";
-
-            const fecfin = document.createElement("p");
-            fecfin.textContent = reporte.fecfin_reporte;
-
-            textoTarjeta.appendChild(fecfinLabel);
-            textoTarjeta.appendChild(fecfin);
-            }
-            /*
-            // Correo
-            const correo = document.createElement("p");
-            correo.textContent = reporte.correo_user;
-
-            // Dirección concatenada
-            const direccion = document.createElement("p");
-            direccion.textContent = `${repo.nom_calle} ${afiliado.numero_direc} , ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
-            */
-            // Estado del dispositivo
-            const estadoLabel = document.createElement("p");
-            estadoLabel.textContent = "Estado del dispositivo:";
-
-            const estado = document.createElement("p");
-            const estadoIcono = document.createElement("i");
-            estadoIcono.classList.add("fa", "fa-circle");
-            estado.appendChild(estadoIcono);
-
-            // Por ahora asumiremos que todos son "Activo" porque no veo campo de estado en el backend,
-            // si me confirmas cómo viene el estado real te lo agrego dinámico.
-            estado.innerHTML += " Activo";
-
-            // Añadir todo al contenedor de texto
+            // Añadir elementos básicos
             textoTarjeta.appendChild(nombreLabel);
             textoTarjeta.appendChild(nombre);
             textoTarjeta.appendChild(encargLabel);
             textoTarjeta.appendChild(encarg);
             textoTarjeta.appendChild(feciniLabel);
             textoTarjeta.appendChild(fecini);
-            textoTarjeta.appendChild(fecfinLabel);
-            textoTarjeta.appendChild(fecfin);
-            /*
-            textoTarjeta.appendChild(correo);
-            textoTarjeta.appendChild(direccion);
-            */
+
+            // ✅ CORREGIDO: Solo agregar fecha de solución si existe
+            if (reporte.estado_reporte === "realizado" && reporte.fecfin_reporte) {
+                const fecfinLabel = document.createElement("p");
+                fecfinLabel.textContent = "Fecha de solución:";
+
+                const fecfin = document.createElement("p");
+                fecfin.textContent = reporte.fecfin_reporte;
+
+                textoTarjetas.appendChild(fecfinLabel);
+                textoTarjeta.appendChild(fecfin);
+            }
+
+            // Estado del reporte
+            const estadoLabel = document.createElement("p");
+            estadoLabel.textContent = "Estado del reporte:";
+
+            const estado = document.createElement("p");
+            const estadoIcono = document.createElement("i");
+            estadoIcono.classList.add("fa", "fa-circle");
+            
+            // Color del icono según el estado
+            if (reporte.estado_reporte === "realizado") {
+                estadoIcono.style.color = "green";
+            } else if (reporte.estado_reporte === "pendiente") {
+                estadoIcono.style.color = "orange";
+            } else {
+                estadoIcono.style.color = "red";
+            }
+            
+            estado.appendChild(estadoIcono);
+            estado.innerHTML += ` ${reporte.estado_reporte}`;
+
             textoTarjeta.appendChild(estadoLabel);
             textoTarjeta.appendChild(estado);
 
@@ -124,11 +148,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             grupoTarjetas.appendChild(tarjeta);
         });
 
+        console.log(`Se crearon ${reportes.length} reportes`);
 
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Error detallado:", error);
+        const reportesContainer = document.getElementById("containerreportes");
+        if (reportesContainer) {
+            reportesContainer.innerHTML = `<p style="color: red;">Error al cargar los reportes: ${error.message}</p>`;
+        }
     }
 });
+
 
 
 document.getElementById("searchInput").addEventListener("input", function () {
