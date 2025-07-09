@@ -17,10 +17,14 @@ import pool from "./generalidades_back_bd.js";
 import cors from 'cors';
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-import { handleInvoicePaymentSucceeded, 
+import { createWebhookHandlers } from './webhook-handler.js';
+const {
+  handleInvoicePaymentSucceeded,
   handleInvoicePaymentFailed,
   handleSubscriptionDeleted,
-  handleSubscriptionUpdated } from "./webhook-handler.js";
+  handleSubscriptionUpdated
+} = createWebhookHandlers(stripe);
+
 
 console.log("Métodos de autenticación:", authentication);
 console.log("Mapa de códigos:", authentication.recoveryCodes);
