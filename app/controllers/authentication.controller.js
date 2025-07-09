@@ -338,6 +338,121 @@ export const registrarAfiliado = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error en el registro del afiliado" });
     }
 };
+
+
+
+
+
+
+
+/*CUENTAS AFILIADAS CON REPORTE
+async function registrarAfiliado(req, res) {
+    const { nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass } = req.body;
+
+    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
+        return res.status(400).send({ status: "Error", message: "Los campos están incompletos" });
+    }
+
+    if (password.length < 8 || password.length > 12) {
+        return res.status(400).send({ status: "Error", message: "La contraseña debe tener entre 8 y 12 caracteres." });
+    }
+
+    if (password !== confpass) {
+        return res.status(400).send({ status: "Error", message: "Las contraseñas no coinciden" });
+    }
+
+    try {
+        const [rows] = await pool.execute('SELECT correo_user FROM musuario WHERE correo_user = ?', [correo]);
+        if (rows.length > 0) {
+            return res.status(400).send({ status: "Error", message: "Este usuario ya existe" });
+        }
+
+        const apiKey = process.env.HUNTER_API_KEY;
+        const apiURL = `https://api.hunter.io/v2/email-verifier?email=${correo}&api_key=${apiKey}`;
+
+        const response = await fetch(apiURL);
+        const data = await response.json();
+
+        if (!data || !data.data || data.data.status !== 'valid') {
+            return res.status(400).send({ status: "Error", message: "El correo no es válido." });
+        }
+
+        const salt = await bcryptjs.genSalt(5);
+        const hashPassword = await bcryptjs.hash(password, salt);
+
+        const [coloniaResult] = await pool.execute('SELECT id_colonia FROM ccolonia WHERE nom_col = ?', [colonia]);
+        let id_colonia = coloniaResult.length > 0
+            ? coloniaResult[0].id_colonia
+            : (await pool.execute('INSERT INTO ccolonia (nom_col) VALUES (?)', [colonia]))[0].insertId;
+
+        const [calleResult] = await pool.execute('SELECT id_calle FROM dcalle WHERE nom_calle = ?', [calle]);
+        let id_calle = calleResult.length > 0
+            ? calleResult[0].id_calle
+            : (await pool.execute('INSERT INTO dcalle (nom_calle) VALUES (?)', [calle]))[0].insertId;
+
+        const [ciudadResult] = await pool.execute('SELECT id_ciudad FROM cciudad WHERE nom_ciudad = ?', [ciudad]);
+        let id_ciudad = ciudadResult.length > 0
+            ? ciudadResult[0].id_ciudad
+            : (await pool.execute('INSERT INTO cciudad (nom_ciudad) VALUES (?)', [ciudad]))[0].insertId;
+
+        const [estadoResult] = await pool.execute('SELECT id_estado FROM cestado WHERE nom_estado = ?', [estado]);
+        let id_estado = estadoResult.length > 0
+            ? estadoResult[0].id_estado
+            : (await pool.execute('INSERT INTO cestado (nom_estado) VALUES (?)', [estado]))[0].insertId;
+
+        const [copostResult] = await pool.execute('SELECT id_copost FROM ccpostal WHERE cp_copost = ?', [cp]);
+        let id_copost = copostResult.length > 0
+            ? copostResult[0].id_copost
+            : (await pool.execute('INSERT INTO ccpostal (cp_copost) VALUES (?)', [cp]))[0].insertId;
+
+        const [direccionResult] = await pool.execute(
+            'INSERT INTO ddireccion (numero_direc, id_colonia, id_calle, id_ciudad, id_estado, id_copost) VALUES (?, ?, ?, ?, ?, ?)',
+            [numero, id_colonia, id_calle, id_ciudad, id_estado, id_copost]
+        );
+        const direccionId = direccionResult.insertId;
+
+        const [insertUsuario] = await pool.execute(
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, id_direccion, id_estcuenta) VALUES (?, ?, ?, ?, ?)',
+            [nombre, correo, hashPassword, direccionId, 1]
+        );
+        const idAfiliado = insertUsuario.insertId;
+
+        // ----------------------------------------
+        // Insertar reporte de tipo "instalación"
+        const estado_reporte = 'pendiente';
+        const descripcion = 'Instalación inicial del dispositivo';
+        const fecini = new Date();
+        const id_tireporte = 1;
+
+        const [insertReporte] = await pool.execute(`
+            INSERT INTO mreporte (nmticket_reporte, estado_reporte, descri_reporte, fecini_reporte, id_tireporte, id_user)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [0, estado_reporte, descripcion, fecini, id_tireporte, idAfiliado]);
+
+        const id_reporte_insertado = insertReporte.insertId;
+
+        await pool.execute(
+            'UPDATE mreporte SET nmticket_reporte = ? WHERE id_reporte = ?',
+            [id_reporte_insertado, id_reporte_insertado]
+        );
+        // ----------------------------------------
+
+        return res.status(201).send({
+            status: "ok",
+            message: `Usuario ${nombre} agregado y reporte de instalación creado.`,
+            redirect: "/paso2"
+        });
+
+    } catch (error) {
+        console.error('Error al registrar usuario o generar reporte:', error);
+        return res.status(500).send({ status: "Error", message: "Error al registrar usuario." });
+    }
+}
+
+
+
+
+*/
 /*--------CUENTAS AFILIADAS CON CUENTAS RESTANTES */
 /*
 export const registrarAfiliado = async (req, res) => {
@@ -1188,6 +1303,85 @@ export const desactivarAfiliado = async (req, res) => {
     }
 };
 
+/**
+ * Desactivar afiliado con reporte de desinstalacion
+ * export const desactivarAfiliado = async (req, res) => {
+    const { idAfiliado } = req.body;
+
+    try {
+        // 1. Obtener el id del estado 'inactiva'
+        const [[estado]] = await pool.execute(`
+            SELECT id_estcuenta 
+            FROM cestadocuenta 
+            WHERE nom_estcuenta = 'inactiva'
+        `);
+
+        if (!estado) {
+            return res.status(500).send({ status: "Error", message: "No se encontró el estado 'inactiva'" });
+        }
+
+        const idEstadoInactiva = estado.id_estcuenta;
+
+        // 2. Obtener el id de la empresa que registró al afiliado
+        const [[afiliado]] = await pool.execute(`
+            SELECT id_relempr 
+            FROM musuario 
+            WHERE id_user = ?
+        `, [idAfiliado]);
+
+        if (!afiliado || !afiliado.id_relempr) {
+            return res.status(404).send({ status: "Error", message: "Afiliado no encontrado o sin empresa asociada" });
+        }
+
+        const idEmpresa = afiliado.id_relempr;
+
+        // 3. Actualizar el estado del afiliado a 'inactiva'
+        await pool.execute(`
+            UPDATE musuario 
+            SET id_estcuenta = ? 
+            WHERE id_user = ?
+        `, [idEstadoInactiva, idAfiliado]);
+
+        // 4. Disminuir el contador de afiliados ocupados de la empresa
+        await pool.execute(`
+            UPDATE musuario 
+            SET afilocup_user = afilocup_user - 1 
+            WHERE id_user = ?
+        `, [idEmpresa]);
+
+        // 5. Crear reporte de tipo "desinstalación"
+        const estado_reporte = 'pendiente';
+        const descripcion = 'Desinstalación del dispositivo';
+        const fecini = new Date();
+        const id_tireporte = 3;
+
+        const [insertReporte] = await pool.execute(`
+            INSERT INTO mreporte (
+                nmticket_reporte,
+                estado_reporte,
+                descri_reporte,
+                fecini_reporte,
+                id_tireporte,
+                id_user
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        `, [0, estado_reporte, descripcion, fecini, id_tireporte, idAfiliado]);
+
+        const id_reporte = insertReporte.insertId;
+
+        await pool.execute(`
+            UPDATE mreporte SET nmticket_reporte = ? WHERE id_reporte = ?
+        `, [id_reporte, id_reporte]);
+
+        // Todo listo
+        res.status(200).send({ status: "ok", message: "Afiliado desactivado y reporte generado correctamente." });
+
+    } catch (error) {
+        console.error("Error al desactivar afiliado o generar reporte:", error);
+        res.status(500).send({ status: "Error", message: "Error al desactivar afiliado." });
+    }
+};
+
+ */
 
 export const methods = {
     login,

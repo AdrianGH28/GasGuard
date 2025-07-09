@@ -377,6 +377,42 @@ app.get("/api/reportesempre", authorization.proteccion, async (req, res) => {
     }
 });
 
+// Ruta para registrar reporte tipo "fuga" por afiliado
+app.post("/api/reporte-fuga", authorization.proteccion, async (req, res) => {
+    const { descripcion } = req.body;
+
+    if (!descripcion || descripcion.trim() === "") {
+        return res.status(400).send({ status: "Error", message: "La descripción es obligatoria." });
+    }
+
+    const id_user = req.user.id_user; // Usuario logueado
+    const estado = 'pendiente';
+    const fecini = new Date(); // Fecha actual
+    const id_tireporte = 2; // Tipo "fuga"
+
+    try {
+        // Insertamos primero dejando nmticket_reporte en 0
+        const [insert] = await pool.execute(`
+            INSERT INTO mreporte (nmticket_reporte, estado_reporte, descri_reporte, fecini_reporte, id_tireporte, id_user)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [0, estado, descripcion, fecini, id_tireporte, id_user]);
+
+        const idInsertado = insert.insertId;
+
+        // Usamos el mismo id como número de ticket
+        await pool.execute(
+            `UPDATE mreporte SET nmticket_reporte = ? WHERE id_reporte = ?`,
+            [idInsertado, idInsertado]
+        );
+
+        return res.status(201).send({ status: "ok", message: `Reporte #${idInsertado} generado correctamente.` });
+
+    } catch (error) {
+        console.error("Error al insertar reporte:", error);
+        return res.status(500).send({ status: "Error", message: "No se pudo registrar el reporte." });
+    }
+});
+
 
 // Ruta para obtener la lista de dispositivos
 app.get("/api/dispositivos", authorization.proteccion, async (req, res) => {
