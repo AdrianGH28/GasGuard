@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cookieParser from 'cookie-parser';
 import mysql from 'mysql2/promise';
@@ -10,7 +13,6 @@ import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { getUserInfo } from './controllers/authentication.controller.js';
 import { methods as authorization } from "./middlewares/authorization.js";
-import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
 import cors from 'cors';
 import Stripe from 'stripe';
@@ -22,8 +24,9 @@ import { handleInvoicePaymentSucceeded,
 
 console.log("Métodos de autenticación:", authentication);
 console.log("Mapa de códigos:", authentication.recoveryCodes);
+console.log("CLAVE STRIPE:", process.env.STRIPE_SECRET_KEY); // debe imprimir algo que empiece con "sk_test_"
 
-dotenv.config();
+
 
 // Fix para __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -410,6 +413,36 @@ app.post("/api/reporte-fuga", authorization.proteccion, async (req, res) => {
     } catch (error) {
         console.error("Error al insertar reporte:", error);
         return res.status(500).send({ status: "Error", message: "No se pudo registrar el reporte." });
+    }
+});
+
+// Ruta para obtener reportes generados por el usuario logueado
+app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => {
+    try {
+        const id_user = req.user.id_user;
+
+        const [rows] = await pool.execute(`
+            SELECT 
+                id_reporte,
+                nmticket_reporte,
+                estado_reporte,
+                descri_reporte,
+                DATE_FORMAT(fecini_reporte, '%Y-%m-%d') AS fecini_reporte,
+                DATE_FORMAT(fecfin_reporte, '%Y-%m-%d') AS fecfin_reporte,
+                id_reltecnico
+            FROM mreporte
+            WHERE id_user = ?
+        `, [id_user]);
+
+        if (rows.length === 0) {
+            return res.status(404).send({ status: "Error", message: "No se encontraron reportes." });
+        }
+
+        return res.send({ status: "ok", data: rows });
+
+    } catch (error) {
+        console.error("Error al obtener reportes:", error);
+        return res.status(500).send({ status: "Error", message: "Error al obtener reportes." });
     }
 });
 
