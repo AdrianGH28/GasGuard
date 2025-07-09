@@ -1,17 +1,3 @@
-window.addEventListener('load', () => {
-    const body = document.body;
-    body.style.opacity='1';
-});
-
-
-const modal = document.querySelector('#modal');
-const pageContainer = document.querySelector('.page-container');
-
-
-function esperar(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 document.addEventListener("DOMContentLoaded", function () {
     const filtroPanel = document.getElementById("filtro-lateral");
     const botonFiltrar = document.getElementById("filter-btn");
@@ -233,6 +219,7 @@ function ocultarFiltros() {
     }
 }
 
+/* 1) Datos dummy — sin campo 'estado', se calcula automáticamente */
 const reportesDummy = [
   { id: 70, tipo: "Instalación", encargado: "Javier Muñoz", fechaReg: "2025-03-12", fechaSol: "2025-03-18" },
   { id: 71, tipo: "Retiro",      encargado: "Javier Muñoz", fechaReg: "2025-03-12", fechaSol: ""           },
@@ -241,6 +228,7 @@ const reportesDummy = [
   { id: 74, tipo: "Instalación", encargado: "Javier Muñoz", fechaReg: "2025-03-12", fechaSol: "2025-03-18" },
   { id: 75, tipo: "Retiro",      encargado: "Javier Muñoz", fechaReg: "2025-03-12", fechaSol: ""           },
   { id: 76, tipo: "Reparación",  encargado: "Javier Muñoz", fechaReg: "2025-03-12", fechaSol: ""           },
+  { id: 77, tipo: "Retiro",      encargado: "Javier Muñoz", fechaReg: "2025-03-12", fechaSol: "2025-03-17" },
 ];
 
 /* 2) Íconos por tipo */
@@ -254,133 +242,112 @@ const iconMap = {
 const detallesDummy = {
   70: { autor:"Mario Pérez",  correoAutor:"mario@gasguard.com",  correoEncargado:"javier@gasguard.com", descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
   71: { autor:"Ana Ruiz",     correoAutor:"ana@gasguard.com",   correoEncargado:"javier@gasguard.com",  descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
-  72: { autor:"Carlos López", correoAutor:"carlos@gasguard.com", correoEncargado:"javier@gasguard.com", descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
-  73: { autor:"Lucía Torres", correoAutor:"lucia@gasguard.com", correoEncargado:"laura@gasguard.com",   descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
-  74: { autor:"Mario Pérez",  correoAutor:"mario@gasguard.com",  correoEncargado:"javier@gasguard.com", descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
-  75: { autor:"Ana Ruiz",     correoAutor:"ana@gasguard.com",   correoEncargado:"javier@gasguard.com",  descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
+  72: { autor:"Carlos López", correoAutor:"carlos@gasguard.com", correoEncargado:"javier@gasguard.com", descripcion:"Lorem ipsum dolor sit amet..." },
+  73: { autor:"Lucía Torres", correoAutor:"lucia@gasguard.com", correoEncargado:"laura@gasguard.com",   descripcion:"Lorem ipsum dolor sit amet..." },
+  74: { autor:"Mario Pérez",  correoAutor:"mario@gasguard.com",  correoEncargado:"javier@gasguard.com", descripcion:"Lorem ipsum dolor sit amet..." },
+  75: { autor:"Ana Ruiz",     correoAutor:"ana@gasguard.com",   correoEncargado:"javier@gasguard.com",  descripcion:"Lorem ipsum dolor sit amet..." },
   76: { autor:"Carlos López", correoAutor:"carlos@gasguard.com", correoEncargado:"javier@gasguard.com", descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },
+  77: { autor:"Ana Ruiz",     correoAutor:"ana@gasguard.com",   correoEncargado:"javier@gasguard.com",  descripcion:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " },  
 };
 
-
-/* 4) Pinta las tarjetas */
+/* 4) Pinta solo reportes concluidos */
 function pintarReportes(lista){
   const cont = document.getElementById("lista-reportes");
   if(!cont) return;
   cont.innerHTML = "";
-  lista.forEach(r=>{
-    const estado = r.fechaSol ? "Solucionado" : "Pendiente";
+
+  lista.forEach(r => {
+    if (!r.fechaSol) return; // Solo mostrar reportes concluidos
+
+    const autor = detallesDummy[r.id]?.autor || "—";
+
     const art = document.createElement("article");
-    art.className = `reporte-card ${estado.toLowerCase()}`;
+    art.className = `reporte-card solucionado`;
+
     art.innerHTML = `
       <i class="reporte-icono ${iconMap[r.tipo] || "fa-solid fa-file"}"></i>
       <div class="reporte-info">
-        <div class="reporte-titulo">ROJO ${r.id}</div>
-        <div class="reporte-encargado">Encargado: ${r.encargado}</div>
-        <div class="reporte-fecha">Fecha de registro: ${r.fechaReg}</div>
-        ${ r.fechaSol ? `<div class="reporte-fecha">Fecha de solución: ${r.fechaSol}</div>` : "" }
-        <div class="reporte-estado">
-          Estado: <span class="punto ${estado==="Solucionado"?"solucionado":"pendiente"}"></span> ${estado}
+        <div class="reporte-titulo">${autor}</div>
+        
+        <div class="reporte-etiqueta">Fecha de registro</div>
+        <div class="reporte-fecha">${r.fechaReg}</div>
+        
+        <div class="reporte-etiqueta">Fecha de solución</div>
+        <div class="reporte-fecha">${r.fechaSol}</div>
+
+        <div class="contenedor-boton">
+          <button class="reporte-boton" data-id="${r.id}">Ver más</button>
         </div>
-        <button class="reporte-boton" data-id="${r.id}">Ver más</button>
       </div>`;
+    
     cont.appendChild(art);
   });
 }
-window.addEventListener("load",()=>pintarReportes(reportesDummy));
+
+window.addEventListener("load", () => {
+  const concluidos = reportesDummy.filter(r => r.fechaSol);
+  pintarReportes(concluidos);
+});
 
 /* 5) Modal “Ver más” */
-document.addEventListener("click",e=>{
-  if(!e.target.classList.contains("reporte-boton")) return;
+document.addEventListener("click", e => {
+  if (!e.target.classList.contains("reporte-boton")) return;
 
-  const id      = e.target.dataset.id;
-  const rep     = reportesDummy.find(r=>r.id==id);
-  const det     = detallesDummy[id];
-  if(!rep||!det) return;
+  const id  = e.target.dataset.id;
+  const rep = reportesDummy.find(r => r.id == id);
+  const det = detallesDummy[id];
+  if (!rep || !det) return;
 
-  /* -- rellena campos fijos -- */
-  document.getElementById("modal-autor").textContent            = det.autor;
-  document.getElementById("modal-correo-autor").textContent     = det.correoAutor;
-  document.getElementById("modal-encargado").textContent        = rep.encargado;
-  document.getElementById("modal-correo-encargado").textContent = det.correoEncargado;
-  document.getElementById("modal-fecha-reg").textContent        = rep.fechaReg;
-  document.getElementById("modal-descripcion").textContent      = det.descripcion;
+  document.getElementById("modal-autor").textContent       = det.autor;
+  document.getElementById("modal-fecha-reg").textContent   = rep.fechaReg;
+  document.getElementById("modal-descripcion").textContent = det.descripcion;
 
-  /* -- inserta / actualiza “Tipo” y <hr> justo debajo del título -- */
   const modalInfo = document.querySelector("#modalVerReporte .modal-info");
-  let   tipoDiv   = document.getElementById("modal-tipo");
-  let   hrDiv     = document.getElementById("modal-divider");
+  let tipoDiv = document.getElementById("modal-tipo");
+  let hrDiv   = document.getElementById("modal-divider");
 
-  if(!tipoDiv){
-    tipoDiv         = document.createElement("div");
-    tipoDiv.id      = "modal-tipo";
+  if (!tipoDiv) {
+    tipoDiv = document.createElement("div");
+    tipoDiv.id = "modal-tipo";
     tipoDiv.className = "modal-tipo";
-    modalInfo.prepend(tipoDiv);          // va al principio
+    modalInfo.prepend(tipoDiv);
 
-    hrDiv           = document.createElement("hr");
-    hrDiv.id        = "modal-divider";
+    hrDiv = document.createElement("hr");
+    hrDiv.id = "modal-divider";
     hrDiv.className = "modal-divider";
-    modalInfo.insertBefore(hrDiv, modalInfo.children[1]);  // inmediatamente después del tipo
+    modalInfo.insertBefore(hrDiv, modalInfo.children[1]);
   }
   tipoDiv.textContent = `Tipo: ${rep.tipo}`;
 
-  /* -- lógica de fechaSol + botón imagen -- */
   const filaFechaSol = document.getElementById("fila-fecha-sol");
   const btnImagen    = document.getElementById("btn-ver-imagen");
-  const estado       = rep.fechaSol ? "Solucionado" : "Pendiente";
 
-  if(rep.tipo==="Instalación" || (rep.tipo==="Reparación" && estado==="Solucionado")){
-    filaFechaSol.style.display="block";
-    document.getElementById("modal-fecha-sol").textContent = rep.fechaSol;
-    btnImagen.style.display="inline-block";
-  }else{
-    filaFechaSol.style.display="none";
-    btnImagen.style.display="none";
-  }
+  filaFechaSol.style.display = "block";
+  document.getElementById("modal-fecha-sol").textContent = rep.fechaSol;
+  btnImagen.style.display = "inline-block";
 
   document.getElementById("modalVerReporte").showModal();
-  
-  // Imagen dummy por ID
+
   const imagenesDummy = {
     70: "https://tse4.mm.bing.net/th/id/OIP.K275zLzX44QFAPcvxkqUmwHaE8?pid=Api&P=0&h=180",
     73: "https://tse1.mm.bing.net/th/id/OIP.rQ3bWtNSiAt2phUGEtUmmwHaE7?pid=Api&P=0&h=180",
     74: "https://tse2.mm.bing.net/th/id/OIP.heZY9ZTfqhAv6TcN7-mCagHaEK?pid=Api&P=0&h=180"
-    // Puedes agregar más aquí
   };
 
   const modalImagen = document.getElementById("modalImagen");
   const imagenModal = document.getElementById("imagenModal");
 
-  // Delegar al botón de imagen
-  const btnVerImagen = document.getElementById("btn-ver-imagen");
-  btnVerImagen.onclick = () => {
+  document.getElementById("btn-ver-imagen").onclick = () => {
     const ruta = imagenesDummy[id] || "https://via.placeholder.com/600x400?text=Sin+imagen";
     imagenModal.src = ruta;
     modalImagen.showModal();
   };
-
 });
 
-/* 6) Cerrar modal */
+/* 6) Cerrar modales */
 function cerrarModal(){
   document.getElementById("modalVerReporte").close();
 }
-
-// 7) Búsqueda en vivo por nombre del encargado
-document.addEventListener("DOMContentLoaded", () => {
-  const inputBusqueda = document.getElementById("input-busqueda-encargado");
-
-  if (inputBusqueda) {
-    inputBusqueda.addEventListener("input", function () {
-      const texto = this.value.toLowerCase().trim();
-
-      const filtrados = reportesDummy.filter(rep =>
-        rep.encargado.toLowerCase().includes(texto)
-      );
-
-      pintarReportes(filtrados);
-    });
-  }
-});
 
 function cerrarModalImagen() {
   document.getElementById("modalImagen").close();

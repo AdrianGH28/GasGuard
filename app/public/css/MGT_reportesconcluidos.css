@@ -2,7 +2,6 @@ body {
     opacity: 0;
     transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
 }
-
 #alertamodal {
     position: fixed;
     flex-direction: row;
@@ -190,41 +189,6 @@ body {
 #eliminarcuentas {
     font-size: 30px; /* Para el ícono de 30x30px */
     color:#ff0000
-}
-.search-container {
-    display: flex;
-    height: 36px;
-    padding: 8px;
-    background-color: rgba(0, 0, 0, 0.04); /* Fondo negro al 4% */
-    border-radius: 10px;
-    align-items: center;
-    position: relative;
-    width: 300px;
-}
-
-.search-bar {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: transparent;
-    color: #000;
-    padding-left: 10px;
-    font-size: 16px;
-    outline: none;
-    color: rgba(0, 0, 0, 0.42);
-    justify-content: flex-start;
-    text-align: left;
-    font-family: Montserrat;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.search-icon {
-    position: absolute;
-    right: 10px;
-    color: #00000070;
-    font-size: 18px;
 }
 
 .filter-reportes {
@@ -586,59 +550,67 @@ body {
     margin-bottom: -35px !important;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Estilo general del contenedor de tarjetas */
 .lista-reportes {
     display: flex;
     flex-wrap: wrap;
-    gap: 35px;
+    gap: 70px;
     padding: 40px;
     justify-content: center;
   }
   
   /* Tarjeta */
   .reporte-card {
-    width: 320px;
-    height: 160px;
+    width: 218px;
+    height: 236px;
     display: flex;
-    gap: 20px;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
     background: #FFF;
     border-radius: 16px;
     box-shadow: 9px 9px 4px 0px rgba(0, 0, 0, 0.25);
     padding: 16px;
-    font-family: 'Montserrat', sans-serif;
     box-sizing: border-box;
   }
   
-  /* Ícono grande a la izquierda */
+  /* Ícono grande */
   .reporte-icono {
-    font-size: 38px;
-    margin-top: 4px;
+    font-size: 60px;
     color: rgba(255, 0, 0, 0.70);
-    flex-shrink: 0;
-    margin-left: 8px;
   }
   
-  /* Contenedor de la info textual */
-  .reporte-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-grow: 1;
-  }
-  
-  /* ID */
   .reporte-titulo {
     color: rgba(0, 0, 0, 0.42);
+    text-align: center;
+    font-family: Montserrat;
     font-size: 20px;
+    font-style: normal;
     font-weight: 600;
-    text-align: left;
-  }
-  
-  /* Encargado */
-  .reporte-encargado {
-    color: rgba(0, 0, 0, 0.42);
-    font-size: 12px;
-    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 10px;
   }
   
   /* Fechas */
@@ -646,32 +618,16 @@ body {
     color: rgba(0, 0, 0, 0.42);
     font-size: 12px;
     font-weight: 500;
+    text-align: center;
   }
-  
-  /* Estado + punto */
-  .reporte-estado {
-    color: rgba(0, 0, 0, 0.42);
+
+  .reporte-etiqueta {
     font-size: 12px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .punto {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-  }
-  
-  .punto.solucionado {
-    background-color: #01E17B;
-  }
-  
-  .punto.pendiente {
-    background-color: #FDCD0F;
-  }
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.42);
+    text-align: center;
+    margin-top: 3px;
+  }  
   
   /* Botón Ver más */
   .reporte-boton {
@@ -683,10 +639,33 @@ body {
     color: #F00;
     font-size: 14px;
     font-weight: 500;
-    align-self: flex-start;
-    margin-top: 5px;
+    align-self: center;
+    margin-top: 15px;
     cursor: pointer;
   }
+
+  .contenedor-boton {
+    width: 100%;
+    display: flex;
+    justify-content: center; /
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 dialog#modalVerReporte:not([open]) {
   display: none;
@@ -813,6 +792,7 @@ dialog#modalVerReporte {
     width: 340px;
     line-height: normal;
     margin: 6px auto;
+    
   }
 
   .modal-imagen-btn {
@@ -898,460 +878,60 @@ dialog#modalVerReporte {
   
 
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');
 
-/* Estilos generales */
 
-main {
-    display: block;
-    justify-items: auto;
-    flex: 1;
-}
 
-h1 {
-    text-align: center;
-    font-weight: 700;
-}
 
-.txt h1 {
-    color: red;
-}
 
-.txt p {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.42);
-    font-weight: 500;
-    
-}
 
-img {
-    width: 30px;
-    height: 40px;
-}
 
-.header {
-    margin-top: 40px;
-}
 
-.header p {
-    color: #ff0000;
-    font-size: 20px;
-    margin-left: 20px;
-}
 
-.form h1 {
-    color: #ff0000;
-    margin-bottom: -20px;
-}
 
-.contenedor {
-    display: flex;
-    flex-direction: column;
-    width: 500px; /* Respetar el ancho de 500px */
-}
 
-.contenedor1,
-.contenedor2,
-.contenedor3 {
-    width: 100%;
-    
-}
 
-.contenedor1 p{
-    font-size: 11px;
-    
-    color: #a1a3a1;
-    padding: 10px 0 0 10px;
-    
-    justify-content: flex-start;
-    
-}
 
-.input-mitad {
-    display: flex;
-    justify-content: space-between;
-    width: 100%; /* Cambiado a 100% */
-    padding: 10px 10px 0px 5px;
-    
-}
 
-.input-mitad .grupo {
-    
-    margin-right: 10px;
-}
 
-.input-mitad .grupo:last-child {
-    margin-right: 0;
-}
 
-.input-entero {
-    padding: 10px 5px 0px 5px;
-    width: 100%;
-}
 
-.input-triples1,
-.input-triples2 {
-    display: flex;
-    justify-content: space-between;
-    width: 100%; /* Cambiado a 100% */
-    padding: 10px 10px 0px 5px;
-}
 
-.input-triples1 .grupo,
-.input-triples2 .grupo {
-    
-    margin-right: 10px;
-    max-width: 100%; /* Para asegurarse de que no sobresalgan */
-}
 
-.input-triples1 .grupo:last-child,
-.input-triples2 .grupo:last-child {
-    margin-right: 0;
-}
 
-.division {
-    text-align: center;
-    width: 100%;
-    font-size: 14px;
-    color: #8f8c8c;
-    margin: 10px 0;
-    position: relative;
-}
-.division::before,
-.division::after {
-    content: "";
+
+
+
+
+
+
+
+
+
+
+
+  .modal-imagen {
     width: 40%;
-    height: 1px;
-    background-color: #b8b7b7;
-    position: absolute;
+    max-width: 600px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: fixed;
     top: 50%;
-}
-
-.division::before {
-    left: 0;
-}
-
-.division::after {
-    right: 0;
-}
-
-.contenedor-pa {
-    margin-top: 5px; 
-    margin-bottom: -15px; /* Ajustado para que esté más cerca del contenedor */
-    background-color: white;
-    padding: 40px;
-    box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100px;
-    border-radius: 10px;
-}
-
-.img {
-    margin-left: -300px;
-}
-
-.img,
-.txt {
-    display: flex;
-    align-items: center;
-}
-
-.txt {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-
-form {
-    background: white;
-    padding: 0;
-    box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
-    border-top: 1px solid #8f8c8c; /* Borde gris agregado entre contenedor-pa y form */
-    border-radius: 0 0 10px 10px;
-}
-
-.form {
-    width: 100%;
-    margin: auto;
-}
-
-form .grupo {
-    position: relative;
-    margin: 5px 5px;
-}
-
-form p {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: underline;
-    color: #E00000;
-    font-size: 18px;
-    padding-top: 10px;
-    padding-bottom: 20px;
-}
-
-form p a {
-    margin-left: 25px;
-    color: #E00000;
-}
-
-.error {
-    padding: 10px 0px;
-    color: red;
-}
-
-.escondido {
-    display: none;
-}
-
-input {
-    background: none;
-    color: #8f8c8c;
-    font-size: 15px;
-    padding: 10px 20px; /* Ajustar el padding para centrar verticalmente */
-    display: block;
-    width: 100%; /* Asegurando que todos los inputs ocupen el 100% del ancho */
-    border: 1px solid var(--colorTextos);
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-input:focus {
-    outline: none;
-    color: #7d838c; /* Más oscuro para mayor contraste */
-    border-color: #7d838c;
-    background-color: rgba(205, 207, 210, 0.486); /* Opacidad reducida */
-}
-input:focus::placeholder{
-    color: #7d838c; /* Más oscuro para mayor contraste */
-}
-
-input:not(:placeholder-shown) {
-    border: 1px solid rgba(0, 0, 0, 0.42);
-    background-color: rgba(0, 0, 0, 0.04);
-}
-
-
-::placeholder {
-    color: var(--colorTextos);
-    font-size: 15px;
-    transition: 0.5s ease all;
-    pointer-events: none;
-}
-.search-bar:focus{
-    border: none;
-    background-color: transparent;
-}
-.search-bar:not(:placeholder-shown) {
-    border: none;
-    background-color: transparent;
-}
-.barra {
-    display: none; /* Eliminado porque ahora se usa el borde del input */
-}
-
-#submitbtn {
-    background-color: rgba(255, 0, 0, 0.74);
-    border: none;
-    display: block;
-    width: 35%;
-    margin: 10px auto;
-    color: white;
-    height: 40px;
-    font-size: 18px;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 167px;
-    height: 46px;
-    flex-shrink: 0;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-}
-
-#submitbtn:hover {
-    background: rgba(255, 0, 0, 1);
-}
-
-footer {
-    background-color: #ff0000;
-    text-align: center;
-    padding: 10px 0;
-    color: white;
-    width: 100%;
-    position: relative;
-    bottom: 0;
-}
-
-footer p {
-    color: white;
-    text-align: right;
-    padding: 0 20px 0 0;
-}
-.contenedor-p{
-    filter: drop-shadow(9px 9px 4px rgba(0, 0, 0, 0.25));
-}
-@media screen and (max-width: 500px) {
-    .contenedor-general {
-        width: 80%;
-    }
-}
-
-
-@media (max-width: 600px) {
-    #alertamodal {
-        width: 60%;  /* La alerta ocupará el 90% del ancho en pantallas pequeñas */
-        max-width: none; /* Eliminar el límite máximo en pantallas pequeñas */
-        top: 10px;  /* Mover un poco más cerca de la parte superior */
-    }
-
-    .alertcontentcont {
-        font-size: 12px;  /* Reducir el tamaño del texto en pantallas pequeñas */
-    }
-
-    .alerticon i {
-        font-size: 20px;  /* Reducir el tamaño del icono en pantallas pequeñas */
-    }
-}
-
-@media (max-width: 500px) {
-    .contenedor {
-        width: 95%;
-        padding: 0 5%;
-    }
-    
-    input {
-        font-size: 13px;
-        padding: 6px 12px;
-    }
-    
-    .alertcontentcont {
-        font-size: 12px;
-    }
-    
-    .alertheading {
-        font-size: 14px;
-    }
-    
-    .back-link {
-        font-size: 14px;
-    }
-}
-
-
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
   
-/* RESPONSIVIDAD - RESTO DE ELEMENTOS */
-@media screen and (max-width: 1024px) {
-    .container-items {
-        gap: 40px !important;
-    }
-
-    .user-container {
-        font-size: 1em;
-    }
-
-    /* Ajustar las tarjetas en pantallas medianas */
-    .grupodetarjetas {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Mostrar 2 tarjetas por fila */
-        gap: 20px;
-        justify-items: center; /* Centrar las tarjetas */
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .logo-container {
-        position: static;
-        margin-bottom: 10px;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .logo-container img {
-        width: 8%;
-        display: block;
-    }
-
-    .container-items {
-        flex-direction: column;
-        gap: 20px !important;
-        margin-top: 10px;
-        display: none;
-    }
-
-    .user-container {
-        position: static;
-        margin-top: 10px;
-        justify-content: center;
-    }
-
-    /* Ajustar las tarjetas en pantallas pequeñas */
-    .grupodetarjetas {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr); /* Mostrar 1 tarjeta por fila */
-        gap: 10px; /* Espacio más pequeño entre las tarjetas */
-        justify-items: center; /* Centrar las tarjetas */
-    }
-
-    /* Apilar el header */
-    .header-top {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .header-top h1 {
-        text-align: center;
-        font-size: 1.5em;
-    }
-
-    .actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .search-container {
-        width: 100%;
-    }
-
-    .search-bar {
-        width: 80%;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .logo-text {
-        font-size: 1em;
-    }
-
-    .user-container i {
-        font-size: 25px;
-        padding-left: 10px;
-    }
-
-    .page-title {
-        font-size: 24px;
-        text-align: center;
-    }
-
-    .header-top {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .container-tittle {
-        flex-direction: column;
-        padding: 0;
-        text-align: center;
-    }
-
-    .logo-container img {
-        width: 10%;
-    }
-}
+  .modal-contenido-img {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .modal-contenido-img img {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 10px;
+    margin-top: 1rem;
+  }

@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>GasGuard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
@@ -11,7 +13,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
     <link rel="icon" href="images/logotipo.png" type="image/png">
     <link rel="stylesheet" href="backgroundvideo.css">
-    <link rel="stylesheet" href="MAE_visualizarrep.css">
+    <link rel="stylesheet" href="MAA_reportes.css">
     <link rel="stylesheet" href="navbar.css">
 </head>
 
@@ -34,6 +36,20 @@
   </dialog>
 
   <nav>
+    <div id="barra-lateral" class="barra-lateral">
+      <div class="barra-header">
+        <span class="titulo-barra">CUENTAS</span>
+        <i class="fa-solid fa-bars toggle-barra" id="toggle-barra"></i>
+      </div>
+      <div class="opciones-barra" id="opciones-barra">
+        <p class="opcion" onclick="location.href='tecnicos.html'">Técnicos</p>
+        <p class="opcion" onclick="location.href='empresas.html'">Empresas</p>
+        <p class="opcion" onclick="location.href='cuentas-afiliadas.html'">Cuentas afiliadas</p>
+        <p class="opcion" onclick="location.href='usuarios.html'">Usuarios individuales</p>
+        <p class="opcion" onclick="location.href='MAA_reportes.html'">Reportes</p>
+      </div>
+    </div>
+    
     <div class="navbar-container">
       <div class="logo-container">
         <img src="images/logotipo.png" alt="Logo">
@@ -69,6 +85,11 @@
           <input type="text" class="search-bar" id="input-busqueda-encargado" placeholder="Buscar por nombre...">
           <i class="fa fa-search search-icon"></i>
         </div>
+
+        <button class="download-btn" id="download-btn">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </button>
+
         <button class="filter-reportes" id="filter-btn">
           <span class="underline-text">Filtrar</span>
           <i class="fa fa-filter" aria-hidden="true"></i>
@@ -238,8 +259,8 @@
 
 
     <script src="MAEnav.js" defer></script>
-    
-    <script src="MAE_visualizarrep.js" defer></script> <!-- Asegúrate de agregar tu archivo JS -->
+    <script src="reportesMAA.js" defer></script>
+    <script src="MAA_reportes.js" defer></script> <!-- Asegúrate de agregar tu archivo JS -->
 </body>
 
 </html>

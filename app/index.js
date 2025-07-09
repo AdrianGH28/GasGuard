@@ -13,6 +13,12 @@ import { methods as authorization } from "./middlewares/authorization.js";
 import dotenv from "dotenv";
 import pool from "./generalidades_back_bd.js";
 import cors from 'cors';
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import { handleInvoicePaymentSucceeded, 
+  handleInvoicePaymentFailed,
+  handleSubscriptionDeleted,
+  handleSubscriptionUpdated } from "./webhook-handler.js";
 
 console.log("Métodos de autenticación:", authentication);
 console.log("Mapa de códigos:", authentication.recoveryCodes);
@@ -88,7 +94,12 @@ app.get("/mcacrudreportes", authorization.proteccion, (req, res) => res.sendFile
 app.get("/mcahistorial", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MCA_historial.html"));
 app.get("/mcapaginaprincipal", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MCA_paginaprincipal.html"));
 app.get("/mgtinfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_infocuenta.html"));
+app.get("/mgtconclurep", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_reportesconcluidos.html"));
 app.get("/maainfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_infocuenta.html"));
+app.get("/maacuentafil", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_cuentasafiliadas.html"));
+app.get("/maaempresas", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_empresas.html"));
+app.get("/maareportes", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_reportes.html"));
+app.get("/maauserindiv", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_usuariosindivuales.html"));
 
 
 app.get("/dispositivos", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/dispositivos.html"));
@@ -436,6 +447,378 @@ app.get("/api/histor", async (req, res) => {
     } catch (error) {
         console.error('Error al obtener datos del historial:', error.message);
         res.status(500).send('Error al obtener datos del historial');
+    }
+});
+
+app.post('/api/create-customer', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ error: "El email es obligatorio" });
+    }
+    
+    // Buscar si el cliente ya existe
+    const existingCustomers = await stripe.customers.list({ email });
+    let customer;
+    
+    if (existingCustomers.data.length > 0) {
+      customer = existingCustomers.data[0];
+    } else {
+      customer = await stripe.customers.create({ email });
+    }
+    
+    res.json({ customerId: customer.id });
+  } catch (error) {
+    console.error("Error creando cliente:", error);
+    res.status(500).json({ error: "Error al crear cliente en Stripe" });
+  }
+});
+
+app.post('/api/attach-payment-method', async (req, res) => {
+  try {
+    const { customerId, paymentMethodId, setAsDefault } = req.body;
+    
+    if (!customerId || !paymentMethodId) {
+      return res.status(400).json({ error: "Datos incompletos" });
+    }
+    
+    // Adjuntar método de pago al cliente
+    await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId
+    });
+    
+    // Si se solicitó, establecer este método como predeterminado
+    if (setAsDefault) {
+      await stripe.customers.update(customerId, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId
+        }
+      });
+    }
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error adjuntando método de pago:", error);
+    res.status(500).json({ error: "Error al adjuntar método de pago: " + error.message });
+  }
+});
+
+// Crear suscripción en Stripe
+app.post("/api/create-subscription", async (req, res) => {
+  const { customerId, tiplan, afiliados, montoTotal, paymentMethodId } = req.body;
+
+  if (!customerId || !tiplan || !afiliados || !montoTotal || !paymentMethodId) {
+    return res.status(400).json({ error: "Datos incompletos" });
+  }
+
+  // Configuración del intervalo según el plan
+  let interval = "month";
+  let intervalCount = 1;
+  
+  if (tiplan === "semestral") {
+    interval = "month";
+    intervalCount = 6;
+  } else if (tiplan === "anual") {
+    interval = "year";
+    intervalCount = 1;
+  }
+
+  try {
+    // Primero, crear un producto para esta suscripción
+    const product = await stripe.products.create({
+      name: `Plan ${tiplan} con ${afiliados} afiliados`,
+      metadata: {
+        tiplan: tiplan,
+        afiliados: afiliados.toString()
+      }
+    });
+
+    // Luego crear un precio para este producto
+    const price = await stripe.prices.create({
+      product: product.id,
+      currency: "mxn",
+      unit_amount: montoTotal,
+      recurring: {
+        interval: interval,
+        interval_count: intervalCount
+      }
+    });
+
+    // Crear la suscripción con el precio y método de pago
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
+      items: [{
+        price: price.id,
+      }],
+      default_payment_method: paymentMethodId,
+      payment_settings: {
+        payment_method_types: ['card'],
+        save_default_payment_method: 'on_subscription'
+      },
+      metadata: {
+        tiplan: tiplan,
+        afiliados: afiliados.toString(),
+        montoTotal: montoTotal.toString()
+      }
+    });
+
+    // Si necesitas un client_secret para confirmación en el frontend,
+    // crea un PaymentIntent separado
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: montoTotal,
+      currency: 'mxn',
+      customer: customerId,
+      payment_method: paymentMethodId,
+      setup_future_usage: 'off_session',
+      confirm: false,
+      description: `Pago inicial para suscripción ${subscription.id}`,
+      metadata: {
+        subscription_id: subscription.id
+      }
+    });
+
+    res.json({
+      subscription: subscription, 
+      clientSecret: paymentIntent.client_secret
+    });
+
+  } catch (err) {
+    console.error("Error creando suscripción:", err);
+    res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
+  }
+});
+
+// Webhook para manejar eventos de Stripe
+app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Manejar los eventos según su tipo
+  try {
+    switch (event.type) {
+      case 'invoice.payment_succeeded':
+        await handleInvoicePaymentSucceeded(event.data.object);
+        break;
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(event.data.object);
+        break;
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object);
+        break;
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object);
+        break;
+      default:
+        console.log(`Evento no manejado: ${event.type}`);
+    }
+    res.json({received: true});
+  } catch (error) {
+    console.error(`Error procesando evento ${event.type}:`, error);
+    res.status(500).json({error: 'Error procesando el evento'});
+  }
+});
+
+// Endpoint para actualizar una suscripción existente
+app.post('/api/update-subscription', async (req, res) => {
+  const { subscriptionId, tiplan, afiliados, montoTotal } = req.body;
+  
+  if (!subscriptionId || !tiplan || !afiliados || !montoTotal) {
+    return res.status(400).json({ error: "Datos incompletos" });
+  }
+  
+  try {
+    // Configuración del intervalo según el plan
+    let interval = "month";
+    let intervalCount = 1;
+    
+    if (tiplan === "semestral") {
+      interval = "month";
+      intervalCount = 6;
+    } else if (tiplan === "anual") {
+      interval = "year";
+      intervalCount = 1;
+    }
+    
+    // Obtener la suscripción actual
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    
+    // Crear un nuevo producto para el plan actualizado
+    const product = await stripe.products.create({
+      name: `Plan ${tiplan} con ${afiliados} afiliados`,
+      metadata: {
+        tiplan: tiplan,
+        afiliados: afiliados.toString()
+      }
+    });
+    
+    // Crear un nuevo precio para el producto
+    const newPrice = await stripe.prices.create({
+      product: product.id,
+      currency: "mxn",
+      unit_amount: montoTotal,
+      recurring: {
+        interval: interval,
+        interval_count: intervalCount
+      },
+    });
+    
+    // Actualizar la suscripción con el nuevo precio
+    const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          price: newPrice.id,
+        },
+      ],
+      metadata: {
+        tiplan: tiplan,
+        afiliados: afiliados.toString(),
+        montoTotal: montoTotal.toString()
+      },
+      proration_behavior: 'create_prorations',
+    });
+    
+    res.json({
+      updated: true,
+      subscriptionId: updatedSubscription.id
+    });
+    
+  } catch (error) {
+    console.error("Error actualizando suscripción:", error);
+    res.status(500).json({ error: "No se pudo actualizar la suscripción" });
+  }
+});
+
+app.post('/api/cancel-subscription', async (req, res) => {
+  const { subscriptionId } = req.body;
+  
+  if (!subscriptionId) {
+    return res.status(400).json({ error: "ID de suscripción requerido" });
+  }
+  
+  try {
+    const canceledSubscription = await stripe.subscriptions.cancel(subscriptionId);
+    
+    // Actualizar el estado en tu base de datos
+    // Aquí deberías incluir tu código para actualizar la BD
+    
+    res.json({
+      canceled: true,
+      subscriptionId: canceledSubscription.id
+    });
+    
+  } catch (error) {
+    console.error("Error cancelando suscripción:", error);
+    res.status(500).json({ error: "No se pudo cancelar la suscripción" });
+  }
+});
+
+ app.post("/api/pago", authorization.proteccion, async (req, res) => {
+    const { tipo_pago, num_tarjeta, fecha_pago } = req.body;
+    if (!tipo_pago || !num_tarjeta || !fecha_pago) {
+        return res.status(400).send({ status: "Error", message: "Faltan datos" });
+    }
+
+    try {
+        const [result] = await conexion.execute(
+            "INSERT INTO dpago (tipo_pago, nmcrd_pago, fecha_pago) VALUES (?, ?, ?)",
+            [tipo_pago, num_tarjeta, fecha_pago]
+        );
+
+        res.status(201).send({ status: "ok", message: "Pago registrado", id_pago: result.insertId });
+    } catch (error) {
+        console.error("Error al registrar pago:", error);
+        return res.status(500).send({ status: "Error", message: "Error interno" });
+    }
+});
+
+app.get("/api/precios", async (req, res) => {
+    const { plan, noAfiliados } = req.body;
+    
+
+    try {
+        const [result] = await conexion.execute(`
+            SELECT ppp_nmafil, pbas_tiplan 
+            FROM cplan pl
+            JOIN cnumafil na on pl.id_nmafil = na.id_nmafil
+            JOIN ctipoplan tp on pl.id_tiplan = tp.id_tiplan
+            WHERE na.id_nmafil=? AND tp.dura_tiplan=?
+        `, [noAfiliados, plan]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send({ status: "Error", message: "Usuario no encontrado" });
+        }
+
+        res.send({ status: "ok", message: "Información actualizada exitosamente" });
+    } catch (error) {
+        console.error('Error al actualizar el usuario:', error);
+        return res.status(500).send({ status: "Error", message: "Error al actualizar el usuario" });
+    }
+});
+
+// Registro de suscripción
+app.post("/api/suscripcion", authorization.proteccion, async (req, res) => {
+    const { id_plan, id_pago, num_afiliados } = req.body;
+    if (!id_plan || !id_pago || !num_afiliados) {
+        return res.status(400).send({ status: "Error", message: "Faltan datos" });
+    }
+
+    try {
+        // Obtener precio base del plan
+        const [planResult] = await conexion.execute("SELECT precio FROM ctipoplan WHERE id_tiplan = ?", [id_plan]);
+        if (planResult.length === 0) {
+            return res.status(404).send({ status: "Error", message: "Plan no encontrado" });
+        }
+        const precioBase = planResult[0].precio;
+        
+        // Calcular costo por afiliados
+        const [afiliadoResult] = await conexion.execute("SELECT precio FROM cnumafil WHERE id_nmafil = ?", [num_afiliados]);
+        if (afiliadoResult.length === 0) {
+            return res.status(404).send({ status: "Error", message: "Número de afiliados no encontrado" });
+        }
+        let precioAfiliados = afiliadoResult[0].precio * 6; // Multiplicar por 6 si es semestral
+
+        const montoTotal = precioBase + precioAfiliados;
+        
+        const [result] = await conexion.execute(
+            "INSERT INTO msuscripcion (id_plan, id_fact, monto_susc) VALUES (?, ?, ?)",
+            [id_plan, id_pago, montoTotal]
+        );
+
+        res.status(201).send({ status: "ok", message: "Suscripción registrada", id_susc: result.insertId });
+    } catch (error) {
+        console.error("Error al registrar suscripción:", error);
+        return res.status(500).send({ status: "Error", message: "Error interno" });
+    }
+});
+
+// Registro de factura
+app.post("/api/factura", authorization.proteccion, async (req, res) => {
+    const { id_pago } = req.body;
+    if (!id_pago) {
+        return res.status(400).send({ status: "Error", message: "Falta el ID de pago" });
+    }
+
+    try {
+        const folio_fact = crypto.randomBytes(6).toString("hex").toUpperCase();
+        const [result] = await conexion.execute(
+            "INSERT INTO dfact (folio_fact, id_pago) VALUES (?, ?)",
+            [folio_fact, id_pago]
+        );
+
+        res.status(201).send({ status: "ok", message: "Factura generada", folio: folio_fact });
+    } catch (error) {
+        console.error("Error al generar factura:", error);
+        return res.status(500).send({ status: "Error", message: "Error interno" });
     }
 });
 

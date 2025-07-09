@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>GasGuard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
+    <link rel="stylesheet" href="backgroundvideo.css">
+    <link rel="stylesheet" href="MGT_reportesconcluidos.css">
+    <link rel="stylesheet" href="navbar.css">
+</head>
+
+<body>
+  <dialog id="alertamodal" class="custom-alert">
+    <div class="alerticon"><i class="fa-solid fa-circle-info"></i></div>
+    <div class="alertcontent">
+      <div class="alertheadingcont">
+        <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+      </div>
+      <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+      <div class="alertactionscont">
+        <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+        <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+      </div>
+    </div>
+    <div class="alertclosebtn">
+      <button class="closebtn" onclick="cerraralerta()"><i class="fa fa-x"></i></button>
+    </div>
+  </dialog>
+
+  <nav>
+    <div class="navbar-container">
+      <div class="logo-container">
+        <img src="images/logotipo.png" alt="Logo">
+        <span class="logo-text">GasGuard</span>
+      </div>
+      <div class="container-items">
+        <a class="nav-link" id="iralcrud" href="/maecrudcuentasafi" data-page="maecrudcuentasafi">
+          <i class="fa fa-address-book"></i><div class="animation"></div>
+        </a>
+        <a class="nav-link" id="iralhistorial" href="/maevisualizarrep" data-page="maevisualizarrep">
+          <i class="fa fa-clipboard"></i><div class="animation"></div>
+        </a>
+        <a class="nav-link" id="iraldashboard" href="/maedashboard" data-page="maedashboard">
+          <i class="fa fa-chart-column"></i><div class="animation"></div>
+        </a>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <div></div><div></div><div></div>
+      </div>
+    </div>
+    <div class="user-container" id="user-container">
+      <span class="user-text">Usuario</span>
+      <i class="fa fa-user-circle user-icon"></i>
+      <div class="animacion"></div>
+    </div>
+  </nav>
+
+  <div class="page-container" id="contenedor-principal">
+    <div class="header-top">
+      <h1 class="page-title">REPORTES CONCLUIDOS</h1>
+      <div class="actions">
+        <button class="filter-reportes" id="filter-btn">
+          <span class="underline-text">Filtrar</span>
+          <i class="fa fa-filter" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div id="filtro-lateral" class="filtro-lateral">
+      <div class="contenido-filtros">
+        <div class="filtro-header">
+          <span class="filtro-titulo">Filtrar por:</span>
+          <i class="fa fa-times cerrar-filtro" onclick="ocultarFiltros()"></i>
+        </div>
+
+        <div class="linea-divisoria"></div>
+
+        <div class="contenedor-limpiar-filtros">
+          <button class="btn-limpiar-filtros" onclick="limpiarFiltros()">Limpiar filtros</button>
+        </div>
+
+        <!-- Tipo -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Tipo</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">Instalación</div>
+              <div class="opcion-filtro">Reparación</div>
+              <div class="opcion-filtro">Retiro</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mes -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Mes</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">Enero</div>
+              <div class="opcion-filtro">Febrero</div>
+              <div class="opcion-filtro">Marzo</div>
+              <div class="opcion-filtro">Abril</div>
+              <div class="opcion-filtro">Mayo</div>
+              <div class="opcion-filtro">Junio</div>
+              <div class="opcion-filtro">Julio</div>
+              <div class="opcion-filtro">Agosto</div>
+              <div class="opcion-filtro">Septiembre</div>
+              <div class="opcion-filtro">Octubre</div>
+              <div class="opcion-filtro">Noviembre</div>
+              <div class="opcion-filtro">Diciembre</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Año -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Año</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">2025</div>
+              <div class="opcion-filtro">2024</div>
+              <div class="opcion-filtro">2023</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fecha registro -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Fecha de registro</span>
+            <i class="fa fa-calendar icono-fijo"></i>
+          </div>
+          <div class="opciones-dropdown"></div>
+        </div>
+
+        <!-- Fecha solución -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Fecha de solución</span>
+            <i class="fa fa-calendar icono-fijo"></i>
+          </div>
+          <div class="opciones-dropdown contenedor-fecha-solucion"></div>
+        </div>
+
+        <div class="boton-filtro-container">
+          <button class="boton-aplicar-filtro">Filtrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="lista-reportes" class="lista-reportes"></div>
+  </div>
+
+  <!-- Modal -->
+  <dialog id="modalVerReporte" class="modal-reporte">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h2 class="modal-titulo">Detalles</h2>
+        <button class="modal-cerrar" onclick="cerrarModal()">
+          <i class="fa fa-xmark"></i>
+        </button>
+      </div>
+  
+      <div id="modal-tipo" class="modal-tipo">Tipo: —</div>
+      <hr class="modal-divider">
+  
+      <div class="modal-info">
+        <p class="campo-grande"><strong>Autor:</strong> <span id="modal-autor">—</span></p>
+        
+        <p class="campo-grande"><strong>Fecha de registro:</strong> <span id="modal-fecha-reg">—</span></p>
+        <p id="fila-fecha-sol" class="campo-grande">
+          <strong>Fecha de solución:</strong> <span id="modal-fecha-sol">—</span>
+        </p>
+  
+        <p class="campo-pequeno"><strong>Descripción:</strong></p>
+        <p id="modal-descripcion" class="descripcion-texto">—</p>
+  
+        <div class="contenedor-boton-imagen">
+          <button id="btn-ver-imagen" class="modal-imagen-btn">
+            <i class="fa-solid fa-image icono-boton"></i>
+            Ver imagen
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="modalImagen" class="modal-imagen">
+    <div class="modal-contenido-img">
+      <button class="modal-cerrar" onclick="cerrarModalImagen()">
+        <i class="fa fa-xmark"></i>
+      </button>
+      <img id="imagenModal" src="" alt="Evidencia del reporte" />
+    </div>
+  </dialog>  
+
+  <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+
+
+    <script src="MAEnav.js" defer></script>
+
+    <script src="MGT_reportesconcluidos.js" defer></script> <!-- Asegúrate de agregar tu archivo JS -->
+</body>
+
+</html>

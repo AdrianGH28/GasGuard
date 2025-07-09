@@ -1,0 +1,917 @@
+body {
+    opacity: 0;
+    transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
+}
+
+#alertamodal {
+    position: fixed;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
+    margin: 0%;
+    transform: translateX(-50%) translateY(-20px);
+    width: 360px;
+    height: auto;
+    padding: 24px;
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0px 16px 20px -8px rgba(3, 5, 18, 0.10);
+    left: 50%;
+    top: 19px;
+    border: 0; /* Establece todos los bordes en 0 */
+    border-left: 12px solid black;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+    z-index: 999;
+    box-sizing: content-box;
+    height: fit-content;  /* Asegura que la altura sea solo lo necesario */
+    opacity: 0; /* Empieza oculto */
+    visibility: hidden; /* Inicia invisibilidad */
+}
+
+#alertamodal:open {
+    display: flex;
+    opacity: 1; /* Se hace visible */
+    visibility: visible; /* Hace visible el modal */
+    transform: translateX(-50%) translateY(0); /* Se desplaza a su posición final */
+}
+#alertamodal::backdrop {
+    background-color: transparent;
+}
+.alertcontent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+    width: 240px;
+}
+
+.alertheading {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.alertcontentcont {
+    color: #6C7D7D;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.alerticon {
+    font-size: 24px;
+}
+
+.closebtn {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: #6C7D7D;
+}
+
+.alertactionscont {
+    line-height: 60px;
+    display: flex;
+    margin-top: 16px;
+}
+
+.alertactionscont .aceptar {
+    font-size: 15px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    background-color: transparent;
+    border: none;
+    margin-right: 16px;
+}
+
+.alertactionscont .cancelar {
+    color: #6C7D7D;
+    font-family: Montserrat;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    background-color: transparent;
+    border: none;
+}
+
+.alertactionscont  .aceptar.info {
+    color: #3498db; /* Color para el botón Aceptar en alerta informativa */
+}
+
+.alertactionscont .aceptar.warning {
+    color: #f39c12; /* Color para el botón Aceptar en alerta de advertencia */
+}
+
+.alertactionscont .aceptar.error {
+    color: #e74c3c; /* Color para el botón Aceptar en alerta de error */
+}
+
+.alertactionscont .aceptar.success {
+    color: #2ecc71; /* Color para el botón Aceptar en alerta de éxito */
+}
+
+.page-title {
+    color: #FA0000;
+    font-size: 30px;
+    font-weight: 700;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+}
+/* Contenedor principal de la página */
+.page-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 30px; /* Espacio desde la parte superior */
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .page-container::after {
+    content: ''; /* Necesario para crear el pseudo-elemento */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1); /* Fondo negro con opacidad */
+    z-index: 998; /* Asegúrate de que esté por debajo del modal */
+    display: none; /* Inicialmente oculto */
+}
+  
+  .header-top {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px; /* Espacio entre el encabezado y el contenedor */
+    border-right: 0px solid rgba(0, 0, 0, 0);
+  }
+.container-tittle{
+    display: flex;
+    padding-left: 50px;
+    padding-right: 50px;
+    justify-content: space-between;
+    align-items: center;
+}
+.actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px; /* Espaciado entre los elementos */
+}
+
+
+.actions p{
+    color: rgba(0, 0, 0, 0.42);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+#anadircuenta {
+    font-size: 24px; /* Para el ícono de 30x24px */
+    color:#ff0000
+}
+
+#eliminarcuentas {
+    font-size: 30px; /* Para el ícono de 30x30px */
+    color:#ff0000
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.search-container {
+  display: flex;
+  height: 36px;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.04); /* Fondo negro al 4% */
+  border-radius: 10px;
+  align-items: center;
+  position: relative;
+  width: 300px;
+}
+
+.search-bar {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  padding-left: 10px;
+  font-size: 16px;
+  outline: none;
+  color: rgba(0, 0, 0, 0.42);
+  text-align: left;
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  color: #00000070;
+  font-size: 18px;
+}
+
+.download-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+}
+
+.download-btn i {
+  color: #FA0000;        
+  font-size: 26px;       
+  width: 21px;           
+  flex-shrink: 0;
+}
+
+
+/* Estilo general del contenedor de tarjetas */
+.lista-reportes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 70px;
+    padding: 40px;
+    justify-content: center;
+  }
+  
+  /* Tarjeta */
+  .reporte-card {
+    width: 218px;
+    height: 236px;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    background: #FFF;
+    border-radius: 16px;
+    box-shadow: 9px 9px 4px 0px rgba(0, 0, 0, 0.25);
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  
+  /* Ícono grande */
+  .reporte-icono {
+    font-size: 60px;
+    color: rgba(255, 0, 0, 0.70);
+  }
+  
+  .reporte-titulo {
+    color: rgba(0, 0, 0, 0.42);
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 10px;
+  }
+  
+  /* Fechas */
+  .reporte-fecha {
+    color: rgba(0, 0, 0, 0.42);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .reporte-etiqueta {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.42);
+    text-align: center;
+    margin-top: 3px;
+  }  
+  
+  /* Botón Ver más */
+  .reporte-boton {
+    width: 126px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1px solid #F00;
+    background: #FFF;
+    color: #F00;
+    font-size: 14px;
+    font-weight: 500;
+    align-self: center;
+    margin-top: 15px;
+    cursor: pointer;
+  }
+
+  .contenedor-boton {
+    width: 100%;
+    display: flex;
+    justify-content: center; /
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  dialog#modalVerUsuario:not([open]) {
+    display: none;
+  }
+  
+  dialog#modalVerUsuario {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 100px;
+    z-index: 9999;
+  }
+  
+  dialog#modalVerUsuario::backdrop {
+    background: rgba(0, 0, 0, 0.10);
+  }
+  
+  .modal-contenido {
+    background-color: #FFF;
+    filter: drop-shadow(9px 9px 4px rgba(0, 0, 0, 0.25));
+    width: 385px;
+    border-radius: 8px;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  
+  .modal-titulo {
+    color: #FA0000;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 33px;
+    font-weight: 700;
+    text-align: center;
+    margin: -15px 0 2px 0;
+  }
+
+  /* Línea de tipo */
+  .modal-tipo {
+    color: rgba(0, 0, 0, 0.42);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .modal-header {
+    position: relative;
+    display: flex;
+    justify-content: center; /* Centra el título */
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  /* Botón cerrar con estilo personalizado */
+  .modal-cerrar {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    transform: none;
+    width: 14px;
+    height: 14px;
+    background: none;
+    border: none;
+    flex-shrink: 0;
+    fill: rgba(0, 0, 0, 0.42); 
+    color: rgba(0, 0, 0, 0.42); 
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  /* Icono dentro del botón */
+  .modal-cerrar i {
+    font-size: 14px;
+    pointer-events: none;
+  }
+  
+  .modal-info .campo-grande:first-of-type {
+    margin-top: 18px; 
+  }
+
+  .modal-nota {
+    color: rgba(0, 0, 0, 0.42);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .modal-divider {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.25);
+    margin-bottom: 12px;
+  }
+
+  /* Estilo para los títulos como "Correo:", "Dirección:", etc. */
+.modal-info .campo-grande strong {
+  color: rgba(0, 0, 0, 0.42);
+  font-family: Montserrat;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+/* Estilo para el contenido dinámico como el correo, dirección, etc. */
+.modal-info .campo-grande span {
+  color: rgba(0, 0, 0, 0.42);
+  font-family: Montserrat;
+  font-size: 13.7px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+/* Estado ACTIVO - verde */
+.icono-estado.activo {
+  background-color: #01E17B;
+  fill: #01E17B;
+}
+
+/* Estado INACTIVO - rojo */
+.icono-estado.inactivo {
+  background-color: red;
+  fill: red;
+}
+
+  /* Indicador circular de estado */
+.icono-estado {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+  
+  /* Scrollbar personalizada SOLO en #contenedor-principal */
+  #contenedor-principal::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  #contenedor-principal::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+  
+  #contenedor-principal::-webkit-scrollbar-thumb {
+    background-color:#F00;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  
+  
+  #contenedor-principal::-webkit-scrollbar-thumb:hover {
+    background-color:#F00;
+  }
+
+  #filtro-lateral::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  #filtro-lateral::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+  }
+  
+  #filtro-lateral::-webkit-scrollbar-thumb {
+    background-color: #F00;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  
+  #filtro-lateral::-webkit-scrollbar-thumb:hover {
+    background-color: #F00;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .modal-imagen {
+    width: 40%;
+    max-width: 600px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .modal-contenido-img {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .modal-contenido-img img {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 10px;
+    margin-top: 1rem;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* === Tarjetas de Usuarios Individuales (igual que Reportes) === */
+.lista-usuarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 70px;
+  padding: 40px;
+  justify-content: center;
+}
+
+.usuario-card {
+  width: 218px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFF;
+  border-radius: 16px;
+  box-shadow: 9px 9px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  box-sizing: border-box;
+  text-align: center;
+  gap: 10px;
+}
+
+.usuario-icono {
+  font-size: 60px;
+  color: rgba(255, 0, 0, 0.7);
+  margin-bottom: 10px;
+}
+
+.usuario-info {
+  flex-grow: 1;
+  font-family: Montserrat, sans-serif;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.usuario-info strong {
+  font-weight: 600;
+}
+
+.usuario-info .usuario-id,
+.usuario-info .usuario-correo,
+.usuario-info .usuario-direccion {
+  margin-bottom: 8px;
+}
+
+.usuario-boton {
+  width: 126px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid #F00;
+  background: #FFF;
+  color: #F00;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Contenedor donde se insertan las tarjetas */
+#lista-reportes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 70px;
+  padding: 40px;
+  justify-content: center;
+}
+
+/* Ícono de usuario fijo */
+.usuario-card .reporte-icono {
+  font-size: 60px;
+  color: rgba(255, 0, 0, 0.70);
+  margin-bottom: 10px;
+}
+
+.usuario-card {
+  width: 218px;
+  height: 236px;
+  position: relative; /* Necesario para usar position absolute */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFF;
+  border-radius: 16px;
+  box-shadow: 9px 9px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.usuario-id {
+  color: rgba(0, 0, 0, 0.42);
+  text-align: center;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-bottom: 8px;
+}
+
+.usuario-correo {
+  width: 184px;
+  color: rgba(0, 0, 0, 0.42);
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-bottom: -2px; 
+}
+
+.usuario-direccion {
+  color: rgba(0, 0, 0, 0.42);
+  text-align: center;
+  font-size: 12.3px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin-top: -6px !important;
+  word-break: break-word;
+  margin-bottom: 40px; /* Deja espacio libre para el botón */
+}
+
+.usuario-boton {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid #F00;
+  background: #FFF;
+  color: #F00;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Encabezado de la barra con "CUENTAS" y el ícono */
+.barra-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Texto CUENTAS (oculto hasta que se expanda) */
+.titulo-barra {
+  display: none;
+  color: rgba(28, 28, 28, 0.60);
+  font-family: Montserrat;
+  font-size: 15px;
+  margin-top: -20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-left: 5px;
+}
+
+.barra-lateral.expandida .titulo-barra {
+  display: inline;
+}
+
+.page-container {
+  padding-left: 42px;
+  transition: padding-left 0.3s ease;
+}
+
+.page-container.expandida {
+  padding-left: 133px;
+  transition: margin-left 0.3s ease;
+}
+
+.barra-lateral {
+  position: fixed;
+  top: 65px; /* Altura exacta debajo de tu <nav> */
+  left: 0;
+  width: 42px;
+  height: 110vh;
+  background:rgba(217, 217, 217, 0.34);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+  z-index: 999;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Ícono dentro de la barra */
+.barra-lateral .toggle-barra {
+  font-size: 22px;
+  color: rgba(28, 28, 28, 0.60);
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.barra-lateral.expandida {
+  width: 133px;
+}
+
+.toggle-barra {
+  font-size: 22px;
+  color: #FA0000;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.opciones-barra {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  width: 100%;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.barra-lateral.expandida .opciones-barra {
+  opacity: 1;
+}
+
+.opciones-barra .opcion {
+  color: rgba(28, 28, 28, 0.60);
+  font-family: Montserrat;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  width: 85px;
+  margin: 8px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  margin-top: 19px;
+  margin-left: 10px;
+}
+
+/* Resaltar opción activa */
+.opciones-barra .opcion.activa {
+  font-weight: 600;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.42);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
