@@ -138,7 +138,7 @@ app.post("/api/desactivar-afiliado", authorization.proteccion, authentication.de
 
 app.post("/api/repagoempresa", authentication.repagoempresa);
 app.post("/api/obtener-precio-empr", authentication.Obtenerprecioempr);
-app.post("/api/repagoempresa", authentication.repagousuario);
+app.post("/api/repagousuario", authentication.repagousuario);
 app.post("/api/obtener-precio-empr", authentication.Obtenerpreciouser);
 
 app.get("/api/user-info", authentication.getUserInfo);
