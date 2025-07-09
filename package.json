@@ -20,7 +20,8 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.8",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^6.9.13"
+    "nodemailer": "^6.9.13",
+    "stripe": "^18.3.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
