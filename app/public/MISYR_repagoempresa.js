@@ -389,7 +389,7 @@ const stripeEmail = document.getElementById("email").value; // Solo para Stripe
       `<div class="success-message">¡Suscripción creada exitosamente! Redirigiendo...</div>`;
     
     setTimeout(() => {
-      window.location.href = "/principal";
+      window.location.href = "/login";
     }, 2000);
     
   } catch (error) {
