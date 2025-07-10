@@ -578,6 +578,7 @@ app.post('/api/attach-payment-method', async (req, res) => {
 });
 
 // Crear suscripción en Stripe
+/*
 app.post("/api/create-subscription", async (req, res) => {
   const { customerId, tiplan, afiliados, montoTotal, paymentMethodId } = req.body;
 
@@ -661,7 +662,42 @@ app.post("/api/create-subscription", async (req, res) => {
     res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
   }
 });
-
+*/
+app.post("/api/create-subscription", async (req, res) => {
+  try {
+    const { customerId, tiplan, afiliados, montoTotal, paymentMethodId, userEmail } = req.body;
+    
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
+      items: [{
+        price_data: {
+          currency: 'mxn',
+          product_data: {
+            name: `Plan ${tiplan}`,
+            description: `Suscripción ${tiplan} para ${afiliados} afiliados`,
+          },
+          unit_amount: montoTotal,
+          recurring: {
+            interval: tiplan === 'mensual' ? 'month' : tiplan === 'semestral' ? 'month' : 'year',
+            interval_count: tiplan === 'semestral' ? 6 : 1,
+          },
+        },
+        quantity: 1,
+      }],
+      default_payment_method: paymentMethodId,
+      metadata: {
+        tiplan: tiplan,
+        afiliados: afiliados.toString(),
+        userEmail: userEmail // Email del usuario que debe recibir la suscripción
+      }
+    });
+    
+    res.json({ subscription });
+  } catch (error) {
+    console.error("Error creating subscription:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 // Webhook para manejar eventos de Stripe
 app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
   const sig = req.headers['stripe-signature'];
