@@ -269,10 +269,11 @@ async function handleSubmit(event) {
 */
 async function handleSubmit(event) {
   event.preventDefault();
-const stripeEmail = document.getElementById("email").value; // Solo para Stripe
-  const userEmail = localStorage.getItem("resetEmail"); // Usuario que recibirá la suscripción
+  const stripeEmail = document.getElementById("email").value; // Solo para Stripe
+  const userEmail = localStorage.getItem('resetEmail'); // Usuario que recibirá la suscripción
   const cardholderName = document.getElementById("cardholder-name").value;
-  
+        console.log("Correo asociado:", userEmail);
+        console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
   if (!stripeEmail) {
     mostrarAlerta("error", "Se requiere un correo electrónico para el pago");
     return;
