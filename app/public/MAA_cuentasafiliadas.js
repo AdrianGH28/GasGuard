@@ -28,9 +28,9 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
     
-  
+    
     // === LLAMADA A TU FUNCIÓN PARA PINTAR REPORTES ===
-    pintarReportes(reportesDummy);
+   //pintarReportes(reportesDummy);
   
     // === FUNCIONALIDAD DE BÚSQUEDA EN VIVO POR ID ===
     const inputBusqueda = document.getElementById("input-busqueda-encargado");
@@ -52,42 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   
-  // 1) Datos dummy de usuarios individuales con ID en texto con espacios
-const usuariosDummy = [
-  {
-    id: "Amarillo 101",
-    correo: "vaelntinaxanaeth1@gasguard.com",
-    direccion: "Mar Mediterráneo 117, Popotla Miguel Hidalgo CDMX",
-    empresa: "Autonomus Gas Track",
-    estado: "Activo",
-    reportes: 5
-  },
-  {
-    id: "Verde 122",
-    correo: "ejemplo2@gasguard.com",
-    direccion: "Av. Reforma 12, Centro Cuauhtémoc CDMX",
-    empresa: "GasGuard",
-    estado: "Inactivo",
-    reportes: 2
-  },
-  {
-    id: "Azul 135",
-    correo: "vaelntinaxanaethhaha1@gasguard.com",
-    direccion: "Insurgentes Sur 345, Del Valle Benito Juárez CDMX",
-    empresa: "Liverpool",
-    estado: "Activo",
-    reportes: 7
-  },
-  {
-    id: "Rojo 111",
-    correo: "ejemplo3@gasguard.com",
-    direccion: "Insurgentes Sur 345, Del Valle Benito Juárez CDMX",
-    empresa: "Toyota",
-    estado: "Inactivo",
-    reportes: 0
-  }
-];
-
 // 2) Función para pintar las tarjetas
 function pintarUsuarios(lista) {
   const contenedor = document.getElementById("lista-reportes");
@@ -113,22 +77,47 @@ function pintarUsuarios(lista) {
     contenedor.appendChild(card);
   });
 }
-
+let usuariosReales = [];
 // 3) Cargar todo cuando la página esté lista
-window.addEventListener("load", () => {
-  pintarUsuarios(usuariosDummy);
-
-  // Filtro de búsqueda en tiempo real (por ID y empresa)
-  const inputBusqueda = document.getElementById("input-busqueda-encargado");
-  if (inputBusqueda) {
-    inputBusqueda.addEventListener("input", function () {
-      const texto = this.value.toLowerCase().trim();
-      const filtrados = usuariosDummy.filter(usuario =>
-        usuario.id.toLowerCase().includes(texto) ||
-        usuario.empresa.toLowerCase().includes(texto)
-      );
-      pintarUsuarios(filtrados);
+window.addEventListener("load", async () => {
+  
+  try {
+    const res = await fetch("/api/admin-afiliados", {
+      credentials: "include"
     });
+
+    if (!res.ok) throw new Error("Error al obtener cuentas afiliadas");
+
+    const resJson = await res.json();
+    const afiliadosBD = resJson.data;
+
+    // Convertir estructura al formato esperado por pintarUsuarios
+    usuariosReales = afiliadosBD.map((afiliado, index) => ({
+      id: `${afiliado.nom_user} ${index + 1}`,
+      correo: afiliado.correo_user,
+      direccion: `${afiliado.nom_calle} ${afiliado.numero_direc}, ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`,
+      empresa: afiliado.nom_empresa || "—",
+      estado: "Activo",
+      reportes: 0
+    }));
+
+    pintarUsuarios(usuariosReales);
+
+    // Filtro de búsqueda en tiempo real (por ID y empresa)
+    const inputBusqueda = document.getElementById("input-busqueda-encargado");
+    if (inputBusqueda) {
+      inputBusqueda.addEventListener("input", function () {
+        const texto = this.value.toLowerCase().trim();
+        const filtrados = usuariosReales.filter(usuario =>
+          usuario.id.toLowerCase().includes(texto) ||
+          usuario.empresa.toLowerCase().includes(texto)
+        );
+        pintarUsuarios(filtrados);
+      });
+    }
+  } catch (error) {
+    console.error("Error al cargar cuentas afiliadas:", error);
+    mostraralerta("error", "No se pudieron cargar las cuentas afiliadas.");
   }
 });
 
@@ -137,7 +126,7 @@ document.addEventListener("click", e => {
   if (!e.target.classList.contains("usuario-boton")) return;
 
   const id = e.target.dataset.id;
-  const usuario = usuariosDummy.find(u => u.id === id);
+  const usuario = usuariosReales.find(u => u.id === id);
   if (!usuario) return;
 
   // Mostrar datos en el modal

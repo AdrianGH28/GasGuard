@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   
     // === LLAMADA A TU FUNCIÓN PARA PINTAR REPORTES ===
-    pintarReportes(reportesDummy);
+    //pintarReportes(reportesDummy);
   
     // === FUNCIONALIDAD DE BÚSQUEDA EN VIVO POR ID ===
     const inputBusqueda = document.getElementById("input-busqueda-encargado");
@@ -51,37 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   
-  // 1) Datos dummy de usuarios individuales con ID en texto con espacios
-const usuariosDummy = [
-  {
-    id: "Amarillo 101",
-    correo: "vaelntinaxanaeth1@gasguard.com",
-    direccion: "Mar Mediterráneo 117, Popotla Miguel Hidalgo CDMX",
-    estado: "Activo",
-    reportes: 5
-  },
-  {
-    id: "Verde 122",
-    correo: "ejemplo2@gasguard.com",
-    direccion: "Av. Reforma 12, Centro Cuauhtémoc CDMX",
-    estado: "Inactivo",
-    reportes: 2
-  },
-  {
-    id: "Azul 135",
-    correo: "vaelntinaxanaethhaha1@gasguard.com",
-    direccion: "Insurgentes Sur 345, Del Valle Benito Juárez CDMX",
-    estado: "Activo",
-    reportes: 7
-  },
-  {
-    id: "Rojo 111",
-    correo: "ejemplo3@gasguard.com",
-    direccion: "Insurgentes Sur 345, Del Valle Benito Juárez CDMX",
-    estado: "Inactivo",
-    reportes: 0
-  }
-];
 
 // 2) Función para pintar las tarjetas
 function pintarUsuarios(lista) {
@@ -108,23 +77,45 @@ function pintarUsuarios(lista) {
     contenedor.appendChild(card);
   });
 }
+let usuariosReales = [];
 
-// 3) Cargar todo cuando la página esté lista
-window.addEventListener("load", () => {
-  pintarUsuarios(usuariosDummy);
-
-  // Filtro de búsqueda en tiempo real
-  const inputBusqueda = document.getElementById("input-busqueda-encargado");
-  if (inputBusqueda) {
-    inputBusqueda.addEventListener("input", function () {
-      const texto = this.value.toLowerCase().trim();
-      const filtrados = usuariosDummy.filter(usuario =>
-        usuario.id.toLowerCase().includes(texto) ||
-        usuario.correo.toLowerCase().includes(texto) ||
-        usuario.direccion.toLowerCase().includes(texto)
-      );
-      pintarUsuarios(filtrados);
+window.addEventListener("load", async () => {
+  try {
+    const res = await fetch("/api/usuarios-individuales", {
+      credentials: "include"
     });
+
+    if (!res.ok) throw new Error("Error al obtener usuarios individuales");
+
+    const resJson = await res.json();
+    const usuariosBD = resJson.data;
+
+    usuariosReales = usuariosBD.map((usuario, index) => ({
+      id: `${usuario.nom_user} ${index + 1}`,
+      correo: usuario.correo_user,
+      direccion: `${usuario.nom_calle} ${usuario.numero_direc}, ${usuario.nom_col}, ${usuario.nom_ciudad} ${usuario.nom_estado}`,
+      estado: "Activo", // Cambiar si luego tienes campo real
+      reportes: 0
+    }));
+
+    pintarUsuarios(usuariosReales);
+
+    // Filtro de búsqueda por ID, correo o dirección
+    const inputBusqueda = document.getElementById("input-busqueda-encargado");
+    if (inputBusqueda) {
+      inputBusqueda.addEventListener("input", function () {
+        const texto = this.value.toLowerCase().trim();
+        const filtrados = usuariosReales.filter(usuario =>
+          usuario.id.toLowerCase().includes(texto) ||
+          usuario.correo.toLowerCase().includes(texto) ||
+          usuario.direccion.toLowerCase().includes(texto)
+        );
+        pintarUsuarios(filtrados);
+      });
+    }
+  } catch (error) {
+    console.error("Error al cargar usuarios individuales:", error);
+    mostraralerta("error", "No se pudieron cargar los usuarios.");
   }
 });
 
@@ -133,7 +124,7 @@ document.addEventListener("click", e => {
   if (!e.target.classList.contains("usuario-boton")) return;
 
   const id = e.target.dataset.id;
-  const usuario = usuariosDummy.find(u => u.id === id);
+  const usuario = usuariosReales.find(u => u.id === id);
   if (!usuario) return;
 
   // Mostrar datos en el modal

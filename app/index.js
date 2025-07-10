@@ -450,6 +450,79 @@ app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => 
     }
 });
 
+//ADMIN OBTENCION DE DATOS DE USUARIOS---------------
+app.get("/api/usuarios-individuales", authorization.proteccion, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT 
+                musuario.id_user,
+                musuario.nom_user,
+                musuario.correo_user,
+                ddireccion.numero_direc,
+                dcalle.nom_calle,
+                ccolonia.nom_col,
+                cciudad.nom_ciudad,
+                ccpostal.cp_copost,
+                cestado.nom_estado
+            FROM 
+                musuario
+            JOIN ddireccion ON musuario.id_direccion = ddireccion.id_direccion
+            JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
+            JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
+            JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN ccpostal ON ddireccion.id_copost = ccpostal.id_copost
+            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
+            JOIN cestadocuenta ON musuario.id_estcuenta = cestadocuenta.id_estcuenta
+            WHERE 
+                musuario.rol_user = 'user'
+                AND musuario.id_relempr IS NULL
+                AND cestadocuenta.nom_estcuenta = 'activa'
+        `);
+
+        res.send({ status: "ok", data: rows });
+    } catch (error) {
+        console.error('Error al obtener usuarios individuales:', error);
+        res.status(500).send({ status: "Error", message: "Error al obtener usuarios individuales" });
+    }
+});
+
+app.get("/api/admin-afiliados", authorization.proteccion, async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT 
+                afil.id_user,
+                afil.nom_user,
+                afil.correo_user,
+                ddireccion.numero_direc,
+                dcalle.nom_calle,
+                ccolonia.nom_col,
+                cciudad.nom_ciudad,
+                ccpostal.cp_copost,
+                cestado.nom_estado,
+                empr.nom_user AS nom_empresa
+            FROM 
+                musuario afil
+            JOIN ddireccion ON afil.id_direccion = ddireccion.id_direccion
+            JOIN dcalle ON ddireccion.id_calle = dcalle.id_calle
+            JOIN ccolonia ON ddireccion.id_colonia = ccolonia.id_colonia
+            JOIN cciudad ON ddireccion.id_ciudad = cciudad.id_ciudad
+            JOIN ccpostal ON ddireccion.id_copost = ccpostal.id_copost
+            JOIN cestado ON ddireccion.id_estado = cestado.id_estado
+            JOIN cestadocuenta ON afil.id_estcuenta = cestadocuenta.id_estcuenta
+            JOIN musuario empr ON afil.id_relempr = empr.id_user
+            WHERE 
+                afil.rol_user = 'afiliado'
+                AND cestadocuenta.nom_estcuenta = 'activa'
+        `);
+
+        res.send({ status: "ok", data: rows });
+    } catch (error) {
+        console.error('Error al obtener afiliados:', error);
+        res.status(500).send({ status: "Error", message: "Error al obtener afiliados" });
+    }
+});
+
+
 
 // Ruta para obtener la lista de dispositivos
 app.get("/api/dispositivos", authorization.proteccion, async (req, res) => {
