@@ -1126,21 +1126,12 @@ async function repagoempresa(req, res) {
         }
 
         // Obtener o crear suscripción
-        let id_susc;
-        const [suscripcionResult] = await pool.execute(
-            'SELECT id_susc FROM msuscripcion WHERE fecini_susc = ? AND fecfin_susc = ? AND estado_susc = ? AND monto_susc = ? AND id_plan = ?',
-            [fechaInicio, fechaFinStr, estatus, monto, id_plan]
+        
+        const [insertResult] = await pool.execute(
+        'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
+        [fechaInicio, fechaFinStr, estatus, monto, id_plan]
         );
-        if (suscripcionResult.length > 0) {
-            id_susc = suscripcionResult[0].id_susc;
-        } else {
-            const [insertResult] = await pool.execute(
-                'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
-                [fechaInicio, fechaFinStr, estatus, monto, id_plan]
-            );
-            id_susc = insertResult.insertId;
-        }
-
+        const id_susc = insertResult.insertId;
         const rol = 'empresa';
         await pool.execute(
             'UPDATE musuario SET id_susc = ?, rol_user = ? WHERE correo_user = ?',
