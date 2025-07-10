@@ -1115,8 +1115,8 @@ async function repagoempresa(req, res) {
         if (tipoplanResult.length > 0) {
             id_tiplan = tipoplanResult[0].id_tiplan; // Corregido de id_colonia a id_tiplan
         } else {
-            const [inserttipoplanResult] = await pool.execute('INSERT INTO ctipoplan (dura_tiplan) VALUES (?)', [tiplan]);
-            id_tiplan = inserttipoplanResult.insertId;
+            await pool.execute('INSERT INTO ctipoplan (dura_tiplan) VALUES (?)', [tiplan]);
+            id_tiplan = tipoplanResult[0].id_tiplan;
         }
 
         // Obtener id_plan
@@ -1125,25 +1125,31 @@ async function repagoempresa(req, res) {
         if (planResult.length > 0) {
             id_plan = planResult[0].id_plan;
         } else {
-            const [insertplanResult] = await pool.execute(
+                await pool.execute(
                 'INSERT INTO cplan (id_tiplan, id_nmafil) VALUES (?, ?)',
                 [id_tiplan, noAfiliados]
             );
-            id_plan = insertplanResult.insertId;
+            id_plan = planResult[0].id_plan;
         }
 
         // Insertar suscripción
-        const [suscripcionResult] = await pool.execute(
-            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
-            [fechaInicio, fechaFinStr, estatus, monto, id_plan] // Eliminado id_estado que no estaba definido
-        );
-        const suscriId = suscripcionResult.insertId;
+        const [suscripcionResult] = await pool.execute('SELECT id_susc FROM msuscripcion WHERE fecini_susc = ? AND fecfin_susc = ? AND estado_susc = ?  AND monto_susc = ? AND id_plan = ?', [fechaInicio, fechaFinStr, estatus, monto, id_plan]);
+        let id_susc;
+        if (suscripcionResult.length > 0) {
+            id_susc = suscripcionResult[0].id_susc; // Corregido de id_colonia a id_tiplan
+        } else {
+            await pool.execute('INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
+            [fechaInicio, fechaFinStr, estatus, monto, id_plan]);
+            id_susc = suscripcionResult[0].id_susc;
+        }
+        
+        
 
         const rol = "empresa";
         // Actualizar usuario
         await pool.execute(
             'UPDATE musuario SET id_susc = ?, rol_user = ? WHERE correo_user = ?',
-            [suscriId, rol, correo]
+            [id_susc, rol, correo]
         );
 
         return res.status(201).json({ status: "ok", message: "Suscripción activada", redirect: "/login" });
