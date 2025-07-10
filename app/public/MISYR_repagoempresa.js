@@ -130,6 +130,7 @@ async function calcularMonto() {
 }
 
 // Función para manejar el envío del formulario
+/*
 async function handleSubmit(event) {
   event.preventDefault();
   
@@ -261,6 +262,141 @@ async function handleSubmit(event) {
     console.error("Error en el proceso de pago:", error);
     
     // Restaurar botón
+    submitButton.disabled = false;
+    submitButton.textContent = "Pagar ahora";
+  }
+}
+*/
+async function handleSubmit(event) {
+  event.preventDefault();
+const stripeEmail = document.getElementById("email").value; // Solo para Stripe
+  const userEmail = localStorage.getItem("resetEmail"); // Usuario que recibirá la suscripción
+  const cardholderName = document.getElementById("cardholder-name").value;
+  
+  if (!stripeEmail) {
+    mostrarAlerta("error", "Se requiere un correo electrónico para el pago");
+    return;
+  }
+  
+  if (!userEmail) {
+    mostrarAlerta("error", "No se encontró el usuario logueado");
+    return;
+  }
+  
+  if (!cardholderName) {
+    mostrarAlerta("error", "Se requiere el nombre del titular de la tarjeta");
+    return;
+  }
+  
+  if (!montoTotal) {
+    mostrarAlerta("error", "Por favor calcula el monto primero");
+    return;
+  }
+  
+  const tiplan = document.getElementById("subscription").value;
+  const noAfiliados = parseInt(document.getElementById("disp").value);
+  
+  const submitButton = document.getElementById('submit-button');
+  submitButton.disabled = true;
+  submitButton.textContent = "Procesando...";
+  
+  try {
+    // 1. Crear cliente en Stripe (con email del formulario)
+    const customerResponse = await fetch("/api/create-customer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: stripeEmail }),
+    });
+    
+    if (!customerResponse.ok) {
+      const errorData = await customerResponse.json();
+      throw new Error(errorData.error || "Error al crear cliente");
+    }
+    
+    const { customerId } = await customerResponse.json();
+    
+    // 2. Crear método de pago
+    const { error: setupError, paymentMethod } = await stripeInstance.createPaymentMethod({
+      type: 'card',
+      card: cardElement,
+      billing_details: {
+        email: stripeEmail,
+        name: cardholderName
+      }
+    });
+    
+    if (setupError) {
+      throw new Error(setupError.message || "Error al configurar el método de pago");
+    }
+    
+    // 3. Asociar método de pago
+    const attachResponse = await fetch("/api/attach-payment-method", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerId,
+        paymentMethodId: paymentMethod.id,
+        setAsDefault: true
+      }),
+    });
+    
+    if (!attachResponse.ok) {
+      const errorData = await attachResponse.json();
+      throw new Error(errorData.error || "Error al asociar método de pago");
+    }
+    
+    // 4. Crear suscripción con metadata del usuario real
+    const subscriptionResponse = await fetch("/api/create-subscription", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customerId,
+        tiplan,
+        afiliados: noAfiliados,
+        montoTotal: Math.round(montoTotal * 100),
+        paymentMethodId: paymentMethod.id,
+        userEmail: userEmail // IMPORTANTE: Email del usuario que recibirá la suscripción
+      }),
+    });
+    
+    if (!subscriptionResponse.ok) {
+      const errorData = await subscriptionResponse.json();
+      throw new Error(errorData.error || "Error al crear suscripción");
+    }
+    
+    const { subscription } = await subscriptionResponse.json();
+    
+    // 5. Registrar en BD directamente (opcional, el webhook también lo hará)
+    const dbResponse = await fetch("/api/repagoempresa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        correo: userEmail, // Usuario que recibirá la suscripción
+        nombre: cardholderName,
+        tiplan,
+        noAfiliados,
+        monto: montoTotal,
+        meses: mesespl,
+        subscriptionId: subscription.id
+      })
+    });
+    
+    if (!dbResponse.ok) {
+      console.error("Error al registrar en BD, pero la suscripción fue creada");
+    }
+    
+    document.getElementById("payment-message").innerHTML = 
+      `<div class="success-message">¡Suscripción creada exitosamente! Redirigiendo...</div>`;
+    
+    setTimeout(() => {
+      window.location.href = "/principal";
+    }, 2000);
+    
+  } catch (error) {
+    document.getElementById("payment-message").innerHTML = 
+      `<div class="error-message">${error.message}</div>`;
+    console.error("Error en el proceso de pago:", error);
+    
     submitButton.disabled = false;
     submitButton.textContent = "Pagar ahora";
   }
