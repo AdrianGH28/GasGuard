@@ -1141,7 +1141,7 @@ async function repagoempresa(req, res) {
             id_susc = insertResult.insertId;
         }
 
-        const rol = "empresa";
+        const rol = 'empresa';
         await pool.execute(
             'UPDATE musuario SET id_susc = ?, rol_user = ? WHERE correo_user = ?',
             [id_susc, rol, correo]
