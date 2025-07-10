@@ -1134,8 +1134,8 @@ async function repagoempresa(req, res) {
         const id_susc = insertResult.insertId;
         const rol = 'empresa';
         await pool.execute(
-            'UPDATE musuario SET id_susc = ?, rol_user = ? WHERE correo_user = ?',
-            [id_susc, rol, correo]
+            'UPDATE musuario SET id_susc = ? WHERE correo_user = ?',
+            [id_susc, correo]
         );
 
         return res.status(201).json({ status: "ok", message: "Suscripción activada", redirect: "/login" });
