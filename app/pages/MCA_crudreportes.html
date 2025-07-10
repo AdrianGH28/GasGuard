@@ -3,11 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Hola</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+    <link rel="icon" href="images/logotipo.png" type="image/png">
+    <link rel="stylesheet" href="/css/backgroundvideo.css">
     <link rel="stylesheet" href="/css/MCA_crudreportes.css">
+    <link rel="stylesheet" href="/css/navbar.css">
 </head>
 <body>
-    
+    <dialog id="alertamodal" class="custom-alert">
+        <div class="alerticon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="alertcontent">
+            <div class="alertheadingcont">
+                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+            </div>
+            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+            <div class="alertactionscont">
+                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+            </div>
+        </div>
+        <div class="alertclosebtn">
+            <button class="closebtn" onclick="cerraralerta()">
+                <i class="fa fa-x"></i>
+            </button>
+        </div>
+    </dialog>
+    <nav>
+        <div class="navbar-container">
+            <!-- Contenedor logo y texto -->
+            <div class="logo-container">
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </div>
+
+            <!-- Contenedor de los items (ya centrado) -->
+            <div class="container-items">
+                <!-- Página 1: Dirección (maecrudcuentasafi) -->
+                <a class="nav-link" id="iralcrud" href="/maecrudcuentasafi" data-page="maecrudcuentasafi">
+                    <i class="fa fa-address-book"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 2: Historial (maevisualizarrep) -->
+                <a class="nav-link" id="iralhistorial" href="/maevisualizarrep" data-page="maevisualizarrep">
+                    <i class="fa fa-clipboard"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 3: Estadísticas (maedashboard) -->
+                <a class="nav-link" id="iraldashboard" href="/maedashboard" data-page="maedashboard">
+                    <i class="fa fa-chart-column"></i>
+                    <div class="animation"></div>
+                </a>
+            </div>
+
+            <!-- Botón Hamburguesa -->
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
+        </div>
+        <div class="user-container" id="user-container">
+            <span class="user-text">Usuario</span>
+            <i class="fa fa-user-circle user-icon"></i>
+            <div class="animacion"></div>
+        </div>
+    </nav>
+    <div class="page-container">
+        <div class="header-top">
+            <h1 class="page-title">CUENTAS AFILIADAS</h1>
+            <div class="actions">
+                <div class="search-container">
+                    <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por nombre...">
+                    <i class="fa fa-search search-icon"></i>
+                </div>
+                <p>Cuentas restantes: <span id="remaining-count">5</span></p>
+                <i class="fa fa-user-plus" id="anadircuenta"></i>
+                <i class="fa fa-user-minus" id="eliminarcuentas"></i>
+            </div>
+        </div>
+        <div class="containercuentas" id="containercuentas">
+            <dialog class="contenedor-general" id="modal">
+                <div class="contenedor-p">
+                    <div class="contenedor-pa">
+
+                        <div class="txt">
+                            <h1>Registrar</h1>
+                            <p>*Nota: El encargado podrá editar esta información</p>
+                        </div>
+                    </div>
+                    <form id="cuentas-afiliadas-form">
+                        <div class="form">
+
+                            <div class="contenedor">
+                                <div class="contenedor1">
+                                    <div class="input-entero">
+                                        <div class="grupo">
+                                            <input type="text" name="nombre" id="nombre" placeholder="Nombre">
+                                            <span class="barra"></span>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="input-entero">
+
+                                        <div class="grupo">
+                                            <input type="email" name="correo" id="correo"
+                                                placeholder="Correo electrónico">
+                                            <span class="barra"></span>
+                                        </div>
+                                    </div>
+                                    <p>* La contraseña debe ser entre 8 a 12 caractéres</p>
+                                    <div class="input-mitad">
+                                        <div class="grupo">
+                                            <input type="password" name="password" id="password"
+                                                placeholder="Contraseña">
+                                            <span class="barra"></span>
+                                        </div>
+                                        <div class="grupo">
+                                            <input type="password" name="conf-pass" id="conf-pass"
+                                                placeholder="Confirmar contraseña">
+                                            <span class="barra"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="contenedor2">
+                                    <div class="division">
+                                        <span>Dirección</span>
+                                    </div>
+                                </div>
+                                <div class="contenedor3">
+                                    <div class="input-triples1">
+                                        <div class="grupo">
+                                            <input type="text" name="calle" id="calle" placeholder="Calle">
+                                            <span class="barra"></span>
+                                        </div>
+                                        <div class="grupo">
+                                            <input type="text" name="numero" id="numero" placeholder="Número">
+                                            <span class="barra"></span>
+                                        </div>
+                                        <div class="grupo">
+                                            <input type="text" name="colonia" id="colonia" placeholder="Colonia">
+                                            <span class="barra"></span>
+                                        </div>
+                                    </div>
+                                    <div class="input-triples2">
+                                        <div class="grupo">
+                                            <input type="text" name="ciudad" id="ciudad" placeholder="Ciudad/Alc">
+                                            <span class="barra"></span>
+                                        </div>
+                                        <div class="grupo">
+                                            <input type="text" name="cp" id="cp" placeholder="C.P">
+                                            <span class="barra"></span>
+                                        </div>
+                                        <div class="columna">
+                                            <div class="grupo">
+                                                <input type="text" name="estado" id="estado" placeholder="Estado">
+                                                <span class="barra"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="submitbtn" type="submit">Aceptar</button>
+                            <p id="cerrarmodal">Cancelar</p>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+        </div>
+
+
+    </div>
+
+
+
+    <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+
     <script src="MCA_crudreportes.js" defer></script>
 </body>
 </html>
