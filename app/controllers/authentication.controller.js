@@ -1079,83 +1079,79 @@ export async function getUserInfo(req, res) {
 async function repagoempresa(req, res) {
     const { tiplan, noAfiliados, correo, monto, meses } = req.body;
 
-
     if (!tiplan || !noAfiliados) {
         return res.status(400).json({ status: "Error", message: "Los campos están incompletos" });
     }
-
 
     if (noAfiliados < 1 || noAfiliados > 20) {
         return res.status(400).json({ status: "Error", message: "El número de afiliados debe estar entre 1 y 20." });
     }
 
     try {
-        // Verificar si el usuario ya tiene una suscripción
         const [rows] = await pool.execute('SELECT id_susc FROM musuario WHERE correo_user = ?', [correo]);
 
-        // Verificar si el usuario tiene suscripción (corregido)
         if (rows.length > 0 && rows[0].id_susc !== null) {
             return res.status(400).json({ status: "Error", message: "Este usuario tiene una suscripción activa" });
         }
 
         const ahora = new Date();
-
-        // Para la fecha de inicio (formato YYYY-MM-DD)
         const fechaInicio = ahora.toISOString().split('T')[0];
 
-        // Para la fecha de fin, añadir meses
         const fechaFin = new Date();
         fechaFin.setMonth(fechaFin.getMonth() + parseInt(meses));
         const fechaFinStr = fechaFin.toISOString().split('T')[0];
         const estatus = 1;
 
-        // Obtener id_tiplan
-        const [tipoplanResult] = await pool.execute('SELECT id_tiplan FROM ctipoplan WHERE dura_tiplan = ?', [tiplan]);
+        // Obtener o crear id_tiplan
         let id_tiplan;
+        const [tipoplanResult] = await pool.execute('SELECT id_tiplan FROM ctipoplan WHERE dura_tiplan = ?', [tiplan]);
         if (tipoplanResult.length > 0) {
-            id_tiplan = tipoplanResult[0].id_tiplan; // Corregido de id_colonia a id_tiplan
-        } else {
-            await pool.execute('INSERT INTO ctipoplan (dura_tiplan) VALUES (?)', [tiplan]);
             id_tiplan = tipoplanResult[0].id_tiplan;
+        } else {
+            const [insertResult] = await pool.execute('INSERT INTO ctipoplan (dura_tiplan) VALUES (?)', [tiplan]);
+            id_tiplan = insertResult.insertId;
         }
 
-        // Obtener id_plan
-        const [planResult] = await pool.execute('SELECT id_plan FROM cplan WHERE id_tiplan = ? AND id_nmafil = ?', [id_tiplan, noAfiliados]);
+        // Obtener o crear id_plan
         let id_plan;
+        const [planResult] = await pool.execute('SELECT id_plan FROM cplan WHERE id_tiplan = ? AND id_nmafil = ?', [id_tiplan, noAfiliados]);
         if (planResult.length > 0) {
             id_plan = planResult[0].id_plan;
         } else {
-                await pool.execute(
+            const [insertResult] = await pool.execute(
                 'INSERT INTO cplan (id_tiplan, id_nmafil) VALUES (?, ?)',
                 [id_tiplan, noAfiliados]
             );
-            id_plan = planResult[0].id_plan;
+            id_plan = insertResult.insertId;
         }
 
-        // Insertar suscripción
-        const [suscripcionResult] = await pool.execute('SELECT id_susc FROM msuscripcion WHERE fecini_susc = ? AND fecfin_susc = ? AND estado_susc = ?  AND monto_susc = ? AND id_plan = ?', [fechaInicio, fechaFinStr, estatus, monto, id_plan]);
+        // Obtener o crear suscripción
         let id_susc;
+        const [suscripcionResult] = await pool.execute(
+            'SELECT id_susc FROM msuscripcion WHERE fecini_susc = ? AND fecfin_susc = ? AND estado_susc = ? AND monto_susc = ? AND id_plan = ?',
+            [fechaInicio, fechaFinStr, estatus, monto, id_plan]
+        );
         if (suscripcionResult.length > 0) {
-            id_susc = suscripcionResult[0].id_susc; // Corregido de id_colonia a id_tiplan
-        } else {
-            await pool.execute('INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
-            [fechaInicio, fechaFinStr, estatus, monto, id_plan]);
             id_susc = suscripcionResult[0].id_susc;
+        } else {
+            const [insertResult] = await pool.execute(
+                'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
+                [fechaInicio, fechaFinStr, estatus, monto, id_plan]
+            );
+            id_susc = insertResult.insertId;
         }
-        
-        
 
         const rol = "empresa";
-        // Actualizar usuario
         await pool.execute(
             'UPDATE musuario SET id_susc = ?, rol_user = ? WHERE correo_user = ?',
             [id_susc, rol, correo]
         );
 
         return res.status(201).json({ status: "ok", message: "Suscripción activada", redirect: "/login" });
+
     } catch (error) {
-        console.error('Error al realizar la suscripcion:', error);
-        return res.status(500).json({ status: "Error", message: "Error al realizar la suscripcion." });
+        console.error('Error al realizar la suscripción:', error);
+        return res.status(500).json({ status: "Error", message: "Error al realizar la suscripción." });
     }
 }
 
