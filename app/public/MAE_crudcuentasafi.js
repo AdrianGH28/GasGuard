@@ -313,44 +313,7 @@ document.getElementById("searchInput").addEventListener("input", function () {
     });
 });
 
- const toggleBtn = document.getElementById("toggle-chatbot");
-  const chatbot = document.getElementById("chatbot-container");
-  const icon = document.getElementById("chatbot-icon");
-
-  toggleBtn.addEventListener("click", () => {
-    const isVisible = chatbot.style.display === "block";
-    chatbot.style.display = isVisible ? "none" : "block";
-    icon.className = isVisible ? "fa fa-comments" : "fa fa-times";
-  });
-
-  // Función global (necesaria si usas HTML directo)
-  async function enviarAlChat() {
-    const input = document.getElementById("chatInput");
-    const chatbox = document.getElementById("chatbox");
-    const mensaje = input.value.trim();
-    if (!mensaje) return;
-
-    chatbox.innerHTML += `<div><strong>Tú:</strong> ${mensaje}</div>`;
-    input.value = "";
-    chatbox.scrollTop = chatbox.scrollHeight;
-
-    try {
-      const res = await fetch("https://gasguard-production.up.railway.app/api/chatbotMAE_cuentasafil", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: mensaje }),
-      });
-
-      const data = await res.json();
-      const respuesta = data?.response || "Lo siento, no entendí tu mensaje.";
-      chatbox.innerHTML += `<div><strong>Bot:</strong> ${respuesta}</div>`;
-    } catch (error) {
-      console.error("Error:", error);
-      chatbox.innerHTML += `<div><strong>Bot:</strong> ❌ Error al conectar con el servidor.</div>`;
-    }
-
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
+ 
 /*
 async function actualizarCuentasRestantes() {
     try {
