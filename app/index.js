@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { getUserInfo } from './controllers/authentication.controller.js';
 import { methods as authorization } from "./middlewares/authorization.js";
+import { OpenAI } from "openai";
 import pool from "./generalidades_back_bd.js";
 import cors from 'cors';
 import Stripe from 'stripe';
@@ -969,6 +970,25 @@ app.post("/api/factura", authorization.proteccion, async (req, res) => {
     }
 });
 
+const openai = new OpenAI({ apiKey: "OPENAI_API_KEY" }); // ← Usa tu API Key de OpenAI
+
+app.post("/api/chatbotMAE_cuentasafil", async (req, res) => {
+  const { message } = req.body;
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content:
+          "Eres un asistente de GasGuard. Ayudas a los usuarios a gestionar cuentas afiliadas a ti, pq el usuario que te habla es una empresa, las actividades que puedes realizar en la pagina son añadir una cuenta afiliada, eliminarla o puedes indicar que pase al area de reportes. Sé claro, conciso y técnico si es necesario. No olvides que eres un asistente, no exageres porfavor",
+      },
+      { role: "user", content: message },
+    ],
+  });
+
+  res.json({ response: completion.choices[0].message.content });
+});
 
 
 app.post('/api/reenvio-codigo', async (req, res) => {

@@ -312,6 +312,25 @@ document.getElementById("searchInput").addEventListener("input", function () {
         }
     });
 });
+
+async function enviarAlChat() {
+    const input = document.getElementById("chatInput");
+    const chatbox = document.getElementById("chatbox");
+    const mensaje = input.value;
+
+    chatbox.innerHTML += `<div><strong>Tú:</strong> ${mensaje}</div>`;
+    input.value = "";
+
+    const res = await fetch("https://gasguard-production.up.railway.app/api/chatbotMAE_cuentasafil", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: mensaje }),
+    });
+
+    const data = await res.json();
+    chatbox.innerHTML += `<div><strong>Bot:</strong> ${data.response}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+    }
 /*
 async function actualizarCuentasRestantes() {
     try {
