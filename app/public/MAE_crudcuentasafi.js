@@ -318,14 +318,12 @@ document.getElementById("searchInput").addEventListener("input", function () {
     chatbot.style.display = chatbot.style.display === "none" ? "block" : "none";
   });
 
-  // Función para enviar mensaje al chatbot
   async function enviarAlChat() {
     const input = document.getElementById("chatInput");
     const chatbox = document.getElementById("chatbox");
     const mensaje = input.value.trim();
     if (!mensaje) return;
 
-    // Mostrar mensaje del usuario
     chatbox.innerHTML += `<div><strong>Tú:</strong> ${mensaje}</div>`;
     input.value = "";
     chatbox.scrollTop = chatbox.scrollHeight;
