@@ -313,11 +313,17 @@ document.getElementById("searchInput").addEventListener("input", function () {
     });
 });
 
- document.getElementById("toggle-chatbot").addEventListener("click", () => {
-    const chatbot = document.getElementById("chatbot-container");
-    chatbot.style.display = chatbot.style.display === "none" ? "block" : "none";
+ const toggleBtn = document.getElementById("toggle-chatbot");
+  const chatbot = document.getElementById("chatbot-container");
+  const icon = document.getElementById("chatbot-icon");
+
+  toggleBtn.addEventListener("click", () => {
+    const isVisible = chatbot.style.display === "block";
+    chatbot.style.display = isVisible ? "none" : "block";
+    icon.className = isVisible ? "fa fa-comments" : "fa fa-times";
   });
 
+  // Función global (necesaria si usas HTML directo)
   async function enviarAlChat() {
     const input = document.getElementById("chatInput");
     const chatbox = document.getElementById("chatbox");
@@ -337,10 +343,9 @@ document.getElementById("searchInput").addEventListener("input", function () {
 
       const data = await res.json();
       const respuesta = data?.response || "Lo siento, no entendí tu mensaje.";
-
       chatbox.innerHTML += `<div><strong>Bot:</strong> ${respuesta}</div>`;
     } catch (error) {
-      console.error(error);
+      console.error("Error:", error);
       chatbox.innerHTML += `<div><strong>Bot:</strong> ❌ Error al conectar con el servidor.</div>`;
     }
 

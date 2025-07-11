@@ -211,7 +211,6 @@
   <i class="fa fa-comments"></i>
 </button>
 
-<!-- 🔴 CHATBOT BOX -->
 <div id="chatbot-container" style="
   display: none;
   position: fixed;
@@ -236,50 +235,30 @@
   </div>
 </div>
 
+<!-- ✅ BOTÓN FLOTANTE Font Awesome -->
+<button id="toggle-chatbot" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #FF0000;
+  color: white;
+  border: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+">
+  <i id="chatbot-icon" class="fa fa-comments"></i>
+</button>
 
-<script>
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggleBtn = document.getElementById("toggle-chatbot");
-    const chatbotContainer = document.getElementById("chatbot-container");
-    const icon = toggleBtn.querySelector("i");
 
-    toggleBtn.addEventListener("click", () => {
-      const isOpen = chatbotContainer.style.display === "block";
-      chatbotContainer.style.display = isOpen ? "none" : "block";
-      icon.className = isOpen ? "fa fa-comments" : "fa fa-times";
-    });
-  });
-
-  async function enviarAlChat() {
-    const input = document.getElementById("chatInput");
-    const chatbox = document.getElementById("chatbox");
-    const mensaje = input.value.trim();
-    if (!mensaje) return;
-
-    chatbox.innerHTML += `<div><strong>Tú:</strong> ${mensaje}</div>`;
-    input.value = "";
-    chatbox.scrollTop = chatbox.scrollHeight;
-
-    try {
-      const res = await fetch("https://gasguard-production.up.railway.app/api/chatbotMAE_cuentasafil", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: mensaje }),
-      });
-
-      const data = await res.json();
-      const respuesta = data?.response || "Lo siento, no entendí tu mensaje.";
-      chatbox.innerHTML += `<div><strong>Bot:</strong> ${respuesta}</div>`;
-    } catch (error) {
-      chatbox.innerHTML += `<div><strong>Bot:</strong> ❌ Error al conectar con el servidor.</div>`;
-      console.error("Error al contactar chatbot:", error);
-    }
-
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
-  
-</script>
 
     <script src="MAEnav.js" defer></script>
     <script src="MAE_crudcuentasafi.js" defer></script> <!-- Asegúrate de agregar tu archivo JS -->
