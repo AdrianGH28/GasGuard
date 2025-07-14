@@ -489,7 +489,8 @@ export const registrarAfiliado = async (req, res) => {
     JOIN msuscripcion s ON u.id_susc = s.id_susc
     JOIN cplan pl       ON s.id_plan = pl.id_plan
     WHERE u.id_user = ?
-`, [idEmpresa]); F
+`, [idEmpresa]);
+
 
         if (!empresa) {
             return res.status(404).send({ status: "Error", message: "Empresa no encontrada" });
