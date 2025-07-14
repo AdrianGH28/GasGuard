@@ -454,7 +454,7 @@ async function registrarAfiliado(req, res) {
 
 
 */
-/*--------CUENTAS AFILIADAS CON CUENTAS RESTANTES */
+/*--------CUENTAS AFILIADAS CON CUENTAS RESTANTES CON REPORTES*/
 
 export const registrarAfiliado = async (req, res) => {
     console.log("Solicitud recibida para registrar afiliado");
@@ -545,12 +545,29 @@ export const registrarAfiliado = async (req, res) => {
         const id_direccion = direccionResult.insertId;
 
         // Insertar usuario afiliado
-        await pool.execute(
+        const [insertUsuario] = await pool.execute(
             'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
             [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
         );
+        const idAfiliado = insertUsuario.insertId;
 
-        console.log("Usuario afiliado registrado correctamente");
+        // Insertar reporte de instalación
+        const estado_reporte = 'pendiente';
+        const descripcion = 'Instalación inicial del dispositivo';
+        const fecini = new Date();
+        const id_tireporte = 1; // instalación
+
+        const [insertReporte] = await pool.execute(`
+    INSERT INTO mreporte (nmticket_reporte, estado_reporte, descri_reporte, fecini_reporte, id_tireporte, id_user)
+    VALUES (?, ?, ?, ?, ?, ?)
+`, [0, estado_reporte, descripcion, fecini, id_tireporte, idAfiliado]);
+
+        const id_reporte_insertado = insertReporte.insertId;
+
+        await pool.execute(
+            'UPDATE mreporte SET nmticket_reporte = ? WHERE id_reporte = ?',
+            [id_reporte_insertado, id_reporte_insertado]
+        );
 
         // Enviar la contraseña al correo
         const transporter = nodemailer.createTransport({
@@ -1253,6 +1270,7 @@ export const obtenerCuentasRestantes = async (req, res) => {
     }
 };
 
+/*
 export const desactivarAfiliado = async (req, res) => {
     const { idAfiliado } = req.body;
 
@@ -1304,10 +1322,10 @@ export const desactivarAfiliado = async (req, res) => {
         res.status(500).send({ status: "Error", message: "Error al desactivar afiliado" });
     }
 };
+*/
 
-/**
- * Desactivar afiliado con reporte de desinstalacion
- * export const desactivarAfiliado = async (req, res) => {
+ // Desactivar afiliado con reporte de desinstalacion
+ export const desactivarAfiliado = async (req, res) => {
     const { idAfiliado } = req.body;
 
     try {
@@ -1383,7 +1401,7 @@ export const desactivarAfiliado = async (req, res) => {
     }
 };
 
- */
+
 
 export const methods = {
     login,
