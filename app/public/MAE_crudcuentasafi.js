@@ -25,13 +25,13 @@ function esperar(ms) {
 document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nombre = document.querySelector('#nombre').value;
+    const nombre = document.querySelector('#nombre').value.trim();
     const cp = document.querySelector('#cp').value;
-    const ciudad = document.querySelector('#ciudad').value;
-    const colonia = document.querySelector('#colonia').value;
+    const ciudad = document.querySelector('#ciudad').value.trim();
+    const colonia = document.querySelector('#colonia').value.trim();
     const calle = document.querySelector('#calle').value;
     const numero = document.querySelector('#numero').value;
-    const estado = document.querySelector('#estado').value;
+    const estado = document.querySelector('#estado').value.trim();
     const correo = document.querySelector('#correo').value;
     const password = document.querySelector('#password').value;
     const confpass = document.querySelector('#conf-pass').value;
@@ -42,7 +42,7 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
         return;
     }
 
-    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/i;
     const regexNums = /^[0-9]+$/;
 
     if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
