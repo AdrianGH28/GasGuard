@@ -1231,7 +1231,7 @@ export const obtenerCuentasRestantes = async (req, res) => {
         const [[empresa]] = await pool.execute(`
             SELECT u.afilocup_user, p.id_nmafil 
             FROM musuario u 
-            JOIN psuscripcion p ON u.id_susc = p.id_susc 
+            JOIN msuscripcion p ON u.id_susc = p.id_susc 
             WHERE u.id_user = ?
         `, [idEmpresa]);
 
