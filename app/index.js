@@ -137,6 +137,9 @@ app.post("/api/registrar-afiliado", authorization.proteccion, authentication.reg
 app.get("/api/cuentas-restantes", authorization.proteccion, authentication.obtenerCuentasRestantes);
 app.post("/api/desactivar-afiliado", authorization.proteccion, authentication.desactivarAfiliado);
 
+app.get("/api/reportes-disponibles", authorization.proteccion, authentication.obtenerReportesDisponibles);
+
+
 app.post("/api/repagoempresa", authentication.repagoempresa);
 app.post("/api/obtener-precio-empr", authentication.Obtenerprecioempr);
 app.post("/api/repagousuario", authentication.repagousuario);

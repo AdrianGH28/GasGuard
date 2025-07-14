@@ -1401,7 +1401,33 @@ export const desactivarAfiliado = async (req, res) => {
     }
 };
 
+export const obtenerReportesDisponibles = async (req, res) => {
+    try {
+        const [reportes] = await pool.execute(`
+            SELECT 
+                r.id_reporte,
+                r.nmticket_reporte,
+                r.estado_reporte,
+                r.descri_reporte,
+                r.fecini_reporte,
+                r.id_tireporte,
+                r.id_user
+            FROM mreporte r
+            WHERE r.id_reltecnico IS NULL
+        `);
 
+        res.status(200).json({
+            status: "ok",
+            reportes
+        });
+    } catch (error) {
+        console.error("Error al obtener reportes disponibles:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Error al obtener los reportes disponibles"
+        });
+    }
+};
 
 export const methods = {
     login,
@@ -1421,5 +1447,6 @@ export const methods = {
     repagousuario,
     Obtenerpreciouser,
     obtenerCuentasRestantes,
-    desactivarAfiliado
+    desactivarAfiliado,
+    obtenerReportesDisponibles
 };
