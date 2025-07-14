@@ -45,6 +45,7 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
     const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/i;
     const regexNums = /^[0-9]+$/;
 
+    console.log(nombre, ciudad, colonia, estado);
     
 if (![nombre, ciudad, colonia, estado].every(txt => regexLetras.test(txt.trim()))) {
   mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");

@@ -345,7 +345,7 @@ export const registrarAfiliado = async (req, res) => {
 
 
 
-
+/*
 /*CUENTAS AFILIADAS CON REPORTE
 async function registrarAfiliado(req, res) {
     const { nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass } = req.body;
@@ -483,12 +483,13 @@ export const registrarAfiliado = async (req, res) => {
 
         // Agrega esto dentro del try, después de verificar el correo
         // Verificar cuentas restantes antes de registrar
-        const [[empresa]] = await pool.execute(
-            `SELECT u.id_user, u.afilocup_user, p.id_nmafil 
-     FROM musuario u 
-     JOIN msuscripcion p ON u.id_susc = p.id_susc 
-     WHERE u.id_user = ?`, [idEmpresa]
-        );
+        const [[empresa]] = await pool.execute(`
+    SELECT u.afilocup_user, pl.id_nmafil
+    FROM musuario u
+    JOIN msuscripcion s ON u.id_susc = s.id_susc
+    JOIN cplan pl       ON s.id_plan = pl.id_plan
+    WHERE u.id_user = ?
+`, [idEmpresa]); F
 
         if (!empresa) {
             return res.status(404).send({ status: "Error", message: "Empresa no encontrada" });
@@ -542,38 +543,38 @@ export const registrarAfiliado = async (req, res) => {
         const id_direccion = direccionResult.insertId;
 
         // Insertar usuario afiliado
-await pool.execute(
-    'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
-);
+        await pool.execute(
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
+        );
 
-console.log("Usuario afiliado registrado correctamente");
+        console.log("Usuario afiliado registrado correctamente");
 
-// Enviar la contraseña al correo
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'gasguardad1@gmail.com',
-        pass: 'jxqgehljwskmzfju'
-    }
-});
+        // Enviar la contraseña al correo
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gasguardad1@gmail.com',
+                pass: 'jxqgehljwskmzfju'
+            }
+        });
 
-const mailOptions = {
-    from: 'gasguardad1@gmail.com',
-    to: correo,
-    subject: 'Registro exitoso en GasGuard',
-    text: `Hola ${nombre}, tu cuenta ha sido creada exitosamente. Tu contraseña es: ${password}`
-};
+        const mailOptions = {
+            from: 'gasguardad1@gmail.com',
+            to: correo,
+            subject: 'Registro exitoso en GasGuard',
+            text: `Hola ${nombre}, tu cuenta ha sido creada exitosamente. Tu contraseña es: ${password}`
+        };
 
-await transporter.sendMail(mailOptions);
-console.log("Correo enviado con la contraseña al usuario afiliado");
+        await transporter.sendMail(mailOptions);
+        console.log("Correo enviado con la contraseña al usuario afiliado");
 
-// ✅ Ahora sí, después de todo, incrementa afilocup_user
-await pool.execute(
-    `UPDATE musuario SET afilocup_user = afilocup_user + 1 WHERE id_user = ?`, [idEmpresa]
-);
+        // ✅ Ahora sí, después de todo, incrementa afilocup_user
+        await pool.execute(
+            `UPDATE musuario SET afilocup_user = afilocup_user + 1 WHERE id_user = ?`, [idEmpresa]
+        );
 
-return res.status(201).send({ status: "ok", message: `Afiliado ${nombre} registrado con éxito` });
+        return res.status(201).send({ status: "ok", message: `Afiliado ${nombre} registrado con éxito` });
 
 
     } catch (error) {
@@ -953,7 +954,7 @@ export const resetPassword = async (req, res) => {
 };
 
 async function Obtenerprecioempr(req, res) {
-    const {tiplan, noAfiliados} = req.body;
+    const { tiplan, noAfiliados } = req.body;
 
     if (!tiplan || isNaN(noAfiliados)) {
         return res.status(400).send({ status: "Error", message: "Los campos están incompletos" });
@@ -964,7 +965,7 @@ async function Obtenerprecioempr(req, res) {
     }
 
     if (noAfiliados < 1 || noAfiliados > 20) {
-        return res.status(400).send({ status: "Error", message: "El número de afiliados debe estar entre 2 y 20."});
+        return res.status(400).send({ status: "Error", message: "El número de afiliados debe estar entre 2 y 20." });
     }
 
     try {
@@ -982,10 +983,10 @@ async function Obtenerprecioempr(req, res) {
         if (rows.length === 0) {
             return res.status(404).send({ status: "Error", message: "No se encontraron datos." });
         }
-        return res.status(200).send({ 
-            status: "ok", 
-            message: "Monto calculado", 
-            planes: rows  
+        return res.status(200).send({
+            status: "ok",
+            message: "Monto calculado",
+            planes: rows
         });
 
     } catch (error) {
@@ -995,9 +996,9 @@ async function Obtenerprecioempr(req, res) {
 };
 
 async function Obtenerpreciouser(req, res) {
-    const {tiplan} = req.body;
+    const { tiplan } = req.body;
 
-    if (!tiplan ) {
+    if (!tiplan) {
         return res.status(400).send({ status: "Error", message: "Los campos están incompletos" });
     }
 
@@ -1019,10 +1020,10 @@ async function Obtenerpreciouser(req, res) {
         if (rows.length === 0) {
             return res.status(404).send({ status: "Error", message: "No se encontraron datos." });
         }
-        return res.status(200).send({ 
-            status: "ok", 
-            message: "Monto calculado", 
-            planes: rows  
+        return res.status(200).send({
+            status: "ok",
+            message: "Monto calculado",
+            planes: rows
         });
 
     } catch (error) {
@@ -1130,10 +1131,10 @@ async function repagoempresa(req, res) {
         }
 
         // Obtener o crear suscripción
-        
+
         const [insertResult] = await pool.execute(
-        'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
-        [fechaInicio, fechaFinStr, estatus, monto, id_plan]
+            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
+            [fechaInicio, fechaFinStr, estatus, monto, id_plan]
         );
         const id_susc = insertResult.insertId;
         const rol = 'empresa';
@@ -1152,34 +1153,34 @@ async function repagoempresa(req, res) {
 
 async function repagousuario(req, res) {
     const { tiplan, correo, monto, meses } = req.body;
-    
-    
+
+
     if (monto === 0) {
         return res.status(400).json({ status: "Error", message: "Falta calcular el monto" });
     }
-    
-    
+
+
     try {
         // Verificar si el usuario ya tiene una suscripción
         const [rows] = await pool.execute('SELECT id_susc FROM musuario WHERE correo_user = ?', [correo]);
-        
+
         // Verificar si el usuario tiene suscripción (corregido)
         if (rows.length > 0 && rows[0].id_susc !== null) {
             return res.status(400).json({ status: "Error", message: "Este usuario tiene una suscripción activa" });
         }
-        
+
         const ahora = new Date();
-        
+
         // Para la fecha de inicio (formato YYYY-MM-DD)
         const fechaInicio = ahora.toISOString().split('T')[0];
-        
+
         // Para la fecha de fin, añadir meses
         const fechaFin = new Date();
         fechaFin.setMonth(fechaFin.getMonth() + parseInt(meses));
         const fechaFinStr = fechaFin.toISOString().split('T')[0];
         const estatus = 1;
         const noAfiliados = 1;
-        
+
         // Obtener id_tiplan
         const [tipoplanResult] = await pool.execute('SELECT id_tiplan FROM ctipoplan WHERE dura_tiplan = ?', [tiplan]);
         let id_tiplan;
@@ -1189,34 +1190,34 @@ async function repagousuario(req, res) {
             const [inserttipoplanResult] = await pool.execute('INSERT INTO ctipoplan (dura_tiplan) VALUES (?)', [tiplan]);
             id_tiplan = inserttipoplanResult.insertId;
         }
-        
+
         // Obtener id_plan
         const [planResult] = await pool.execute('SELECT id_plan FROM cplan WHERE id_tiplan = ? AND id_nmafil = ?', [id_tiplan, noAfiliados]);
         let id_plan;
         if (planResult.length > 0) {
-            id_plan = planResult[0].id_plan; 
+            id_plan = planResult[0].id_plan;
         } else {
             const [insertplanResult] = await pool.execute(
-                'INSERT INTO cplan (id_tiplan, id_nmafil) VALUES (?, ?)', 
+                'INSERT INTO cplan (id_tiplan, id_nmafil) VALUES (?, ?)',
                 [id_tiplan, noAfiliados]
             );
             id_plan = insertplanResult.insertId;
         }
-        
+
         // Insertar suscripción
         const [suscripcionResult] = await pool.execute(
             'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
             [fechaInicio, fechaFinStr, estatus, monto, id_plan] // Eliminado id_estado que no estaba definido
         );
         const suscriId = suscripcionResult.insertId;
-        
+
         const rol = "user";
         // Actualizar usuario
         await pool.execute(
             'UPDATE musuario SET id_susc = ?, rol_user = ? WHERE correo_user = ?',
             [suscriId, rol, correo]
         );
-        
+
         return res.status(201).json({ status: "ok", message: "Suscripción activada", redirect: "/" });
     } catch (error) {
         console.error('Error al realizar la suscripcion:', error);
@@ -1229,11 +1230,13 @@ export const obtenerCuentasRestantes = async (req, res) => {
 
     try {
         const [[empresa]] = await pool.execute(`
-            SELECT u.afilocup_user, p.id_nmafil 
-            FROM musuario u 
-            JOIN msuscripcion p ON u.id_susc = p.id_susc 
-            WHERE u.id_user = ?
-        `, [idEmpresa]);
+    SELECT u.afilocup_user, pl.id_nmafil
+    FROM musuario u
+    JOIN msuscripcion s ON u.id_susc = s.id_susc
+    JOIN cplan pl       ON s.id_plan = pl.id_plan
+    WHERE u.id_user = ?
+`, [idEmpresa]);
+
 
         if (!empresa) {
             return res.status(404).send({ status: "Error", message: "Empresa no encontrada" });
