@@ -238,6 +238,7 @@ async function registro(req, res) {
 }
 
 /*--------CUENTAS AFILIADAS */
+/*
 export const registrarAfiliado = async (req, res) => {
     console.log("Solicitud recibida para registrar afiliado");
     const { nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass } = req.body;
@@ -338,7 +339,7 @@ export const registrarAfiliado = async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error en el registro del afiliado" });
     }
 };
-
+*/
 
 
 
@@ -454,7 +455,7 @@ async function registrarAfiliado(req, res) {
 
 */
 /*--------CUENTAS AFILIADAS CON CUENTAS RESTANTES */
-/*
+
 export const registrarAfiliado = async (req, res) => {
     console.log("Solicitud recibida para registrar afiliado");
     const { nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass } = req.body;
@@ -498,10 +499,7 @@ export const registrarAfiliado = async (req, res) => {
             return res.status(400).send({ status: "Error", message: "Ya no tienes cuentas afiliadas disponibles" });
         }
 
-        // al final del registro exitoso, incrementa afilocup_user
-        await pool.execute(
-            `UPDATE musuario SET afilocup_user = afilocup_user + 1 WHERE id_user = ?`, [idEmpresa]
-        );
+
         // Hashear contraseña
         const salt = await bcryptjs.genSalt(5);
         const hashPassword = await bcryptjs.hash(password, salt);
@@ -544,40 +542,46 @@ export const registrarAfiliado = async (req, res) => {
         const id_direccion = direccionResult.insertId;
 
         // Insertar usuario afiliado
-        await pool.execute(
-            'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
-        );
+await pool.execute(
+    'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
+);
 
-        console.log("Usuario afiliado registrado correctamente");
+console.log("Usuario afiliado registrado correctamente");
 
-        // Enviar la contraseña al correo
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'gasguardad1@gmail.com',
-                pass: 'jxqgehljwskmzfju'
-            }
-        });
+// Enviar la contraseña al correo
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'gasguardad1@gmail.com',
+        pass: 'jxqgehljwskmzfju'
+    }
+});
 
-        const mailOptions = {
-            from: 'gasguardad1@gmail.com',
-            to: correo,
-            subject: 'Registro exitoso en GasGuard',
-            text: `Hola ${nombre}, tu cuenta ha sido creada exitosamente. Tu contraseña es: ${password}`
-        };
+const mailOptions = {
+    from: 'gasguardad1@gmail.com',
+    to: correo,
+    subject: 'Registro exitoso en GasGuard',
+    text: `Hola ${nombre}, tu cuenta ha sido creada exitosamente. Tu contraseña es: ${password}`
+};
 
-        await transporter.sendMail(mailOptions);
-        console.log("Correo enviado con la contraseña al usuario afiliado");
+await transporter.sendMail(mailOptions);
+console.log("Correo enviado con la contraseña al usuario afiliado");
 
-        return res.status(201).send({ status: "ok", message: `Afiliado ${nombre} registrado con éxito` });
+// ✅ Ahora sí, después de todo, incrementa afilocup_user
+await pool.execute(
+    `UPDATE musuario SET afilocup_user = afilocup_user + 1 WHERE id_user = ?`, [idEmpresa]
+);
+
+return res.status(201).send({ status: "ok", message: `Afiliado ${nombre} registrado con éxito` });
+
 
     } catch (error) {
         console.error("Error al registrar afiliado:", error);
         return res.status(500).send({ status: "Error", message: "Error en el registro del afiliado" });
     }
 };
-*/
+
 /*
 
 
