@@ -45,10 +45,11 @@ document.getElementById("cuentas-afiliadas-form").addEventListener("submit", asy
     const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/i;
     const regexNums = /^[0-9]+$/;
 
-    if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
-        mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
-        return;
-    }
+    
+if (![nombre, ciudad, colonia, estado].every(txt => regexLetras.test(txt.trim()))) {
+  mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
+  return;
+}
 
     if (!regexNums.test(cp) || cp.length !== 5) {
         mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
