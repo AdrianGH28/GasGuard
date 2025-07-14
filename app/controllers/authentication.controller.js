@@ -496,7 +496,8 @@ export const registrarAfiliado = async (req, res) => {
             return res.status(404).send({ status: "Error", message: "Empresa no encontrada" });
         }
 
-        const cuentasDisponibles = empresa.id_nmafil - empresa.afilocup_user;
+        const afilOcupadas = empresa.afilocup_user ?? 0;  // 👈 si es NULL lo trata como 0
+        const cuentasDisponibles = empresa.id_nmafil - afilOcupadas;
         if (cuentasDisponibles <= 0) {
             return res.status(400).send({ status: "Error", message: "Ya no tienes cuentas afiliadas disponibles" });
         }
@@ -572,7 +573,7 @@ export const registrarAfiliado = async (req, res) => {
 
         // ✅ Ahora sí, después de todo, incrementa afilocup_user
         await pool.execute(
-            `UPDATE musuario SET afilocup_user = afilocup_user + 1 WHERE id_user = ?`, [idEmpresa]
+            `UPDATE musuario SET afilocup_user = IFNULL(afilocup_user, 0) + 1 WHERE id_user = ?`, [idEmpresa]
         );
 
         return res.status(201).send({ status: "ok", message: `Afiliado ${nombre} registrado con éxito` });
