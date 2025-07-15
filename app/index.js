@@ -306,6 +306,7 @@ app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
                 musuario.id_user,
                 musuario.nom_user,
                 musuario.correo_user,
+                musuario.dispositivo_user,
                 ddireccion.numero_direc,
                 dcalle.nom_calle,
                 ccolonia.nom_col,
@@ -345,6 +346,7 @@ app.get("/api/afiliadosempre", authorization.proteccion, async (req, res) => {
         return res.status(500).send({ status: "Error", message: "Error al obtener las cuentas afiliadas" });
     }
 });
+
 
 app.get("/api/reportesempre", authorization.proteccion, async (req, res) => {
     try {
