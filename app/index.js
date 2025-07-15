@@ -1503,20 +1503,19 @@ app.post('/api/sensor-value', async (req, res) => {
 });
 
 
-app.get('/api/sensor-value', async (req, res) => {
+app.get('/api/sensor-value',  authorization.proteccion, async (req, res) => {
+    const idUsuario = req.user.id_user;
+
     try {
         const [rows] = await pool.execute(
-            'SELECT resistencia, fecha, hora FROM dregistro ORDER BY id_registro DESC LIMIT 1'
+            'SELECT resistencia, fecha, hora FROM dregistro WHERE id_user = ? ORDER BY id_registro DESC',
+            [idUsuario]
         );
 
-        if (rows.length > 0) {
-            const { resistencia, fecha, hora } = rows[0];
-            res.json({ resistencia, fecha, hora });
-        } else {
-            res.json({ resistencia: null, fecha: null, hora: null });
-        }
+        
+        res.json(rows.length > 0 ? rows : []);
     } catch (error) {
-        console.error('Error al obtener el valor del sensor:', error);
+        console.error('Error al obtener los valores del sensor:', error);
         res.status(500).json({ status: 'Error', message: 'Error al obtener los datos del sensor' });
     }
 });
