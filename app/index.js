@@ -144,7 +144,7 @@ app.get("/api/reportes-disponibles", authorization.proteccion, authentication.ob
 app.post("/api/repagoempresa", authentication.repagoempresa);
 app.post("/api/obtener-precio-empr", authentication.Obtenerprecioempr);
 app.post("/api/repagousuario", authentication.repagousuario);
-app.post("/api/obtener-precio-empr", authentication.Obtenerpreciouser);
+app.post("/api/obtener-precio-user", authentication.Obtenerpreciouser);
 
 app.get("/api/user-info", authentication.getUserInfo);
 
