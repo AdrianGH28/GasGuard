@@ -86,6 +86,7 @@ app.get("/registropago", authorization.soloPublico, (req, res) => res.sendFile(_
 app.get("/paso1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso1.html"));
 app.get("/paso2", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso2.html"));
 app.get("/repagoempresa", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_repagoempresa.html"));
+app.get("/repagousuario", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_repagousuario.html"));
 app.get("/tipocuenta", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_selecttipocuenta.html"));
 app.get("/paso4", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_paso4.html"));
 app.get("/recuperacion1", authorization.soloPublico, (req, res) => res.sendFile(__dirname + "/pages/MISYR_recuperacion1.html"));

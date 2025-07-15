@@ -66,32 +66,28 @@ document.addEventListener("DOMContentLoaded", () => {
 // Variable global para el monto total (declarada una sola vez)
 let montoTotal = 0;
 
-// Función para calcular el monto de la suscripción
 async function calcularMonto() {
-  // Obtener valores del formulario
-  const tiplan = document.querySelector("#subscription").value;
-  const noAfiliados = parseInt(document.querySelector("#disp").value) || 0;
-  
-  // Validaciones básicas
-  if (tiplan === "selectop" || !tiplan) {
-    mostrarAlerta("error", "Por favor selecciona un plan");
-    return;
-  }
-  
-  if (!noAfiliados || noAfiliados < 1 || noAfiliados > 20) {
-    mostrarAlerta("error", "El número de afiliados debe estar entre 1 y 20");
-    return;
-  }
-  
-  try {
-    // Obtener precio desde el servidor
-    const response = await fetch("/api/obtener-precio-empr", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tiplan, noAfiliados }),
-    });
+    const tiplan = document.querySelector('#subscription').value;
     
-    const data = await response.json();
+    console.log("Datos enviados al backend:", { tiplan });
+    
+    if (tiplan === "selectop") {
+        alert('info', "Elige un tipo de plan.");
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/obtener-precio-user', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                tiplan
+            })
+        });
+
+        const data = await response.json();
     
     // Verificar respuesta correcta
     if (!response.ok) {
@@ -105,17 +101,15 @@ async function calcularMonto() {
     // Calcular monto total
     const plan = data.planes[0];
     const precioBase = parseFloat(plan.pbas_tiplan) || 0;
-    const precioAfiliado = parseFloat(plan.ppp_nmafil) || 0;
     
     // Obtener multiplicador según el plan
     mesespl = { mensual: 1, semestral: 6, anual: 12 }[tiplan] || 1;
     
     // Calcular precio con descuento para planes semestrales y anuales
     const porcentajeDescuento = tiplan === "mensual" ? 1 : tiplan === "semestral" ? 0.9 : 0.8;
-    montoTotal = (precioBase + (precioAfiliado * noAfiliados)) * mesespl * porcentajeDescuento;
-    
-    // Mostrar el monto a pagar
-    document.getElementById("montoPagar").innerText = `$${montoTotal.toFixed(2)} MXN`;
+    montoTotal = (precioBase) * mesespl * porcentajeDescuento;
+
+        document.getElementById("montoPagar").innerText = `$${montoTotal.toFixed(2)} MXN`;
     
     // Habilitar el botón de pago
     document.getElementById('submit-button').disabled = false;
@@ -129,144 +123,7 @@ async function calcularMonto() {
   }
 }
 
-// Función para manejar el envío del formulario
-/*
-async function handleSubmit(event) {
-  event.preventDefault();
-  
-  // Obtener el email y nombre del titular
-  const email = document.getElementById("email").value || localStorage.getItem("resetEmail");
-  const cardholderName = document.getElementById("cardholder-name").value;
-  
-  if (!email) {
-    mostrarAlerta("error", "Se requiere un correo electrónico");
-    return;
-  }
-  
-  if (!cardholderName) {
-    mostrarAlerta("error", "Se requiere el nombre del titular de la tarjeta");
-    return;
-  }
-  
-  if (!montoTotal) {
-    mostrarAlerta("error", "Por favor calcula el monto primero");
-    return;
-  }
-  
-  // Obtener valores del formulario
-  const tiplan = document.getElementById("subscription").value;
-  const noAfiliados = parseInt(document.getElementById("disp").value);
-  
-  // Cambiar estado del botón
-  const submitButton = document.getElementById('submit-button');
-  submitButton.disabled = true;
-  submitButton.textContent = "Procesando...";
-  
-  try {
-    // 1. Crear o obtener cliente en Stripe
-    const customerResponse = await fetch("/api/create-customer", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    
-    if (!customerResponse.ok) {
-      const errorData = await customerResponse.json();
-      throw new Error(errorData.error || "Error al crear cliente");
-    }
-    
-    const { customerId } = await customerResponse.json();
-    
-    // 2. Crear un método de pago con la tarjeta
-    const { error: setupError, paymentMethod } = await stripeInstance.createPaymentMethod({
-      type: 'card',
-      card: cardElement,
-      billing_details: {
-        email: email,
-        name: cardholderName
-      }
-    });
-    
-    if (setupError) {
-      throw new Error(setupError.message || "Error al configurar el método de pago");
-    }
-    
-    // 3. Asociar el método de pago al cliente
-    const attachResponse = await fetch("/api/attach-payment-method", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customerId,
-        paymentMethodId: paymentMethod.id,
-        setAsDefault: true
-      }),
-    });
-    
-    if (!attachResponse.ok) {
-      const errorData = await attachResponse.json();
-      throw new Error(errorData.error || "Error al asociar método de pago");
-    }
-    
-    // 4. Ahora crear la suscripción con el cliente que ya tiene un método de pago predeterminado
-    const subscriptionResponse = await fetch("/api/create-subscription", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customerId,
-        tiplan,
-        afiliados: noAfiliados,
-        montoTotal: Math.round(montoTotal * 100), // Convertir a centavos para Stripe
-        paymentMethodId: paymentMethod.id
-      }),
-    });
-    
-    if (!subscriptionResponse.ok) {
-      const errorData = await subscriptionResponse.json();
-      throw new Error(errorData.error || "Error al crear suscripción");
-    }
-    
-    const { subscription } = await subscriptionResponse.json();
-    
-    // 5. Registrar la suscripción en nuestra base de datos
-    const dbResponse = await fetch("/api/repagoempresa", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        correo: email,
-        nombre: cardholderName,
-        tiplan,
-        noAfiliados,
-        monto: montoTotal,
-        meses: mesespl,
-        subscriptionId: subscription.id
-      })
-    });
-    
-    if (!dbResponse.ok) {
-      console.error("Error al registrar en BD, pero la suscripción fue creada");
-    }
-    
-    // Mostrar mensaje de éxito
-    document.getElementById("payment-message").innerHTML = 
-      `<div class="success-message">¡Suscripción creada exitosamente! Redirigiendo...</div>`;
-    
-    // Redirigir al usuario
-    setTimeout(() => {
-      window.location.href = "/principal";
-    }, 2000);
-    
-  } catch (error) {
-    // Mostrar mensaje de error
-    document.getElementById("payment-message").innerHTML = 
-      `<div class="error-message">${error.message}</div>`;
-    console.error("Error en el proceso de pago:", error);
-    
-    // Restaurar botón
-    submitButton.disabled = false;
-    submitButton.textContent = "Pagar ahora";
-  }
-}
-*/
+
 async function handleSubmit(event) {
   event.preventDefault();
   const stripeEmail = document.getElementById("email").value; // Solo para Stripe
@@ -368,7 +225,7 @@ async function handleSubmit(event) {
     const { subscription } = await subscriptionResponse.json();
     
     // 5. Registrar en BD directamente (opcional, el webhook también lo hará)
-    const dbResponse = await fetch("/api/repagoempresa", {
+    const dbResponse = await fetch("/api/repagousuario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -402,7 +259,6 @@ async function handleSubmit(event) {
     submitButton.textContent = "Pagar ahora";
   }
 }
-// Función para mostrar alertas
 function mostrarAlerta(tipo, mensaje) {
   const alertamodal = document.getElementById("alertamodal");
   const alertheading = document.querySelector(".alertheading");

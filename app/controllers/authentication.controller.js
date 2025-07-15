@@ -1187,14 +1187,14 @@ async function repagousuario(req, res) {
         }
         
         // Obtener id_plan
-        const [planResult] = await pool.execute('SELECT id_plan FROM cplan WHERE id_tiplan = ? AND id_nmafil = ?', [id_tiplan, noAfiliados]);
+        const [planResult] = await pool.execute('SELECT id_plan FROM cplan WHERE id_tiplan = ?', [id_tiplan]);
         let id_plan;
         if (planResult.length > 0) {
             id_plan = planResult[0].id_plan; 
         } else {
             const [insertplanResult] = await pool.execute(
-                'INSERT INTO cplan (id_tiplan, id_nmafil) VALUES (?, ?)', 
-                [id_tiplan, noAfiliados]
+                'INSERT INTO cplan (id_tiplan) VALUES (?)', 
+                [id_tiplan]
             );
             id_plan = insertplanResult.insertId;
         }
