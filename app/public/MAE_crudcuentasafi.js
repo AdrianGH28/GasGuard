@@ -1,4 +1,196 @@
+window.addEventListener('load', async () => {
+    const body = document.body;
+    body.style.opacity = '1';
+    await actualizarCuentasRestantes();
+});
+
+
+const modal = document.querySelector('#modal');
+const pageContainer = document.querySelector('.page-container');
+const addca = document.getElementById('anadircuenta');
+const cerrarmodal = document.querySelector('#cerrarmodal')
+
+// Función para mostrar u ocultar el modal
+addca.addEventListener('click', () => {
+        modal.showModal();
+});
+cerrarmodal.addEventListener('click', () => {
+    modal.close();
+});
+function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.querySelector('#nombre').value.trim();
+    const cp = document.querySelector('#cp').value;
+    const ciudad = document.querySelector('#ciudad').value.trim();
+    const colonia = document.querySelector('#colonia').value.trim();
+    const calle = document.querySelector('#calle').value;
+    const numero = document.querySelector('#numero').value;
+    const estado = document.querySelector('#estado').value.trim();
+    const correo = document.querySelector('#correo').value;
+    const password = document.querySelector('#password').value;
+    const confpass = document.querySelector('#conf-pass').value;
+    const submitBtn = document.querySelector('button[type="submit"]');
+
+    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
+        mostraralerta('info', "Todos los campos son obligatorios.");
+        return;
+    }
+
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/i;
+    const regexNums = /^[0-9]+$/;
+
+    console.log(nombre, ciudad, colonia, estado);
+    
+if (![nombre, ciudad, colonia, estado].every(txt => regexLetras.test(txt.trim()))) {
+  mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
+  return;
+}
+
+    if (!regexNums.test(cp) || cp.length !== 5) {
+        mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
+        return;
+    }
+
+    if (!regexNums.test(numero)) {
+        mostraralerta('error', "El número debe contener solo caracteres numéricos.");
+        return;
+    }
+
+    if (password.length < 8 || password.length > 12) {
+        mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
+        return;
+    }
+
+    if (password !== confpass) {
+        mostraralerta('error', "Las contraseñas no coinciden.");
+        return;
+    }
+
+    try {
+        const res = await fetch("/api/registrar-afiliado", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            mostraralerta('error', data.message || "Error al registrar afiliado.");
+            return;
+        }
+
+        mostraralerta('success', data.message || "Afiliado registrado correctamente.");
+
+        await esperar(3000); // Espera 4 segundos
+            // Esperar a que la animación termine antes de redirigir
+            cerraralerta();
+            modal.close();
+            location.reload();
+        // Si quieres cerrar el modal automáticamente:
+
+    } catch (err) {
+        console.error(err);
+        mostraralerta('error', "Error de conexión con el servidor.");
+    }
+});
+
+
+
+
 /*
+document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nombre = document.querySelector('#nombre').value;
+    const cp = document.querySelector('#cp').value;
+    const ciudad = document.querySelector('#ciudad').value;
+    const colonia = document.querySelector('#colonia').value;
+    const calle = document.querySelector('#calle').value;
+    const numero = document.querySelector('#numero').value;
+    const estado = document.querySelector('#estado').value;
+    const correo = document.querySelector('#correo').value;
+    const password = document.querySelector('#password').value;
+    const confpass = document.querySelector('#conf-pass').value;
+    const submitBtn = document.querySelector('button[type="submit"]');
+
+    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
+        mostraralerta('info', "Todos los campos son obligatorios.");
+        return;
+    }
+
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const regexNums = /^[0-9]+$/;
+
+    if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
+        mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
+        return;
+    }
+
+    if (!regexNums.test(cp) || cp.length !== 5) {
+        mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
+        return;
+    }
+
+    if (!regexNums.test(numero)) {
+        mostraralerta('error', "El número debe contener solo caracteres numéricos.");
+        return;
+    }
+
+    if (password.length < 8 || password.length > 12) {
+        mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
+        return;
+    }
+
+    if (password !== confpass) {
+        mostraralerta('error', "Las contraseñas no coinciden.");
+        return;
+    }
+
+    try {
+        const res = await fetch("/api/registrar-afiliado", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            mostraralerta('error', data.message || "Error al registrar afiliado.");
+            return;
+        }
+
+        mostraralerta('success', data.message || "Afiliado registrado correctamente.");
+
+        await esperar(3000); // Espera 4 segundos
+            // Esperar a que la animación termine antes de redirigir
+            cerraralerta();
+            modal.close();
+            location.reload();
+        // Si quieres cerrar el modal automáticamente:
+
+    } catch (err) {
+        console.error(err);
+        mostraralerta('error', "Error de conexión con el servidor.");
+    }
+});
+*/
+
 window.addEventListener('load', async () => {
     const body = document.body;
     body.style.opacity = '1';
@@ -28,190 +220,38 @@ window.addEventListener('load', async () => {
         console.error("Error al consultar cuentas restantes:", err);
     }
 });
-*/
-/*
-document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    const nombre = document.querySelector('#nombre').value;
-    const cp = document.querySelector('#cp').value;
-    const ciudad = document.querySelector('#ciudad').value;
-    const colonia = document.querySelector('#colonia').value;
-    const calle = document.querySelector('#calle').value;
-    const numero = document.querySelector('#numero').value;
-    const estado = document.querySelector('#estado').value;
-    const correo = document.querySelector('#correo').value;
-    const password = document.querySelector('#password').value;
-    const confpass = document.querySelector('#conf-pass').value;
-    const submitBtn = document.querySelector('button[type="submit"]');
 
-    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
-        mostraralerta('info', "Todos los campos son obligatorios.");
-        return;
-    }
 
-    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const regexNums = /^[0-9]+$/;
 
-    if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
-        mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
-        return;
-    }
-
-    if (!regexNums.test(cp) || cp.length !== 5) {
-        mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
-        return;
-    }
-
-    if (!regexNums.test(numero)) {
-        mostraralerta('error', "El número debe contener solo caracteres numéricos.");
-        return;
-    }
-
-    if (password.length < 8 || password.length > 12) {
-        mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
-        return;
-    }
-
-    if (password !== confpass) {
-        mostraralerta('error', "Las contraseñas no coinciden.");
-        return;
-    }
-
+async function actualizarCuentasRestantes() {
     try {
-        const res = await fetch("/api/registrar-afiliado", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass
-            })
-        });
-
+        const res = await fetch("/api/cuentas-restantes");
         const data = await res.json();
 
-        if (!res.ok) {
-            mostraralerta('error', data.message || "Error al registrar afiliado.");
-            return;
+        if (res.ok) {
+            const countSpan = document.getElementById('remaining-count');
+            const btnAñadir = document.getElementById('anadircuenta');
+
+            countSpan.textContent = data.cuentasDisponibles;
+
+            if (data.cuentasDisponibles <= 0) {
+                btnAñadir.classList.add('disabled');
+                btnAñadir.style.pointerEvents = 'none';
+                btnAñadir.style.opacity = '0.5';
+                btnAñadir.title = "Ya no puedes añadir más cuentas";
+            } else {
+                btnAñadir.classList.remove('disabled');
+                btnAñadir.style.pointerEvents = 'auto';
+                btnAñadir.style.opacity = '1';
+                btnAñadir.title = "";
+            }
         }
-
-        mostraralerta('success', data.message || "Afiliado registrado correctamente.");
-
-        await esperar(3000); // Espera 4 segundos
-            // Esperar a que la animación termine antes de redirigir
-            cerraralerta();
-            modal.close();
-            location.reload();
-        // Si quieres cerrar el modal automáticamente:
-    await actualizarCuentasRestantes();
-    } catch (err) {
-        console.error(err);
-        mostraralerta('error', "Error de conexión con el servidor.");
+    } catch (error) {
+        console.error("Error actualizando cuentas restantes:", error);
     }
-});
-*/
-window.addEventListener('load', () => {
-    const body = document.body;
-    body.style.opacity='1';
-});
-
-
-const modal = document.querySelector('#modal');
-const pageContainer = document.querySelector('.page-container');
-const addca = document.getElementById('anadircuenta');
-const cerrarmodal = document.querySelector('#cerrarmodal')
-
-// Función para mostrar u ocultar el modal
-addca.addEventListener('click', () => {
-        modal.showModal();
-});
-cerrarmodal.addEventListener('click', () => {
-    modal.close();
-});
-function esperar(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
-document.getElementById("cuentas-afiliadas-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    const nombre = document.querySelector('#nombre').value;
-    const cp = document.querySelector('#cp').value;
-    const ciudad = document.querySelector('#ciudad').value;
-    const colonia = document.querySelector('#colonia').value;
-    const calle = document.querySelector('#calle').value;
-    const numero = document.querySelector('#numero').value;
-    const estado = document.querySelector('#estado').value;
-    const correo = document.querySelector('#correo').value;
-    const password = document.querySelector('#password').value;
-    const confpass = document.querySelector('#conf-pass').value;
-    const submitBtn = document.querySelector('button[type="submit"]');
-
-    if (!nombre || !cp || !ciudad || !colonia || !calle || !numero || !estado || !correo || !password || !confpass) {
-        mostraralerta('info', "Todos los campos son obligatorios.");
-        return;
-    }
-
-    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const regexNums = /^[0-9]+$/;
-
-    if (!regexLetras.test(nombre) || !regexLetras.test(ciudad) || !regexLetras.test(colonia) || !regexLetras.test(estado)) {
-        mostraralerta('error', "Los campos de nombre, ciudad, colonia y estado solo deben contener letras y espacios.");
-        return;
-    }
-
-    if (!regexNums.test(cp) || cp.length !== 5) {
-        mostraralerta('error', "El código postal debe contener 5 caracteres numéricos.");
-        return;
-    }
-
-    if (!regexNums.test(numero)) {
-        mostraralerta('error', "El número debe contener solo caracteres numéricos.");
-        return;
-    }
-
-    if (password.length < 8 || password.length > 12) {
-        mostraralerta('error', "La contraseña debe tener entre 8 y 12 caracteres.");
-        return;
-    }
-
-    if (password !== confpass) {
-        mostraralerta('error', "Las contraseñas no coinciden.");
-        return;
-    }
-
-    try {
-        const res = await fetch("/api/registrar-afiliado", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                nombre, cp, ciudad, colonia, calle, numero, estado, correo, password, confpass
-            })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            mostraralerta('error', data.message || "Error al registrar afiliado.");
-            return;
-        }
-
-        mostraralerta('success', data.message || "Afiliado registrado correctamente.");
-
-        await esperar(3000); // Espera 4 segundos
-            // Esperar a que la animación termine antes de redirigir
-            cerraralerta();
-            modal.close();
-            location.reload();
-        // Si quieres cerrar el modal automáticamente:
-
-    } catch (err) {
-        console.error(err);
-        mostraralerta('error', "Error de conexión con el servidor.");
-    }
-});
 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -314,37 +354,6 @@ document.getElementById("searchInput").addEventListener("input", function () {
 });
 
  
-/*
-async function actualizarCuentasRestantes() {
-    try {
-        const res = await fetch("/api/cuentas-restantes");
-        const data = await res.json();
-
-        if (res.ok) {
-            const countSpan = document.getElementById('remaining-count');
-            const btnAñadir = document.getElementById('anadircuenta');
-
-            countSpan.textContent = data.cuentasDisponibles;
-
-            if (data.cuentasDisponibles <= 0) {
-                btnAñadir.classList.add('disabled');
-                btnAñadir.style.pointerEvents = 'none';
-                btnAñadir.style.opacity = '0.5';
-                btnAñadir.title = "Ya no puedes añadir más cuentas";
-            } else {
-                btnAñadir.classList.remove('disabled');
-                btnAñadir.style.pointerEvents = 'auto';
-                btnAñadir.style.opacity = '1';
-                btnAñadir.title = "";
-            }
-        }
-    } catch (error) {
-        console.error("Error actualizando cuentas restantes:", error);
-    }
-}
-
-window.addEventListener('load', actualizarCuentasRestantes);
-*/
 document.getElementById("eliminarcuentas").addEventListener("click", function () {
     const boton = document.getElementById("eliminarcuentas");
     const iconotarjetas = document.querySelectorAll('.fa');
