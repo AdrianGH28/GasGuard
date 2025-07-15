@@ -1617,6 +1617,28 @@ app.get("/api/tecnicos-activos", async (req, res) => {
     }
 });
 
+app.get("/api/cuentasafi-activos", async (req, res) => {
+    const rango = req.query.rango || "hoy"; // por defecto es 'hoy'
+
+    if (rango !== "hoy") {
+        return res.status(200).send({ status: "ok", cantidad: 0 }); // o puedes poner null o [] si lo prefieres
+    }
+
+    try {
+        const [rows] = await pool.execute(`
+            SELECT COUNT(*) AS cantidad
+            FROM musuario
+            WHERE rol_user = 'afiliado' AND id_estcuenta = 1
+        `);
+
+        const cantidad = rows[0].cantidad;
+        res.status(200).send({ status: "ok", cantidad });
+    } catch (error) {
+        console.error("Error al obtener técnicos activos:", error);
+        res.status(500).send({ status: "Error", message: "Error al obtener técnicos activos" });
+    }
+});
+
 // Reportes registrados
 app.get("/api/reportes-registrados", async (req, res) => {
     const inicio = getFechaInicio(req.query.rango);
