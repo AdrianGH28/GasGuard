@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,27 +12,8 @@
     <link rel="stylesheet" href="/css/MCA_crudreportes.css">
     <link rel="stylesheet" href="/css/navbar.css">
 </head>
+
 <body>
-    <dialog id="alertamodal" class="custom-alert">
-        <div class="alerticon">
-            <i class="fa-solid fa-circle-info"></i>
-        </div>
-        <div class="alertcontent">
-            <div class="alertheadingcont">
-                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
-            </div>
-            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
-            <div class="alertactionscont">
-                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
-                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
-            </div>
-        </div>
-        <div class="alertclosebtn">
-            <button class="closebtn" onclick="cerraralerta()">
-                <i class="fa fa-x"></i>
-            </button>
-        </div>
-    </dialog>
     <nav>
         <div class="navbar-container">
             <!-- Contenedor logo y texto -->
@@ -42,20 +24,20 @@
 
             <!-- Contenedor de los items (ya centrado) -->
             <div class="container-items">
-                <!-- Página 1: Dirección (maecrudcuentasafi) -->
-                <a class="nav-link" id="iralcrud" href="/maecrudcuentasafi" data-page="maecrudcuentasafi">
-                    <i class="fa fa-address-book"></i>
-                    <div class="animation"></div>
-                </a>
-                <!-- Página 2: Historial (maevisualizarrep) -->
-                <a class="nav-link" id="iralhistorial" href="/maevisualizarrep" data-page="maevisualizarrep">
+                <!-- Página 1: Dirección (index.html) -->
+                <a class="nav-link" href="index.html" data-page="index">
                     <i class="fa fa-clipboard"></i>
                     <div class="animation"></div>
                 </a>
-                <!-- Página 3: Estadísticas (maedashboard) -->
-                <a class="nav-link" id="iraldashboard" href="/maedashboard" data-page="maedashboard">
-                    <i class="fa fa-chart-column"></i>
+                <!-- Página 2: Historial (page2.html) -->
+                <a class="nav-link" href="page2.html" data-page="page2">
+                    <i class="fa fa-house"></i>
                     <div class="animation"></div>
+                </a>
+                <!-- Página 3: Estadísticas (page3.html) -->
+                <a class="nav-link" href="page3.html" data-page="page3">
+                    <i class="fa fa-chart-column"></i>
+                    <div class=" animation"></div>
                 </a>
             </div>
 
@@ -75,30 +57,29 @@
     </nav>
     <div class="page-container">
         <div class="header-top">
-            <h1 class="page-title">CUENTAS AFILIADAS</h1>
+            <h1 class="page-title">REPORTES</h1>
             <div class="actions">
-                <div class="search-container">
-                    <input type="text" class="search-bar" id="searchInput" placeholder="Buscar por nombre...">
-                    <i class="fa fa-search search-icon"></i>
-                </div>
-                <p>Cuentas restantes: <span id="remaining-count">5</span></p>
-                <i class="fa fa-user-plus" id="anadircuenta"></i>
-                <i class="fa fa-user-minus" id="eliminarcuentas"></i>
+                <i class="fa fa-plus" id="anadirreporte"></i>
+                <button class="filter-reportes" id="filter-btn">
+                  
+                    <span class="underline-text">Filtrar</span>
+                    <i class="fa fa-filter" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
-        <div class="containercuentas" id="containercuentas">
+        <div class="containercuentas">
             <dialog class="contenedor-general" id="modal">
                 <div class="contenedor-p">
                     <div class="contenedor-pa">
-
+    
                         <div class="txt">
                             <h1>Registrar</h1>
                             <p>*Nota: El encargado podrá editar esta información</p>
                         </div>
                     </div>
-                    <form id="cuentas-afiliadas-form">
+                    <form id="enviar-correov-form">
                         <div class="form">
-
+    
                             <div class="contenedor">
                                 <div class="contenedor1">
                                     <div class="input-entero">
@@ -106,22 +87,20 @@
                                             <input type="text" name="nombre" id="nombre" placeholder="Nombre">
                                             <span class="barra"></span>
                                         </div>
-
-
+    
+    
                                     </div>
                                     <div class="input-entero">
-
+    
                                         <div class="grupo">
-                                            <input type="email" name="correo" id="correo"
-                                                placeholder="Correo electrónico">
+                                            <input type="email" name="correo" id="correo" placeholder="Correo electrónico">
                                             <span class="barra"></span>
                                         </div>
                                     </div>
                                     <p>* La contraseña debe ser entre 8 a 12 caractéres</p>
                                     <div class="input-mitad">
                                         <div class="grupo">
-                                            <input type="password" name="password" id="password"
-                                                placeholder="Contraseña">
+                                            <input type="password" name="password" id="password" placeholder="Contraseña">
                                             <span class="barra"></span>
                                         </div>
                                         <div class="grupo">
@@ -175,8 +154,241 @@
                     </form>
                 </div>
             </dialog>
+            <div class="grupodetarjetas">
+                <div class="tarjeta">
+                    <div class="centrareltache">
+                    <i class="fa fa-xmark"></i>
+                    </div>
+                    <i class="fa fa-truck">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Pendiente</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+            </div>
+            <div class="grupodetarjetas">
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+            </div>
+            <div class="grupodetarjetas">
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+            </div>
+            <div class="grupodetarjetas">
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-screwdriver-wrench">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+                <div class="tarjeta">
+                    <i class="fa fa-truck-ramp-box">
+                    </i>
+                    <div class="textotarjeta">
+                        <h2><i class="fa fa-circle"></i>  Solucionado</h2>
+                        <p>Encargado:</p>
+                        <p>pepe</p>
+                        <p>Fecha de registro:</p>
+                        <p>00-00-00</p>
+                        <p>Fecha de solución:</p>
+                        <p>00-00-00</p>
+                        <button>Ver más</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
+        
 
     </div>
 
@@ -188,7 +400,8 @@
             Tu navegador no soporta el formato de video.
         </video>
     </div>
-
     <script src="MCA_crudreportes.js" defer></script>
+    <script src="MCAnav.js"></script>
 </body>
+
 </html>

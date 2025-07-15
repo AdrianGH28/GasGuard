@@ -315,9 +315,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             estadoIcono.classList.add("fa", "fa-circle");
             estado.appendChild(estadoIcono);
 
-            // Por ahora asumiremos que todos son "Activo" porque no veo campo de estado en el backend,
-            // si me confirmas cómo viene el estado real te lo agrego dinámico.
-           // Supuesto estado (puedes cambiar esto cuando tengas datos reales del backend)
+            
             const estadoTexto = "Activo"; // <- reemplazar cuando tengas estado real
 
             // Color del ícono dependiendo del estado
