@@ -1568,3 +1568,82 @@ app.post('/guardar-datos', async (req, res) => {
         res.status(500).send('Error al insertar datos en la base de datos');
     }
 });
+
+/////////DASHBOARDS
+app.get("/api/reportes-registrados", async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`SELECT COUNT(*) AS total FROM mreporte`);
+        res.json({ total: rows[0].total });
+    } catch (error) {
+        console.error("Error reportes registrados:", error);
+        res.status(500).send("Error al obtener reportes registrados");
+    }
+});
+
+app.get("/api/tecnicos-activos", async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT COUNT(*) AS total 
+            FROM musuario 
+            WHERE rol_user = 'tecnico' AND id_estcuenta = 1
+        `);
+        res.json({ total: rows[0].total });
+    } catch (error) {
+        console.error("Error técnicos activos:", error);
+        res.status(500).send("Error al obtener técnicos activos");
+    }
+});
+
+app.get("/api/reportes-solucionados", async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT COUNT(*) AS total 
+            FROM mreporte 
+            WHERE fecfin_reporte IS NOT NULL
+        `);
+        res.json({ total: rows[0].total });
+    } catch (error) {
+        console.error("Error reportes solucionados:", error);
+        res.status(500).send("Error al obtener reportes solucionados");
+    }
+});
+
+app.get("/api/alertas-emitidas", async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT COUNT(*) AS total 
+            FROM mreporte 
+            WHERE id_tireporte = 2
+        `);
+        res.json({ total: rows[0].total });
+    } catch (error) {
+        console.error("Error alertas emitidas:", error);
+        res.status(500).send("Error al obtener alertas emitidas");
+    }
+});
+
+
+
+app.get("/api/porcentaje-reportes", async (req, res) => {
+    try {
+        const [rows] = await pool.execute(`
+            SELECT 
+                COUNT(*) AS total,
+                SUM(CASE WHEN fecfin_reporte IS NOT NULL THEN 1 ELSE 0 END) AS solucionados
+            FROM mreporte
+        `);
+
+        const total = rows[0].total || 1; // evitar división entre 0
+        const solucionados = rows[0].solucionados;
+        const pendientes = total - solucionados;
+
+        res.json({
+            solucionados: ((solucionados / total) * 100).toFixed(2),
+            pendientes: ((pendientes / total) * 100).toFixed(2)
+        });
+
+    } catch (error) {
+        console.error("Error porcentaje reportes:", error);
+        res.status(500).send("Error al obtener porcentajes de reportes");
+    }
+});
