@@ -152,7 +152,6 @@ async function handleSubmit(event) {
   }
   
   const tiplan = document.getElementById("subscription").value;
-  const noAfiliados = parseInt(document.getElementById("disp").value);
   
   const submitButton = document.getElementById('submit-button');
   submitButton.disabled = true;
@@ -210,7 +209,6 @@ async function handleSubmit(event) {
       body: JSON.stringify({
         customerId,
         tiplan,
-        afiliados: noAfiliados,
         montoTotal: Math.round(montoTotal * 100),
         paymentMethodId: paymentMethod.id,
         userEmail: userEmail // IMPORTANTE: Email del usuario que recibirá la suscripción
@@ -232,7 +230,6 @@ async function handleSubmit(event) {
         correo: userEmail, // Usuario que recibirá la suscripción
         nombre: cardholderName,
         tiplan,
-        noAfiliados,
         monto: montoTotal,
         meses: mesespl,
         subscriptionId: subscription.id
