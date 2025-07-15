@@ -1,120 +1,3 @@
-body {
-    opacity: 0;
-    transition: opacity 2s ease-in-out; /* Transición suave de opacidad */
-}
-#alertamodal {
-    position: fixed;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: start;
-    margin: 0%;
-    transform: translateX(-50%) translateY(-20px);
-    width: 360px;
-    height: auto;
-    padding: 24px;
-    flex-shrink: 0;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0px 16px 20px -8px rgba(3, 5, 18, 0.10);
-    left: 50%;
-    top: 19px;
-    border: 0; /* Establece todos los bordes en 0 */
-    border-left: 12px solid black;
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
-    z-index: 999;
-    box-sizing: content-box;
-    height: fit-content;  /* Asegura que la altura sea solo lo necesario */
-    opacity: 0; /* Empieza oculto */
-    visibility: hidden; /* Inicia invisibilidad */
-}
-#alertamodal:open {
-    display: flex;
-    opacity: 1; /* Se hace visible */
-    visibility: visible; /* Hace visible el modal */
-    transform: translateX(-50%) translateY(0); /* Se desplaza a su posición final */
-}
-#alertamodal::backdrop {
-    background-color: transparent;
-}
-.alertcontent {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    align-self: stretch;
-    width: 240px;
-}
-
-.alertheading {
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-}
-
-.alertcontentcont {
-    color: #6C7D7D;
-    font-family: Montserrat;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 24px;
-}
-
-.alerticon {
-    font-size: 24px;
-}
-
-.closebtn {
-    background-color: transparent;
-    border: none;
-    font-size: 20px;
-    color: #6C7D7D;
-}
-
-.alertactionscont {
-    line-height: 60px;
-    display: flex;
-    margin-top: 16px;
-}
-
-.alertactionscont .aceptar {
-    font-size: 15px;
-    font-family: Montserrat;
-    font-style: normal;
-    font-weight: 600;
-    background-color: transparent;
-    border: none;
-    margin-right: 16px;
-}
-
-.alertactionscont .cancelar {
-    color: #6C7D7D;
-    font-family: Montserrat;
-    font-size: 15px;
-    font-style: normal;
-    font-weight: 600;
-    background-color: transparent;
-    border: none;
-}
-
-.alertactionscont  .aceptar.info {
-    color: #3498db; /* Color para el botón Aceptar en alerta informativa */
-}
-
-.alertactionscont .aceptar.warning {
-    color: #f39c12; /* Color para el botón Aceptar en alerta de advertencia */
-}
-
-.alertactionscont .aceptar.error {
-    color: #e74c3c; /* Color para el botón Aceptar en alerta de error */
-}
-
-.alertactionscont .aceptar.success {
-    color: #2ecc71; /* Color para el botón Aceptar en alerta de éxito */
-}
-
-
 .page-title {
     color: #FA0000;
     font-size: 30px;
@@ -122,6 +5,7 @@ body {
     text-align: left;
     font-family: 'Montserrat', sans-serif;
 }
+
 /* Contenedor principal de la página */
 .page-container {
     width: 100%;
@@ -130,57 +14,67 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 30px; /* Espacio desde la parte superior */
+    padding-top: 30px;
+    /* Espacio desde la parte superior */
     overflow-y: auto;
     overflow-x: hidden;
     box-sizing: border-box;
     position: relative;
-  }
-  .page-container::after {
-    content: ''; /* Necesario para crear el pseudo-elemento */
+}
+
+.page-container::after {
+    content: '';
+    /* Necesario para crear el pseudo-elemento */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.1); /* Fondo negro con opacidad */
-    z-index: 998; /* Asegúrate de que esté por debajo del modal */
-    display: none; /* Inicialmente oculto */
+    background-color: rgba(0, 0, 0, 0.1);
+    /* Fondo negro con opacidad */
+    z-index: 998;
+    /* Asegúrate de que esté por debajo del modal */
+    display: none;
+    /* Inicialmente oculto */
 }
-  
-  .header-top {
+
+.header-top {
     width: 90%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px; /* Espacio entre el encabezado y el contenedor */
+    margin-bottom: 30px;
+    /* Espacio entre el encabezado y el contenedor */
     border-right: 0px solid rgba(0, 0, 0, 0);
-  }
-.container-tittle{
+}
+
+.container-tittle {
     display: flex;
     padding-left: 50px;
     padding-right: 50px;
     justify-content: space-between;
     align-items: center;
 }
+
 .actions {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 25px; /* Espaciado entre los elementos */
+    gap: 25px;
+    /* Espaciado entre los elementos */
     padding-right: 10px;
 }
 
 
-.actions p{
+.actions p {
     color: rgba(0, 0, 0, 0.42);
-text-align: center;
-font-family: Montserrat;
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: normal;
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 #anadircuenta {
@@ -206,8 +100,10 @@ line-height: normal;
 .fa.fa-user-plus:hover {
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
-.fa.fa-user{
-    font-size: 80px;
+.fa.fa-truck, 
+.fa.fa-truck-ramp-box, 
+.fa.fa-screwdriver-wrench{
+    font-size: 70px;
     color:rgba(255, 0, 0, 0.70);
 }
 .fa.fa-user-xmark{
@@ -224,7 +120,8 @@ line-height: normal;
     display: flex;
     height: 36px;
     padding: 8px;
-    background-color: rgba(0, 0, 0, 0.04); /* Fondo negro al 4% */
+    background-color: rgba(0, 0, 0, 0.04);
+    /* Fondo negro al 4% */
     border-radius: 10px;
     align-items: center;
     position: relative;
@@ -242,11 +139,11 @@ line-height: normal;
     outline: none;
     color: rgba(0, 0, 0, 0.42);
     justify-content: flex-start;
-text-align: left;
-font-family: Montserrat;
-font-style: normal;
-font-weight: 500;
-line-height: normal;
+    text-align: left;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 .search-icon {
@@ -255,25 +152,28 @@ line-height: normal;
     color: #00000070;
     font-size: 18px;
 }
+
 .grupodetarjetas {
     display: flex;
     width: 100%;
-    justify-content: space-around; 
+    justify-content: space-around;
     margin-top: 30px;
 }
 
-
 .containercuentas {
     width: 100%;
-    max-height: calc(100vh - 200px); /* Ajusta el 250px según el tamaño de tu header/top */
+    max-height: calc(100vh - 200px);
+    /* Ajusta el 250px según el tamaño de tu header/top */
     overflow-y: auto;
     overflow-x: hidden;
     margin-left: 41px;
     margin-right: 41px;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Espacio entre tarjetas, opcional */
-    padding-bottom: 20px; /* Para que el último elemento no quede pegado */
+    gap: 20px;
+    /* Espacio entre tarjetas, opcional */
+    padding-bottom: 20px;
+    /* Para que el último elemento no quede pegado */
 }
 
 
@@ -288,55 +188,63 @@ line-height: normal;
     width: 218px;
     height: 236px;
     flex-shrink: 0;
-    padding: 20px;
+    padding: 10px;
 }
-.fa.fa-user{
-    font-size: 80px;
-    color:rgba(255, 0, 0, 0.70);
-}
+
 /* Scrollbar personalizada SOLO dentro de containercuentas */
 .containercuentas::-webkit-scrollbar {
-    width: 8px; /* Ancho del scroll */
-  }
-  
-  .containercuentas::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05); /* Color del fondo del scroll */
+    width: 8px;
+    /* Ancho del scroll */
+}
+
+.containercuentas::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    /* Color del fondo del scroll */
     border-radius: 10px;
-  }
-  
-  .containercuentas::-webkit-scrollbar-thumb {
-    background-color: #FA0000; /* Color del "thumb" (lo que arrastras) */
+}
+
+.containercuentas::-webkit-scrollbar-thumb {
+    background-color: #FA0000;
+    /* Color del "thumb" (lo que arrastras) */
     border-radius: 10px;
-    border: 2px solid transparent; /* Opcional: borde para que no se vea tan grueso */
-    background-clip: content-box; /* Hace que el borde transparente funcione */
-  }
-  
-  .containercuentas::-webkit-scrollbar-thumb:hover {
-    background-color: #c40000; /* Un rojo más oscuro cuando pasas el mouse */
-  }
-  h2{
-    font-size: 1.em;
+    border: 2px solid transparent;
+    /* Opcional: borde para que no se vea tan grueso */
+    background-clip: content-box;
+    /* Hace que el borde transparente funcione */
+}
+
+.containercuentas::-webkit-scrollbar-thumb:hover {
+    background-color: #c40000;
+    /* Un rojo más oscuro cuando pasas el mouse */
+}
+
+h2 {
+    font-size:20px;
     color: #0000006f;
-  }
-  .textotarjeta{
+}
+
+h2 i{
+    font-size: 15px;
+}
+
+.textotarjeta {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     flex-direction: column;
     align-items: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    text-align: center; /* Opcional: para que quede centrado bonito */
-    max-width: 100%; /* Asegura que no se pase del ancho */
-  }
-  .textotarjeta p{
+}
+
+.textotarjeta p {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.42);
     font-weight: 500;
     text-align: center;
     white-space: pre-line;
-  }
-  #modal{
-    z-index: 7;
+}
+
+#modal {
+
+    z-index: 999;
     top: 50%;
     left: 50%;
     position: fixed;
@@ -344,17 +252,18 @@ line-height: normal;
     border: none;
     border-radius: 10px;
     filter: drop-shadow(9px 9px 4px rgba(0, 0, 0, 0.25));
-  }
-  #modal::backdrop{
+}
+
+#modal::backdrop {
     background-color: #00000042;
-  }
-  
-  .botones{
+}
+
+.botones {
     display: flex;
-  }
+}
 
 
-  :root {
+:root {
     --colorTextos: #a1a3a1;
 }
 
@@ -365,6 +274,19 @@ line-height: normal;
     padding: 0;
     box-sizing: border-box;
 }
+
+.textotarjeta button {
+    font-size: 14px;
+    color: #FF0000;              /* ← Cambiado de 'font' a 'color' */
+    border-color: #FF0000;
+    border-radius: 5px;
+    border: 1px solid;
+    background-color: transparent; /* (opcional, si quieres fondo transparente) */
+    cursor: pointer;    
+    min-width: 126px;
+    min-height: 18.452px;   
+}
+
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');
 
@@ -389,7 +311,7 @@ h1 {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.42);
     font-weight: 500;
-    
+
 }
 
 img {
@@ -415,36 +337,38 @@ img {
 .contenedor {
     display: flex;
     flex-direction: column;
-    width: 500px; /* Respetar el ancho de 500px */
+    width: 500px;
+    /* Respetar el ancho de 500px */
 }
 
 .contenedor1,
 .contenedor2,
 .contenedor3 {
     width: 100%;
-    
+
 }
 
-.contenedor1 p{
+.contenedor1 p {
     font-size: 11px;
-    
+
     color: #a1a3a1;
     padding: 10px 0 0 10px;
-    
+
     justify-content: flex-start;
-    
+
 }
 
 .input-mitad {
     display: flex;
     justify-content: space-between;
-    width: 100%; /* Cambiado a 100% */
+    width: 100%;
+    /* Cambiado a 100% */
     padding: 10px 10px 0px 5px;
-    
+
 }
 
 .input-mitad .grupo {
-    
+
     margin-right: 10px;
 }
 
@@ -461,15 +385,17 @@ img {
 .input-triples2 {
     display: flex;
     justify-content: space-between;
-    width: 100%; /* Cambiado a 100% */
+    width: 100%;
+    /* Cambiado a 100% */
     padding: 10px 10px 0px 5px;
 }
 
 .input-triples1 .grupo,
 .input-triples2 .grupo {
-    
+
     margin-right: 10px;
-    max-width: 100%; /* Para asegurarse de que no sobresalgan */
+    max-width: 100%;
+    /* Para asegurarse de que no sobresalgan */
 }
 
 .input-triples1 .grupo:last-child,
@@ -485,6 +411,7 @@ img {
     margin: 10px 0;
     position: relative;
 }
+
 .division::before,
 .division::after {
     content: "";
@@ -504,8 +431,9 @@ img {
 }
 
 .contenedor-pa {
-    margin-top: 5px; 
-    margin-bottom: -15px; /* Ajustado para que esté más cerca del contenedor */
+    margin-top: 5px;
+    margin-bottom: -15px;
+    /* Ajustado para que esté más cerca del contenedor */
     background-color: white;
     padding: 40px;
     box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
@@ -537,7 +465,8 @@ form {
     background: white;
     padding: 0;
     box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.8);
-    border-top: 1px solid #8f8c8c; /* Borde gris agregado entre contenedor-pa y form */
+    border-top: 1px solid #8f8c8c;
+    /* Borde gris agregado entre contenedor-pa y form */
     border-radius: 0 0 10px 10px;
 }
 
@@ -580,9 +509,11 @@ input {
     background: none;
     color: #8f8c8c;
     font-size: 15px;
-    padding: 10px 20px; /* Ajustar el padding para centrar verticalmente */
+    padding: 10px 20px;
+    /* Ajustar el padding para centrar verticalmente */
     display: block;
-    width: 100%; /* Asegurando que todos los inputs ocupen el 100% del ancho */
+    width: 100%;
+    /* Asegurando que todos los inputs ocupen el 100% del ancho */
     border: 1px solid var(--colorTextos);
     border-radius: 5px;
     box-sizing: border-box;
@@ -590,12 +521,16 @@ input {
 
 input:focus {
     outline: none;
-    color: #7d838c; /* Más oscuro para mayor contraste */
+    color: #7d838c;
+    /* Más oscuro para mayor contraste */
     border-color: #7d838c;
-    background-color: rgba(205, 207, 210, 0.486); /* Opacidad reducida */
+    background-color: rgba(205, 207, 210, 0.486);
+    /* Opacidad reducida */
 }
-input:focus::placeholder{
-    color: #7d838c; /* Más oscuro para mayor contraste */
+
+input:focus::placeholder {
+    color: #7d838c;
+    /* Más oscuro para mayor contraste */
 }
 
 input:not(:placeholder-shown) {
@@ -610,16 +545,10 @@ input:not(:placeholder-shown) {
     transition: 0.5s ease all;
     pointer-events: none;
 }
-.search-bar:focus{
-    border: none;
-    background-color: transparent;
-}
-.search-bar:not(:placeholder-shown) {
-    border: none;
-    background-color: transparent;
-}
+
 .barra {
-    display: none; /* Eliminado porque ahora se usa el borde del input */
+    display: none;
+    /* Eliminado porque ahora se usa el borde del input */
 }
 
 #submitbtn {
@@ -658,8 +587,22 @@ footer p {
     text-align: right;
     padding: 0 20px 0 0;
 }
-.contenedor-p{
+
+.contenedor-p {
     filter: drop-shadow(9px 9px 4px rgba(0, 0, 0, 0.25));
+}
+
+.tarjeta .fa.fa-xmark{
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.42);
+}
+
+.centrareltache{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    padding: 4%;
 }
 @media screen and (max-width: 500px) {
     .contenedor-general {
@@ -670,17 +613,22 @@ footer p {
 
 @media (max-width: 600px) {
     #alertamodal {
-        width: 60%;  /* La alerta ocupará el 90% del ancho en pantallas pequeñas */
-        max-width: none; /* Eliminar el límite máximo en pantallas pequeñas */
-        top: 10px;  /* Mover un poco más cerca de la parte superior */
+        width: 60%;
+        /* La alerta ocupará el 90% del ancho en pantallas pequeñas */
+        max-width: none;
+        /* Eliminar el límite máximo en pantallas pequeñas */
+        top: 10px;
+        /* Mover un poco más cerca de la parte superior */
     }
 
     .alertcontentcont {
-        font-size: 12px;  /* Reducir el tamaño del texto en pantallas pequeñas */
+        font-size: 12px;
+        /* Reducir el tamaño del texto en pantallas pequeñas */
     }
 
     .alerticon i {
-        font-size: 20px;  /* Reducir el tamaño del icono en pantallas pequeñas */
+        font-size: 20px;
+        /* Reducir el tamaño del icono en pantallas pequeñas */
     }
 }
 
@@ -689,27 +637,27 @@ footer p {
         width: 95%;
         padding: 0 5%;
     }
-    
+
     input {
         font-size: 13px;
         padding: 6px 12px;
     }
-    
+
     .alertcontentcont {
         font-size: 12px;
     }
-    
+
     .alertheading {
         font-size: 14px;
     }
-    
+
     .back-link {
         font-size: 14px;
     }
 }
 
 
-  
+
 /* RESPONSIVIDAD - RESTO DE ELEMENTOS */
 @media screen and (max-width: 1024px) {
     .container-items {
@@ -723,9 +671,11 @@ footer p {
     /* Ajustar las tarjetas en pantallas medianas */
     .grupodetarjetas {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Mostrar 2 tarjetas por fila */
+        grid-template-columns: repeat(2, 1fr);
+        /* Mostrar 2 tarjetas por fila */
         gap: 20px;
-        justify-items: center; /* Centrar las tarjetas */
+        justify-items: center;
+        /* Centrar las tarjetas */
     }
 }
 
@@ -759,9 +709,12 @@ footer p {
     /* Ajustar las tarjetas en pantallas pequeñas */
     .grupodetarjetas {
         display: grid;
-        grid-template-columns: repeat(1, 1fr); /* Mostrar 1 tarjeta por fila */
-        gap: 10px; /* Espacio más pequeño entre las tarjetas */
-        justify-items: center; /* Centrar las tarjetas */
+        grid-template-columns: repeat(1, 1fr);
+        /* Mostrar 1 tarjeta por fila */
+        gap: 10px;
+        /* Espacio más pequeño entre las tarjetas */
+        justify-items: center;
+        /* Centrar las tarjetas */
     }
 
     /* Apilar el header */
