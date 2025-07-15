@@ -317,13 +317,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Por ahora asumiremos que todos son "Activo" porque no veo campo de estado en el backend,
             // si me confirmas cómo viene el estado real te lo agrego dinámico.
-            estado.innerHTML += "Activo";
+           // Supuesto estado (puedes cambiar esto cuando tengas datos reales del backend)
+            const estadoTexto = "Activo"; // <- reemplazar cuando tengas estado real
 
-            if (estado='Activo'){
-                estadoIcono.style.color("#01E17B");
+            // Color del ícono dependiendo del estado
+            if (estadoTexto === "Activo") {
+                estadoIcono.style.color = "#01E17B"; // verde
             } else {
-                estadoIcono.style.color("#FDCD0F");
+                estadoIcono.style.color = "#FDCD0F"; // amarillo
             }
+
+            estado.appendChild(estadoIcono);
+            estado.append(` ${estadoTexto}`); // espacio antes del texto
 
             // Añadir todo al contenedor de texto
             textoTarjeta.appendChild(nombre);
