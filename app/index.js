@@ -1570,80 +1570,151 @@ app.post('/guardar-datos', async (req, res) => {
 });
 
 /////////DASHBOARDS
-app.get("/api/reportes-registrados", async (req, res) => {
-    try {
-        const [rows] = await pool.execute(`SELECT COUNT(*) AS total FROM mreporte`);
-        res.json({ total: rows[0].total });
-    } catch (error) {
-        console.error("Error reportes registrados:", error);
-        res.status(500).send("Error al obtener reportes registrados");
+function getFechaInicio(rango = "mes") {
+    const hoy = new Date();
+    let inicio;
+
+    switch (rango) {
+        case "hoy":
+            inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+            break;
+        case "semana": {
+            const d = hoy.getDay() || 7;
+            inicio = new Date(hoy);
+            inicio.setDate(hoy.getDate() - (d - 1));
+            break;
+        }
+        case "año":
+            inicio = new Date(hoy.getFullYear(), 0, 1);
+            break;
+        case "mes":
+        default:
+            inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     }
-});
+
+    return inicio.toISOString().slice(0, 10);
+}
 
 app.get("/api/tecnicos-activos", async (req, res) => {
+    const rango = req.query.rango || "hoy"; // por defecto es 'hoy'
+
+    if (rango !== "hoy") {
+        return res.status(200).send({ status: "ok", cantidad: 0 }); // o puedes poner null o [] si lo prefieres
+    }
+
     try {
         const [rows] = await pool.execute(`
-            SELECT COUNT(*) AS total 
-            FROM musuario 
+            SELECT COUNT(*) AS cantidad
+            FROM musuario
             WHERE rol_user = 'tecnico' AND id_estcuenta = 1
         `);
-        res.json({ total: rows[0].total });
+
+        const cantidad = rows[0].cantidad;
+        res.status(200).send({ status: "ok", cantidad });
     } catch (error) {
-        console.error("Error técnicos activos:", error);
-        res.status(500).send("Error al obtener técnicos activos");
+        console.error("Error al obtener técnicos activos:", error);
+        res.status(500).send({ status: "Error", message: "Error al obtener técnicos activos" });
     }
 });
 
-app.get("/api/reportes-solucionados", async (req, res) => {
+// Reportes registrados
+app.get("/api/reportes-registrados", async (req, res) => {
+    const inicio = getFechaInicio(req.query.rango);
     try {
-        const [rows] = await pool.execute(`
-            SELECT COUNT(*) AS total 
-            FROM mreporte 
-            WHERE fecfin_reporte IS NOT NULL
-        `);
-        res.json({ total: rows[0].total });
+        const [[{ total }]] = await pool.execute(
+            `SELECT COUNT(*) AS total FROM mreporte WHERE fecini_reporte >= ?`,
+            [inicio]
+        );
+        res.json({ total });
+    } catch (error) {
+        console.error("Error reportes registrados:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
+// Reportes solucionados
+app.get("/api/reportes-solucionados", async (req, res) => {
+    const inicio = getFechaInicio(req.query.rango);
+    try {
+        const [[{ total }]] = await pool.execute(
+            `SELECT COUNT(*) AS total FROM mreporte WHERE fecfin_reporte IS NOT NULL AND fecini_reporte >= ?`,
+            [inicio]
+        );
+        res.json({ total });
     } catch (error) {
         console.error("Error reportes solucionados:", error);
-        res.status(500).send("Error al obtener reportes solucionados");
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
+// Alertas emitidas (reportes tipo alerta = id_tireporte = 2)
 app.get("/api/alertas-emitidas", async (req, res) => {
+    const inicio = getFechaInicio(req.query.rango);
     try {
-        const [rows] = await pool.execute(`
-            SELECT COUNT(*) AS total 
-            FROM mreporte 
-            WHERE id_tireporte = 2
-        `);
-        res.json({ total: rows[0].total });
+        const [[{ total }]] = await pool.execute(
+            `SELECT COUNT(*) AS total FROM mreporte WHERE id_tireporte = 2 AND fecini_reporte >= ?`,
+            [inicio]
+        );
+        res.json({ total });
     } catch (error) {
         console.error("Error alertas emitidas:", error);
-        res.status(500).send("Error al obtener alertas emitidas");
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
-
-
+// Porcentaje reportes solucionados vs pendientes
 app.get("/api/porcentaje-reportes", async (req, res) => {
+    const inicio = getFechaInicio(req.query.rango);
     try {
-        const [rows] = await pool.execute(`
-            SELECT 
-                COUNT(*) AS total,
-                SUM(CASE WHEN fecfin_reporte IS NOT NULL THEN 1 ELSE 0 END) AS solucionados
-            FROM mreporte
-        `);
-
-        const total = rows[0].total || 1; // evitar división entre 0
-        const solucionados = rows[0].solucionados;
+        const [[{ total }]] = await pool.execute(
+            `SELECT COUNT(*) AS total FROM mreporte WHERE fecini_reporte >= ?`,
+            [inicio]
+        );
+        const [[{ solucionados }]] = await pool.execute(
+            `SELECT COUNT(*) AS solucionados FROM mreporte WHERE fecfin_reporte IS NOT NULL AND fecini_reporte >= ?`,
+            [inicio]
+        );
         const pendientes = total - solucionados;
+        const porcentajeSol = total > 0 ? Math.round((solucionados / total) * 100) : 0;
+        const porcentajePen = 100 - porcentajeSol;
 
         res.json({
-            solucionados: ((solucionados / total) * 100).toFixed(2),
-            pendientes: ((pendientes / total) * 100).toFixed(2)
+            solucionados: porcentajeSol,
+            pendientes: porcentajePen
         });
+    } catch (error) {
+        console.error("Error porcentajes:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
+// Datos para gráfica (meses del año actual)
+app.get("/api/grafica-reportes", async (req, res) => {
+    try {
+        const [registros] = await pool.execute(`
+            SELECT MONTH(fecini_reporte) AS mes, COUNT(*) AS total
+            FROM mreporte
+            WHERE YEAR(fecini_reporte) = YEAR(CURDATE())
+            GROUP BY MONTH(fecini_reporte)
+        `);
+
+        const [atendidos] = await pool.execute(`
+            SELECT MONTH(fecini_reporte) AS mes, COUNT(*) AS total
+            FROM mreporte
+            WHERE fecfin_reporte IS NOT NULL AND YEAR(fecini_reporte) = YEAR(CURDATE())
+            GROUP BY MONTH(fecini_reporte)
+        `);
+
+        const data = Array.from({ length: 12 }, (_, i) => ({
+            mes: i + 1,
+            registrados: registros.find(r => r.mes === i + 1)?.total || 0,
+            atendidos: atendidos.find(a => a.mes === i + 1)?.total || 0
+        }));
+
+        res.json({ data });
 
     } catch (error) {
-        console.error("Error porcentaje reportes:", error);
-        res.status(500).send("Error al obtener porcentajes de reportes");
+        console.error("Error gráfica reportes:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });

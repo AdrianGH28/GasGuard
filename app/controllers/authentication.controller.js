@@ -546,9 +546,10 @@ export const registrarAfiliado = async (req, res) => {
 
         // Insertar usuario afiliado
         const [insertUsuario] = await pool.execute(
-            'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1]
+            'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta, dispositivo_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1, 'Inactiva']
         );
+
         const idAfiliado = insertUsuario.insertId;
 
         // Insertar reporte de instalación
@@ -1217,7 +1218,7 @@ async function repagousuario(req, res) {
             id_plan = planResult[0].id_plan;
         } else {
             const [insertplanResult] = await pool.execute(
-                'INSERT INTO cplan (id_tiplan) VALUES (?)', 
+                'INSERT INTO cplan (id_tiplan) VALUES (?)',
                 [id_tiplan]
 
             );
@@ -1325,8 +1326,8 @@ export const desactivarAfiliado = async (req, res) => {
 };
 */
 
- // Desactivar afiliado con reporte de desinstalacion
- export const desactivarAfiliado = async (req, res) => {
+// Desactivar afiliado con reporte de desinstalacion
+export const desactivarAfiliado = async (req, res) => {
     const { idAfiliado } = req.body;
 
     try {
