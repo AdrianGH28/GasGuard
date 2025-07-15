@@ -776,3 +776,41 @@ footer p {
         width: 10%;
     }
 }
+
+
+/*BARRA DE FILTROS*/
+
+
+.filter-reportes {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 0, 0, 0.74);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    flex-direction: row;
+
+  }
+  
+  .filter-reportes i {
+    font-size: 26px;
+    margin-left: 8px;
+    display: inline-block;
+    position: relative;
+    top: -3px;
+  }
+  
+  /* Subrayado solo para el texto */
+  .filter-reportes .underline-text {
+      text-decoration: underline;
+    }
+
+    .header-top i {
+        font-size: 24px; 
+        color:#ff0000
+    }
+    
