@@ -298,10 +298,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Correo
             const correo = document.createElement("p");
+            correo.id = "usuario-correo";
             correo.textContent = afiliado.correo_user;
 
             // Dirección concatenada
             const direccion = document.createElement("p");
+            direccion.id = "usuario-direccion";
             direccion.textContent = `${afiliado.nom_calle} ${afiliado.numero_direc} , ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`;
 
             // Estado del dispositivo

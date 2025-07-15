@@ -661,6 +661,12 @@ footer p {
 .contenedor-p{
     filter: drop-shadow(9px 9px 4px rgba(0, 0, 0, 0.25));
 }
+
+#usuario-correo, #usuario-direccion{
+        word-break: break-word;
+    overflow-wrap: break-word;
+}
+
 @media screen and (max-width: 500px) {
     .contenedor-general {
         width: 80%;
