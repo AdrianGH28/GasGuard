@@ -1149,15 +1149,15 @@ async function repagoempresa(req, res) {
             );
             id_plan = insertResult.insertId;
         }
-
+        const cardpro = 4242;
         let id_pago;
-        const [pagoResult] = await pool.execute('SELECT id_pago FROM dpago WHERE tipo_pago = ? AND fecha_pago = ?', [typepago, fechaInicio]);
+        const [pagoResult] = await pool.execute('SELECT id_pago FROM dpago WHERE tipo_pago = ? AND nmcrd_pago = ? AND fecha_pago = ?', [typepago, cardpro, fechaInicio]);
         if (pagoResult.length > 0) {
             id_pago = pagoResult[0].id_pago;
         } else {
             const [insertResult] = await pool.execute(
-                'INSERT INTO id_pago (tipo_pago, fecha_pago) VALUES (?, ?)',
-                [typepago, fechaInicio]
+                'INSERT INTO id_pago (tipo_pago, nmcrd_pago, fecha_pago) VALUES (?, ?, ?)',
+                [typepago, cardpro, fechaInicio]
             );
             id_pago = insertResult.insertId;
         }
