@@ -1,0 +1,185 @@
+#myChart {
+    height: 100%;
+    width: 100%;
+    min-height: 150px;
+    /* margin-top: ; */
+  }
+   
+  .zc-ref {
+    display: none;
+  }
+
+  .containermlp {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 20px; /* Espacio entre los contenedores */
+      margin-top: 20px;
+  }
+  .chart-container {
+      margin-top: 5%;
+      background-color: #F9FAFC;
+      width: 600px;
+      height: 400px;
+      border-radius: 10px;
+      box-shadow: inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  .chart-container2 {
+      margin-top: 5%;
+      background-color: #F9FAFC;
+      width: 600px;
+      height: 400px;
+      border-radius: 10px;
+      box-shadow: inset;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+  }
+  .modal {
+      align-items: center;
+      justify-content: center;
+      display: none; /* Oculto por defecto */
+      position: fixed; /* Fijo en la ventana */
+      z-index: 1; /* En la parte superior */
+      left: 0;
+      top: 0;
+      width: 100%; /* Ancho completo */
+      height: 100%; /* Alto completo */
+      overflow: hidden; /* Desplazamiento si es necesario */
+      /* background-color: rgb(0,0,0); Fondo negro */
+  }
+  
+  .modal-content {
+      justify-content: center;
+      align-items: center;
+      background-color: #ff0000;
+      margin: 15% auto; /* 15% desde la parte superior y centrado */
+      padding: 80px;
+      color: white;
+      /* border: 1px solid  white; */
+      border-radius: 30px;
+      width: 80%; /* Podrías ajustar esto a lo que necesites */
+      max-width: 600px; /* Ajuste opcional para el tamaño máximo */
+      height: 300px;
+  }
+  
+  .closeIcon {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+  
+  .closeIcon:hover,
+  .closeIcon:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+  }
+  
+  .center-items {
+      text-align: center;
+  }
+  .modalchart {
+      margin-top: 5%;
+      align-items: center;
+      justify-content: center;
+      display: none; /* Oculto por defecto */
+      position: fixed; /* Fijo en la ventana */
+      z-index: 1; /* En la parte superior */
+      left: 0;
+      top: 0;
+      width: 100%; /* Ancho completo */
+      height: 100%; /* Alto completo */
+      overflow: hidden; /* Desplazamiento si es necesario */
+      /* background-color: rgb(0,0,0); Fondo negro */
+  }
+  .modalchart-content {
+      align-items: center;
+      justify-content: center;
+      background-color:white;
+      margin: auto; /* 15% desde la parte superior y centrado */
+      padding: 20px;
+      border-radius: 30px;
+      width: 80%; /* Podrías ajustar esto a lo que necesites */
+      max-width: 1500px; /* Ajuste opcional para el tamaño máximo */
+      height: 600px;
+      color: #ff0000;
+  }
+  .modalchartchart {
+      margin: auto; /* 15% desde la parte superior y centrado */
+      padding: 20px;
+      width: 80%; /* Podrías ajustar esto a lo que necesites */
+      max-width: 1000px; /* Ajuste opcional para el tamaño máximo */
+      height: 700px;
+  }
+  #logo{
+      align-self: center;
+      width: 70px;
+      height: 60px;
+  }
+  .center-items{
+      align-items: center;
+      justify-content: center;
+  }
+  .textotonto{
+      margin-left: 10%;
+  }
+  .modalcarga{
+      display: none; 
+      position: fixed; 
+      z-index: 1; 
+      left: 0;
+      top: 150px;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgba(255, 255, 255, 0.7); /* Fondo negro transparente */
+      padding-top: 150px;
+      padding-left: 700px;
+      justify-content: center;
+      align-items: center;
+      color: #424242;
+  }
+  .spinner {
+      border: 16px solid #f3f3f3; 
+      border-top: 16px solid #ff0000; 
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      animation: spin 2s linear infinite;
+  }
+
+ #sensorValue{
+    display: none;
+  }
+  
+  @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+  }
+  .closeModalBtn{
+      background-color: white;
+      color: red;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+      width: 200px;
+      border-radius: 5px;
+      border: none;
+  }
+  #openModalBtn, #filterBtn{
+      background-color: white;
+      color: red;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+      width: 200px;
+      border-radius: 5px;
+      border: none;
+  }
