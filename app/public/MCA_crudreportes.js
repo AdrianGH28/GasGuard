@@ -188,4 +188,152 @@ window.addEventListener('load', () => {
     body.style.opacity='1';
 });
 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const filtroPanel = document.getElementById("filtro-lateral");
+    const botonFiltrar = document.getElementById("filter-btn");
+    const contenedorPrincipal = document.getElementById("contenedor-principal");
+    const btnLimpiar = document.querySelector(".btn-limpiar-filtros");
+
+    if (botonFiltrar && filtroPanel && contenedorPrincipal) {
+        botonFiltrar.addEventListener("click", function () {
+            filtroPanel.classList.add("activo");
+            contenedorPrincipal.classList.add("expandido");
+            botonFiltrar.style.display = "none";
+        });
+    }
+
+    const cerrarBtn = document.querySelector('.cerrar-filtro');
+    if (cerrarBtn) {
+        cerrarBtn.addEventListener('click', ocultarFiltros);
+    }
+
+    document.querySelectorAll('.opcion-filtro').forEach(opcion => {
+        opcion.addEventListener('click', function () {
+            const grupo = this.closest('.contenedor-opciones');
+            const yaSeleccionada = this.classList.contains('activa');
+
+            grupo.querySelectorAll('.opcion-filtro').forEach(opt => {
+                opt.classList.remove('activa', 'no-hover');
+            });
+
+            if (!yaSeleccionada) {
+                this.classList.add('activa', 'no-hover');
+                grupo.classList.add('tiene-seleccion');
+            } else {
+                grupo.classList.remove('tiene-seleccion');
+            }
+
+            verificarFiltrosActivos();
+        });
+    });
+
+    document.querySelectorAll('.categoria-header').forEach(header => {
+        header.addEventListener('click', function () {
+            const categoria = this.closest('.categoria-filtro');
+            const esFecha = categoria.querySelector(".categoria-header span")?.textContent.includes("Fecha");
+            const dropdown = categoria.querySelector('.opciones-dropdown');
+            const yaTieneFlatpickr = dropdown.classList.contains("calendario-insertado");
+
+            categoria.classList.toggle('abierto');
+
+            // Solo si es de fecha y no se ha insertado aún
+            if (esFecha && !yaTieneFlatpickr) {
+                configurarFlatpickr(dropdown);
+                dropdown.classList.add("calendario-insertado");
+            }
+        });
+    });
+
+    const filtrosConBuscador = ["Mes", "Año"];
+    document.querySelectorAll(".categoria-filtro").forEach(categoria => {
+        const header = categoria.querySelector(".categoria-header span")?.textContent.trim();
+        const contenedorOpciones = categoria.querySelector(".contenedor-opciones");
+
+        if (contenedorOpciones && filtrosConBuscador.includes(header)) {
+            const yaExiste = contenedorOpciones.querySelector(".input-buscador-filtro");
+            if (!yaExiste) {
+                const inputBusqueda = document.createElement("input");
+                inputBusqueda.type = "text";
+                inputBusqueda.placeholder = "Buscar...";
+                inputBusqueda.classList.add("input-buscador-filtro");
+
+                contenedorOpciones.classList.add("contenedor-opciones-scroll");
+                contenedorOpciones.insertBefore(inputBusqueda, contenedorOpciones.firstChild);
+
+                inputBusqueda.addEventListener("input", function () {
+                    const valor = this.value.toLowerCase();
+                    contenedorOpciones.querySelectorAll(".opcion-filtro").forEach(op => {
+                        const texto = op.textContent.toLowerCase();
+                        op.style.display = texto.includes(valor) ? "block" : "none";
+                    });
+                });
+            }
+        }
+    });
+
+    function verificarFiltrosActivos() {
+        const algunActivo = document.querySelector(".opcion-filtro.activa");
+        btnLimpiar.style.display = algunActivo ? "block" : "none";
+    }
+
+    window.limpiarFiltros = function () {
+        document.querySelectorAll('.opcion-filtro').forEach(opt => {
+            opt.classList.remove('activa', 'no-hover');
+        });
+        document.querySelectorAll('.contenedor-opciones').forEach(grupo => {
+            grupo.classList.remove('tiene-seleccion');
+        });
+        verificarFiltrosActivos();
+    };
+
+    verificarFiltrosActivos();
+
+    // ⬇️ Función que realmente inserta el calendario
+    function configurarFlatpickr(container) {
+        const calendarWrapper = document.createElement("div");
+        container.appendChild(calendarWrapper);
+
+        flatpickr(calendarWrapper, {
+            inline: true,
+            locale: "es",
+            dateFormat: "Y-m-d",
+            showMonths: 1,
+            onReady: function (selectedDates, dateStr, instance) {
+                const btnHoy = document.createElement("span");
+                btnHoy.textContent = "Hoy";
+                btnHoy.className = "flatpickr-today-btn";
+                btnHoy.style.cssText = "color:#333;cursor:pointer;font-size:14px;";
+
+                const btnLimpiar = document.createElement("span");
+                btnLimpiar.textContent = "Limpiar";
+                btnLimpiar.className = "flatpickr-clear-btn";
+                btnLimpiar.style.cssText = "color:#333;cursor:pointer;font-size:14px;";
+
+                btnHoy.addEventListener("click", () => instance.setDate(new Date()));
+                btnLimpiar.addEventListener("click", () => instance.clear());
+
+                const footer = document.createElement("div");
+                footer.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-top:1px solid #e6e6e6;margin-top:5px;";
+                footer.appendChild(btnLimpiar);
+                footer.appendChild(btnHoy);
+
+                instance.calendarContainer.appendChild(footer);
+            }
+        });
+    }
+});
+
+function ocultarFiltros() {
+    const filtroPanel = document.getElementById("filtro-lateral");
+    const botonFiltrar = document.getElementById("filter-btn");
+    const contenedorPrincipal = document.getElementById("contenedor-principal");
+
+    if (filtroPanel && botonFiltrar && contenedorPrincipal) {
+        filtroPanel.classList.remove("activo");
+        contenedorPrincipal.classList.remove("expandido");
+        botonFiltrar.style.display = "inline-block";
+    }
+}
+
 //Aqui tratare de generar los containers de las cuentas afiliadas dinamicamente, o sea conectado al back
