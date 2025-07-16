@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             textotarjeta.appendChild(fechaRegistro);
             textotarjeta.appendChild(fechaInicio);
 
-            if (reporte.estado === "Solucionado") {
+            if (reporte.estado === "realizada") {
                 const fechaSolucion = document.createElement("p");
                 fechaSolucion.textContent = "Fecha de solución:";
                 const fechaFin = document.createElement("p");
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             btnVerMas.textContent = "Ver más";
             textotarjeta.appendChild(btnVerMas);
 
-            if (reporte.estado === "Pendiente") {
+            if (reporte.estado === "pendiente") {
                 const iconCancel = document.createElement("div");
                 iconCancel.classList.add("centrareltache");
                 const tache = document.createElement("i");
