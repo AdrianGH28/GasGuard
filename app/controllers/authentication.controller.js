@@ -1169,7 +1169,7 @@ async function repagoempresa(req, res) {
             id_fact = factResult[0].id_fact;
         } else {
             const [insertResult] = await pool.execute(
-                'INSERT INTO dfactura ( id_pago) VALUES (?, ?)',
+                'INSERT INTO dfactura ( id_pago) VALUES ( ?)',
                 [ id_pago]
             );
             id_fact = insertResult.insertId;
