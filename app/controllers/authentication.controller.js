@@ -1164,13 +1164,13 @@ async function repagoempresa(req, res) {
 
         const folio_fact = crypto.randomBytes(6).toString("hex").toUpperCase();
         let id_fact;
-        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE folio_fact = ? AND id_pago = ?', [folio_fact, id_pago]);
+        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE  id_pago = ?', [ id_pago]);
         if (factResult.length > 0) {
             id_fact = factResult[0].id_fact;
         } else {
             const [insertResult] = await pool.execute(
-                'INSERT INTO dfactura (folio_fact, id_pago) VALUES (?, ?)',
-                [folio_fact, id_pago]
+                'INSERT INTO dfactura ( id_pago) VALUES (?, ?)',
+                [ id_pago]
             );
             id_fact = insertResult.insertId;
         }
