@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const estadoRaw = reporte.estado_reporte?.toLowerCase();
             const estadoTexto = estadoRaw === "realizada" ? "Solucionado" : "Pendiente";
             estado.appendChild(estadoIcon);
-            estado.innerHTML += ` ${estadoTexto}`;
+            estado.append(` ${estadoTexto}`);
 
             // Color del icono según estado
             if (estadoRaw === "pendiente") {
