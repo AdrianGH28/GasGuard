@@ -17,6 +17,26 @@
 </head>
 
 <body>
+    <dialog id="alertamodal" class="custom-alert">
+        <div class="alerticon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="alertcontent">
+            <div class="alertheadingcont">
+                <div class="alertheading">¿Está seguro de que desea abandonar?</div>
+            </div>
+            <div class="alertcontentcont">Los cambios no se verán reflejados</div>
+            <div class="alertactionscont">
+                <button class="aceptar" id="aceptarbtnalerta" onclick="">Aceptar</button>
+                <button class="cancelar" onclick="cerraralerta()">Cancelar</button>
+            </div>
+        </div>
+        <div class="alertclosebtn">
+            <button class="closebtn" onclick="cerraralerta()">
+                <i class="fa fa-x"></i>
+            </button>
+        </div>
+    </dialog>
     <nav>
         <div class="navbar-container">
             <!-- Contenedor logo y texto -->
