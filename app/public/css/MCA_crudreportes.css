@@ -604,6 +604,11 @@ footer p {
     align-items: end;
     padding: 4%;
 }
+
+#anadirreporte{
+    color: #E00000;
+    font-size: 40px;
+}
 @media screen and (max-width: 500px) {
     .contenedor-general {
         width: 80%;
