@@ -257,13 +257,16 @@ body {
 
 
 /* Estilo general del contenedor de tarjetas */
+/* Estilo general del contenedor de tarjetas */
 .lista-reportes {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);  /* 4 columnas exactas */
     gap: 70px;
     padding: 40px;
-    justify-content: center;
-  }
+    max-width: 1200px;  /* opcional, para evitar que se vea demasiado ancho */
+    margin: 0 auto;     /* centra el grid */
+}
+
   
   /* Tarjeta */
   .reporte-card {
@@ -621,7 +624,8 @@ body {
 }
 
 .usuario-card {
-  width: 218px;
+  width: 100%;             /* Se adapta a la columna */
+  max-width: 218px;        /* No crece más que tu diseño original */
   height: auto;
   display: flex;
   flex-direction: column;
@@ -633,10 +637,11 @@ body {
   box-sizing: border-box;
   text-align: center;
   gap: 10px;
+  justify-self: center;    /* Centra cada tarjeta en su celda */
 }
 
 .usuario-icono {
-  font-size: 60px;
+  font-size: 80px;
   color: rgba(255, 0, 0, 0.7);
   margin-bottom: 10px;
 }
@@ -724,7 +729,7 @@ body {
 .usuario-id {
   color: rgba(0, 0, 0, 0.42);
   text-align: center;
-  font-size: 20px;
+  font-size: 22px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -735,7 +740,7 @@ body {
   width: 184px;
   color: rgba(0, 0, 0, 0.42);
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -747,7 +752,7 @@ body {
 .usuario-direccion {
   color: rgba(0, 0, 0, 0.42);
   text-align: center;
-  font-size: 12.3px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;

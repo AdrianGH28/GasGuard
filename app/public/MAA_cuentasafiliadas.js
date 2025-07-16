@@ -93,7 +93,7 @@ window.addEventListener("load", async () => {
 
     // Convertir estructura al formato esperado por pintarUsuarios
     usuariosReales = afiliadosBD.map((afiliado, index) => ({
-      id: `${afiliado.nom_user} ${index + 1}`,
+      id: `${afiliado.nom_user}`,
       correo: afiliado.correo_user,
       direccion: `${afiliado.nom_calle} ${afiliado.numero_direc}, ${afiliado.nom_col}, ${afiliado.nom_ciudad} ${afiliado.nom_estado}`,
       empresa: afiliado.nom_empresa || "—",
