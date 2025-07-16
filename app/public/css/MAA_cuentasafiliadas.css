@@ -263,7 +263,7 @@ body {
     grid-template-columns: repeat(4, 1fr);  /* 4 columnas exactas */
     gap: 70px;
     padding: 40px;
-    max-width: 1200px;  /* opcional, para evitar que se vea demasiado ancho */
+    max-width: 1500px;  /* opcional, para evitar que se vea demasiado ancho */
     margin: 0 auto;     /* centra el grid */
 }
 
@@ -699,7 +699,7 @@ body {
 #lista-reportes {
   display: flex;
   flex-wrap: wrap;
-  gap: 70px;
+  column-gap: 160px;
   padding: 40px;
   justify-content: center;
 }
