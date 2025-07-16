@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const reportesContainer = document.getElementById("containerreportes");
         if (!reportesContainer) {
-            console.error("No se encontró el contenedor con id 'containerreportes'");
+            console.error("❌ No se encontró el contenedor con id 'containerreportes'");
             return;
         }
 
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const tarjeta = document.createElement("div");
             tarjeta.classList.add("tarjeta");
 
-            // Icono según id_tireporte
+            // Ícono principal según tipo de reporte (id_tireporte)
             const icono = document.createElement("i");
             switch (reporte.id_tireporte) {
                 case 1: // Instalación
@@ -89,10 +89,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                     icono.className = "fa fa-file";
             }
 
+            // Bloque texto
             const textotarjeta = document.createElement("div");
             textotarjeta.classList.add("textotarjeta");
 
-            // Estado
             const estado = document.createElement("h2");
             const estadoIcon = document.createElement("i");
             estadoIcon.className = "fa fa-circle";
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             textotarjeta.appendChild(fechaRegistro);
             textotarjeta.appendChild(fechaInicio);
 
-            // Si solucionado, mostrar fecha de solución
+            // Si está solucionado, mostrar fecha de solución
             if (reporte.estado?.toLowerCase() === "realizada") {
                 const fechaSolucion = document.createElement("p");
                 fechaSolucion.textContent = "Fecha de solución:";
@@ -132,18 +132,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             btnVerMas.textContent = "Ver más";
             textotarjeta.appendChild(btnVerMas);
 
-            // Si está pendiente, mostrar ícono de cancelar
+            // Si está pendiente, agregar ícono de cancelar (❌)
             if (reporte.estado?.toLowerCase() === "pendiente") {
                 const iconCancel = document.createElement("div");
-                iconCancel.classList.add("centrareltache");
+                iconCancel.classList.add("centrareltache"); // usa tu misma clase
                 const tache = document.createElement("i");
                 tache.className = "fa fa-xmark";
                 iconCancel.appendChild(tache);
                 tarjeta.appendChild(iconCancel);
             }
 
+            // Agregar elementos a la tarjeta
             tarjeta.appendChild(icono);
             tarjeta.appendChild(textotarjeta);
+
+            // Agregar tarjeta al grupo
             grupoContenedores.appendChild(tarjeta);
         });
 
