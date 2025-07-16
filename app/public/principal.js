@@ -1,4 +1,78 @@
 window.onload = function() {
+    
+    // Primero define el gauge
+    const ctxGauge = document.getElementById('myChart').getContext('2d');
+    const gradientSegment = ctxGauge.createLinearGradient(0, 0, 700, 0);
+    gradientSegment.addColorStop(0, 'red');
+    gradientSegment.addColorStop(1, 'red');
+
+    const dataGauge = {
+        labels: ['Score', 'Gray Area'],
+        datasets: [{
+            label: 'Weekly Sales',
+            data: [0, 4000],
+            backgroundColor: [gradientSegment, 'rgba(211, 211, 211, 0.2)'],
+            borderColor: ['rgba(211, 211, 211, 0.2)'],
+            borderWidth: 0,
+            cutout: '90%',
+            circumference: 180,
+            rotation: 270,
+        }]
+    };
+
+    const gaugeChartText = {
+        id: 'gaugeChartText',
+        afterDatasetsDraw(chart, args, pluginOptions) {
+            const { ctx, data, chartArea: { top, bottom, left, right, width, height } } = chart;
+            ctx.save();
+            const xCoor = chart.getDatasetMeta(0).data[0].x;
+            const yCoor = chart.getDatasetMeta(0).data[0].y;
+            const score = data.datasets[0].data[0];
+            let rating = score < 1000 ? 'OK' : score < 1500 ? 'Cuidado' : 'PELIGRO';
+
+            ctx.font = `30px sans-serif`;
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.fillText(score, xCoor, yCoor);
+            ctx.fillText(rating, xCoor, yCoor - 120);
+            ctx.restore();
+        }
+    };
+
+    const configGauge = {
+        type: 'doughnut',
+        data: dataGauge,
+        options: {
+            aspectRatio: 1.5,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        },
+        plugins: [gaugeChartText]
+    };
+
+    const myGaugeChart = new Chart(ctxGauge, configGauge);
+    
+    
+    
+    
+    window.getSensorValue = function(callback) {
+  fetch('/api/sensor-value')
+    .then(response => response.json())
+    .then(data => {
+      let sensorValue = data.resistencia;
+      console.log('Sensor value:', sensorValue);
+
+      if (sensorValue !== null) {
+        callback(sensorValue);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching sensor data:', error);
+    });
+}
+    
     // Llama a la función para obtener el valor del sensor y actualizar la página inicialmente
     getAndDisplaySensorValue();
 
@@ -44,21 +118,9 @@ window.onload = function() {
         // Actualiza el gráfico de medidor
         myGaugeChart.update();
     }
-    function getSensorValue(callback) {
-        fetch('/api/sensor-value')
-            .then(response => response.json())
-            .then(data => {
-                let sensorValue = data.resistencia; 
-                console.log('Sensor value:', sensorValue);
-    
-                if (sensorValue !== null) {
-                    callback(sensorValue);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching sensor data:', error);
-            });
-    }
+
+
+
     
     // Función para mostrar el valor del sensor en el medidor
     function showLoadingModal() {
@@ -174,84 +236,7 @@ window.onload = function() {
         dataLine.datasets[0].data = [...originalDataLine.datasets[0].data];
         myLineChart.update();
     }
-
-    // Gráfico 2: Gauge
-    const ctxGauge = document.getElementById('myChart').getContext('2d');
-    const gradientSegment = ctxGauge.createLinearGradient(0, 0, 700, 0);
-    gradientSegment.addColorStop(0, 'red');
-    gradientSegment.addColorStop(1, 'red');
-    const dataGauge = {
-        labels: ['Score', 'Gray Area'],
-        datasets: [{
-            label: 'Weekly Sales',
-            data: [0, 4000], // Inicializa con 0, el valor se actualizará dinámicamente
-            backgroundColor: [
-                gradientSegment,
-                'rgba(211, 211, 211, 0.2)' // Cambia el color de la barra gris a un gris más claro
-            ],
-            borderColor: [
-                'rgba(211, 211, 211, 0.2)' // Sin bordes para la barra gris
-            ],
-            borderWidth: 0,
-            cutout: '90%',
-            circumference: 180,
-            rotation: 270,
-        }]
-    };
-
-    const gaugeChartText = {
-        id: 'gaugeChartText',
-        afterDatasetsDraw(chart, args, pluginOptions) {
-            const { ctx, data, chartArea: { top, bottom, left, right, width, height }, scales: { r } } = chart;
-            ctx.save();
-            const xCoor = chart.getDatasetMeta(0).data[0].x;
-            const yCoor = chart.getDatasetMeta(0).data[0].y;
-            const score = data.datasets[0].data[0];
-            let rating;
-            
-            if (score < 1000) {
-                rating = 'OK';
-            } else if (score >= 1000 && score < 1500) {
-                rating = 'Cuidado';
-            } else if (score >= 1500) {
-                rating = 'PELIGRO';
-            }
-
-            function textLabel(text, x, y, fontSize, textBaseLine, textAlign) {
-                ctx.font = `${fontSize}px sans-serif`;
-                ctx.fillStyle = 'black'; // Cambia el color del texto a negro
-                ctx.textBaseline = textBaseLine;
-                ctx.textAlign = textAlign;
-                ctx.fillText(text, x, y);
-            }
-
-            textLabel('0', left, yCoor + 20, 20, 'top', 'left');
-            textLabel('4000', right, yCoor + 20, 20, 'top', 'right'); // Agrega el label de 4000 en el lado derecho
-            textLabel(score, xCoor, yCoor, 100, 'bottom', 'center');
-            textLabel(rating, xCoor, yCoor - 120, 30, 'bottom', 'center');
-            ctx.restore();
-        }
-    };
-
-    const configGauge = {
-        type: 'doughnut',
-        data: dataGauge,
-        options: {
-            aspectRatio: 1.5,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    enabled: false
-                }
-            }
-        },
-        plugins: [gaugeChartText]
-    };
-
-    const myGaugeChart = new Chart(ctxGauge, configGauge);
-
+    
     // Instantly assign Chart.js version
     const chartVersion = document.getElementById('chartVersion');
     chartVersion.innerText = Chart.version;

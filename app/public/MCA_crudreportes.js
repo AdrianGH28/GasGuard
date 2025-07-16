@@ -4,7 +4,7 @@ window.addEventListener('load', () => {
     body.style.opacity='1';
 });
 
-document.getElementById("form-reporte-fuga").addEventListener("submit", async (e) => {
+/*document.getElementById("form-reporte-fuga").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const descripcion = document.querySelector('#descripcion').value;
@@ -38,12 +38,12 @@ document.getElementById("form-reporte-fuga").addEventListener("submit", async (e
         console.error('Error al generar reporte:', error);
         mostraralerta('error', "Error de conexión con el servidor.");
     }
-});
+});*/
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const res = await fetch("https://gasguard-production.up.railway.app/api/reportes-afiliado", {
-            credentials: "include" // Para enviar cookies de sesión automáticamente
+            credentials: "include"
         });
 
         if (!res.ok) {
@@ -51,18 +51,97 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const resJson = await res.json();
-        //lo de reportes y reportesContainer es una idea de nombre, cambialo
-        // si quieres
         const reportes = resJson.data;
 
-        const reportesContainer = document.getElementById("containerreportes"); // /aqui va el id del contenedor donde pondras los reportes/
+        console.log("Reportes recibidos:", reportes); // 👈 Verifica que llegan
+
+        const reportesContainer = document.getElementById("containerreportes");
+        if (!reportesContainer) {
+            console.error("No se encontró el contenedor con id 'containerreportes'");
+            return;
+        }
 
         let grupoContenedores = null;
-        reportes.forEach((reporte, index) => {
-            // /aqui generas los contenedores de reporte/
-       
-        });
 
+        reportes.forEach((reporte, index) => {
+            if (index % 4 === 0) {
+                grupoContenedores = document.createElement("div");
+                grupoContenedores.classList.add("grupodetarjetas");
+                reportesContainer.appendChild(grupoContenedores);
+            }
+
+            const tarjeta = document.createElement("div");
+            tarjeta.classList.add("tarjeta");
+
+            // Ícono según tipo de reporte
+            const icono = document.createElement("i");
+            switch (reporte.tipo) {
+                case "Instalación":
+                    icono.className = "fa fa-truck-ramp-box";
+                    break;
+                case "Fuga":
+                    icono.className = "fa fa-screwdriver-wrench";
+                    break;
+                case "Desinstalación":
+                    icono.className = "fa fa-truck";
+                    break;
+                default:
+                    icono.className = "fa fa-file";
+            }
+
+            const textotarjeta = document.createElement("div");
+            textotarjeta.classList.add("textotarjeta");
+
+            const estado = document.createElement("h2");
+            const estadoIcon = document.createElement("i");
+            estadoIcon.className = "fa fa-circle";
+            estado.appendChild(estadoIcon);
+            estado.innerHTML += ` ${reporte.estado}`;
+
+            const encargado = document.createElement("p");
+            encargado.textContent = "Encargado:";
+
+            const nombre = document.createElement("p");
+            nombre.textContent = reporte.nombre_tecnico || "Sin asignar";
+
+            const fechaRegistro = document.createElement("p");
+            fechaRegistro.textContent = "Fecha de registro:";
+
+            const fechaInicio = document.createElement("p");
+            fechaInicio.textContent = reporte.fecini_reporte || "No registrada";
+
+            textotarjeta.appendChild(estado);
+            textotarjeta.appendChild(encargado);
+            textotarjeta.appendChild(nombre);
+            textotarjeta.appendChild(fechaRegistro);
+            textotarjeta.appendChild(fechaInicio);
+
+            if (reporte.estado === "Solucionado") {
+                const fechaSolucion = document.createElement("p");
+                fechaSolucion.textContent = "Fecha de solución:";
+                const fechaFin = document.createElement("p");
+                fechaFin.textContent = reporte.fecfin_reporte || "No registrada";
+                textotarjeta.appendChild(fechaSolucion);
+                textotarjeta.appendChild(fechaFin);
+            }
+
+            const btnVerMas = document.createElement("button");
+            btnVerMas.textContent = "Ver más";
+            textotarjeta.appendChild(btnVerMas);
+
+            if (reporte.estado === "Pendiente") {
+                const iconCancel = document.createElement("div");
+                iconCancel.classList.add("centrareltache");
+                const tache = document.createElement("i");
+                tache.className = "fa fa-xmark";
+                iconCancel.appendChild(tache);
+                tarjeta.appendChild(iconCancel);
+            }
+
+            tarjeta.appendChild(icono);
+            tarjeta.appendChild(textotarjeta);
+            grupoContenedores.appendChild(tarjeta);
+        });
 
     } catch (error) {
         console.error("Error:", error);
