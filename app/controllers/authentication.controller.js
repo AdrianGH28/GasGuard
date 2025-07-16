@@ -1262,11 +1262,50 @@ async function repagousuario(req, res) {
             );
             id_plan = insertplanResult.insertId;
         }
+        const cardpro = '************4242';
+        let id_pago;
+        const [pagoResult] = await pool.execute('SELECT id_pago FROM dpago WHERE tipo_pago = ? AND nmcrd_pago = ? AND fecha_pago = ?', [typepago, cardpro, fechaInicio]);
+        if (pagoResult.length > 0) {
+            id_pago = pagoResult[0].id_pago;
+        } else {
+            const [insertResult] = await pool.execute(
+                'INSERT INTO dpago (tipo_pago, nmcrd_pago, fecha_pago) VALUES (?, ?, ?)',
+                [typepago, cardpro, fechaInicio]
+            );
+            id_pago = insertResult.insertId;
+        }
+
+        const año = new Date().getFullYear();
+
+        // Paso 2: Contar cuántas facturas se han generado este año
+        const [facturasAño] = await pool.execute(
+        'SELECT COUNT(*) AS total FROM dfactura WHERE folio_fact LIKE ?',
+        [`FAC-${año}-%`]
+        );
+
+// Paso 3: Generar número consecutivo
+        const siguienteNumero = facturasAño[0].total + 1;
+        const numeroFormateado = String(siguienteNumero).padStart(6, '0'); // "000001"
+
+// Paso 4: Crear el folio
+        const folio_facto = `FAC-${año}-${numeroFormateado}`;
+        let id_fact;
+        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE folio_fact = ? AND id_pago = ?', [folio_facto, id_pago]);
+        if (factResult.length > 0) {
+            id_fact = factResult[0].id_fact;
+        } else {
+            const [insertResult] = await pool.execute(
+            'INSERT INTO dfactura (folio_fact, id_pago) VALUES (?, ?)',
+            [folio_facto, id_pago]
+            );
+            id_fact = insertResult.insertId;
+        }
+
 
         // Insertar suscripción
         const [suscripcionResult] = await pool.execute(
-            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
-            [fechaInicio, fechaFinStr, estatus, monto, id_plan] // Eliminado id_estado que no estaba definido
+            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc,id_fact, id_plan) VALUES (?, ?, ?, ?, ?, ?)',
+            [fechaInicio, fechaFinStr, estatus, monto, id_fact, id_plan] // Eliminado id_estado que no estaba definido
         );
         const suscriId = suscripcionResult.insertId;
 
