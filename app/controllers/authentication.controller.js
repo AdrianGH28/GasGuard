@@ -1276,7 +1276,7 @@ async function repagoempresa(req, res) {
 }
 
 async function repagousuario(req, res) {
-    const { tiplan, correo, monto, meses } = req.body;
+    const { tiplan, correo, monto, meses, typepago } = req.body;
 
 
     if (monto === 0) {

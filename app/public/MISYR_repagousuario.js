@@ -224,7 +224,8 @@ async function handleSubmit(event) {
         tiplan,
         monto: montoTotal,
         meses: mesespl,
-        subscriptionId: subscription.id
+        subscriptionId: subscription.id,
+        typepago: 'card'
       })
     });
     
