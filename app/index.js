@@ -462,7 +462,6 @@ app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => 
 });
 */
 
-// Ruta para obtener reportes generados por el usuario logueado, incluyendo tipo de reporte
 app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => {
     try {
         const id_user = req.user.id_user;
@@ -476,10 +475,12 @@ app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => 
                 DATE_FORMAT(r.fecini_reporte, '%Y-%m-%d') AS fecini_reporte,
                 DATE_FORMAT(r.fecfin_reporte, '%Y-%m-%d') AS fecfin_reporte,
                 r.id_reltecnico,
+                tecnico.nom_user AS nombre_tecnico,
                 r.id_tireporte,
                 t.nom_tireporte
             FROM mreporte r
             JOIN ctiporeporte t ON r.id_tireporte = t.id_tireporte
+            LEFT JOIN musuario tecnico ON r.id_reltecnico = tecnico.id_user
             WHERE r.id_user = ?
         `, [id_user]);
 
