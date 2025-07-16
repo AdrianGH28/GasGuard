@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GasGuard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="/css/backgroundvideo.css">
+    <link rel="stylesheet" href="/css/MMUI_paginaprincipal.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/principal2.css">
+    <script nonce="undefined" src="https://cdn.zingchart.com/zingchart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="navbar-container">
+            <!-- Contenedor logo y texto -->
+            <div class="logo-container">
+                <img src="images/logotipo.png" alt="Logo">
+                <span class="logo-text">GasGuard</span>
+            </div>
+
+            <!-- Contenedor de los items (ya centrado) -->
+            <div class="container-items">
+                <!-- Página 1: Dirección (index.html) -->
+                <a class="nav-link" href="index.html" data-page="index">
+                    <i class="fa fa-clipboard"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 2: Historial (page2.html) -->
+                <a class="nav-link" href="page2.html" data-page="page2">
+                    <i class="fa fa-house"></i>
+                    <div class="animation"></div>
+                </a>
+                <!-- Página 3: Estadísticas (page3.html) -->
+                <a class="nav-link" href="page3.html" data-page="page3">
+                    <i class="fa fa-chart-column"></i>
+                    <div class=" animation"></div>
+                </a>
+            </div>
+
+            <!-- Botón Hamburguesa -->
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
+        </div>
+        <div class="user-container" id="user-container">
+            <span class="user-text">Usuario</span>
+            <i class="fa fa-user-circle user-icon"></i>
+            <div class="animacion"></div>
+        </div>
+    </nav>
+    <div class="video-background">
+        <video autoplay muted loop id="video-background">
+            <source src="images/video2.mp4" type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+    <div class="page-container" id="contenedor-principal">
+        <div class="header-top">
+            <h1 class="page-title">INICIO</h1>
+        </div>
+        <div class="containermlp">
+    <div class="chart-container">
+        <canvas id='myChart'></canvas>
+        <p id="sensorValue" style="text-align: center; font-size: 20px; margin-top: 10px;">
+        Valor del sensor: --
+    </p>
+    </div>
+    <aside class="chart-container2">
+        <h2>Variación</h2>
+        <canvas id="myLineChart">
+        </canvas>
+
+    </div>
+    </div>
+    <script src="MMUI_paginaprincipal.js" defer></script>
+</body>
+</html>

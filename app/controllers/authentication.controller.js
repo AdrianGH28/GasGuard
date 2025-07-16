@@ -83,7 +83,7 @@ export async function login(req, res) {
             } else if (usuario.rol_user === 'admin') {
                 redirectPath = '/maaseleccioninfo';
             } else if (usuario.rol_user === 'user') {
-                redirectPath = '/principal';
+                redirectPath = '/mmuipaginaprincipal';
             } else {
                 redirectPath = '/maeseleccioninfo'; // fallback
             }

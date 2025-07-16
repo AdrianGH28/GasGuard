@@ -106,6 +106,7 @@ app.get("/mcapaginaprincipal", authorization.proteccion, (req, res) => res.sendF
 app.get("/mgtseleccioninfo", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_seleccioninfo.html"));
 app.get("/mgtinfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_infocuenta.html"));
 app.get("/mgtconclurep", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MGT_reportesconcluidos.html"));
+app.get("/mmuipaginaprincipal", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MMUI_paginaprincipal.html"));
 app.get("/maaseleccioninfo", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_seleccioninfo.html"));
 app.get("/maainfocuenta", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_infocuenta.html"));
 app.get("/maacuentafil", authorization.proteccion, (req, res) => res.sendFile(__dirname + "/pages/MAA_cuentasafiliadas.html"));
@@ -495,6 +496,76 @@ app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => 
         return res.status(500).send({ status: "Error", message: "Error al obtener reportes." });
     }
 });
+
+app.post("/api/reportes-filtrados", authorization.proteccion, async (req, res) => {
+    try {
+        const id_user = req.user.id_user;
+
+        // Recibe los filtros del body
+        const {
+            estado,
+            tipo,
+            mes,
+            anio,
+            fechaInicio,
+            fechaFin
+        } = req.body;
+
+        let query = `
+            SELECT 
+                r.id_reporte,
+                r.nmticket_reporte,
+                r.estado_reporte,
+                r.descri_reporte,
+                DATE_FORMAT(r.fecini_reporte, '%Y-%m-%d') AS fecini_reporte,
+                DATE_FORMAT(r.fecfin_reporte, '%Y-%m-%d') AS fecfin_reporte,
+                tr.nom_tireporte,
+                r.id_reltecnico
+            FROM mreporte r
+            INNER JOIN ctiporeporte tr ON r.id_tireporte = tr.id_tireporte
+            WHERE r.id_user = ?
+        `;
+
+        const params = [id_user];
+
+        if (estado) {
+            query += " AND r.estado_reporte = ?";
+            params.push(estado.toLowerCase());
+        }
+
+        if (tipo) {
+            query += " AND tr.nom_tireporte = ?";
+            params.push(tipo.toLowerCase());
+        }
+
+        if (mes) {
+            query += " AND MONTH(r.fecini_reporte) = ?";
+            params.push(mes); // espera número de mes
+        }
+
+        if (anio) {
+            query += " AND YEAR(r.fecini_reporte) = ?";
+            params.push(anio);
+        }
+
+        if (fechaInicio && fechaFin) {
+            query += " AND r.fecini_reporte BETWEEN ? AND ?";
+            params.push(fechaInicio, fechaFin);
+        }
+
+        const [rows] = await pool.execute(query, params);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ status: "error", message: "No se encontraron reportes." });
+        }
+
+        res.json({ status: "ok", data: rows });
+    } catch (error) {
+        console.error("Error al filtrar reportes:", error);
+        res.status(500).json({ status: "error", message: "Error al filtrar reportes" });
+    }
+});
+
 
 //ADMIN OBTENCION DE DATOS DE USUARIOS---------------
 app.get("/api/usuarios-individuales", authorization.proteccion, async (req, res) => {
