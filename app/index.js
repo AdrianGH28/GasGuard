@@ -743,6 +743,88 @@ app.post("/api/create-subscription", async (req, res) => {
   }
 });
 
+app.post("/api/create-subscription-indiv", async (req, res) => {
+  const { customerId, tiplan, montoTotal, paymentMethodId } = req.body;
+
+  if (!customerId || !tiplan || !montoTotal || !paymentMethodId) {
+    return res.status(400).json({ error: "Datos incompletos" });
+  }
+
+  // Configuración del intervalo según el plan
+  let interval = "month";
+  let intervalCount = 1;
+  
+  if (tiplan === "semestral") {
+    interval = "month";
+    intervalCount = 6;
+  } else if (tiplan === "anual") {
+    interval = "year";
+    intervalCount = 1;
+  }
+
+  try {
+    // Primero, crear un producto para esta suscripción
+    const product = await stripe.products.create({
+      name: `Plan ${tiplan}`,
+      metadata: {
+        tiplan: tiplan
+      }
+    });
+
+    // Luego crear un precio para este producto
+    const price = await stripe.prices.create({
+      product: product.id,
+      currency: "mxn",
+      unit_amount: montoTotal,
+      recurring: {
+        interval: interval,
+        interval_count: intervalCount
+      }
+    });
+
+    // Crear la suscripción con el precio y método de pago
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
+      items: [{
+        price: price.id,
+      }],
+      default_payment_method: paymentMethodId,
+      payment_settings: {
+        payment_method_types: ['card'],
+        save_default_payment_method: 'on_subscription'
+      },
+      metadata: {
+        tiplan: tiplan,
+        montoTotal: montoTotal.toString()
+      }
+    });
+
+    // Si necesitas un client_secret para confirmación en el frontend,
+    // crea un PaymentIntent separado
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: montoTotal,
+      currency: 'mxn',
+      customer: customerId,
+      payment_method: paymentMethodId,
+      setup_future_usage: 'off_session',
+      confirm: false,
+      description: `Pago inicial para suscripción ${subscription.id}`,
+      metadata: {
+        subscription_id: subscription.id
+      }
+    });
+
+    res.json({
+      subscription: subscription, 
+      clientSecret: paymentIntent.client_secret
+    });
+
+  } catch (err) {
+    console.error("Error creando suscripción:", err);
+    res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
+  }
+});
+
 // Webhook para manejar eventos de Stripe
 app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
   const sig = req.headers['stripe-signature'];

@@ -102,12 +102,7 @@ async function calcularMonto() {
     const plan = data.planes[0];
     const precioBase = parseFloat(plan.pbas_tiplan) || 0;
     
-    // Obtener multiplicador según el plan
-    mesespl = { mensual: 1, semestral: 6, anual: 12 }[tiplan] || 1;
-    
-    // Calcular precio con descuento para planes semestrales y anuales
-    const porcentajeDescuento = tiplan === "mensual" ? 1 : tiplan === "semestral" ? 0.9 : 0.8;
-    montoTotal = (precioBase) * mesespl * porcentajeDescuento;
+    montoTotal = precioBase
 
         document.getElementById("montoPagar").innerText = `$${montoTotal.toFixed(2)} MXN`;
     
@@ -199,7 +194,7 @@ async function handleSubmit(event) {
     }
     
     // 4. Crear suscripción con metadata del usuario real
-    const subscriptionResponse = await fetch("/api/create-subscription", {
+    const subscriptionResponse = await fetch("/api/create-subscription-indiv", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

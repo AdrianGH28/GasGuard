@@ -112,7 +112,7 @@ async function calcularMonto() {
     
     // Calcular precio con descuento para planes semestrales y anuales
     const porcentajeDescuento = tiplan === "mensual" ? 1 : tiplan === "semestral" ? 0.9 : 0.8;
-    montoTotal = (precioBase + (precioAfiliado * noAfiliados)) * mesespl * porcentajeDescuento;
+    montoTotal = (precioBase + (precioAfiliado * noAfiliados * mesespl)) * porcentajeDescuento;
     
     // Mostrar el monto a pagar
     document.getElementById("montoPagar").innerText = `$${montoTotal.toFixed(2)} MXN`;
