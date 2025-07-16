@@ -1164,7 +1164,7 @@ async function repagoempresa(req, res) {
 
         const folio_fact = crypto.randomBytes(6).toString("hex").toUpperCase();
         let id_fact;
-        const [factResult] = await pool.execute('SELECT id_fact FROM dpago WHERE folio_fact = ? AND id_pago = ?', [folio_fact, id_pago]);
+        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE folio_fact = ? AND id_pago = ?', [folio_fact, id_pago]);
         if (factResult.length > 0) {
             id_fact = factResult[0].id_fact;
         } else {
@@ -1179,7 +1179,7 @@ async function repagoempresa(req, res) {
 
         const [insertResult] = await pool.execute(
             'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_fact, id_plan) VALUES (?, ?, ?, ?, ?, ?)',
-            [fechaInicio, fechaFinStr, estatus, monto,id_fact, id_plan]
+            [fechaInicio, fechaFinStr, estatus, monto,id_fact , id_plan]
         );
         const id_susc = insertResult.insertId;
 
