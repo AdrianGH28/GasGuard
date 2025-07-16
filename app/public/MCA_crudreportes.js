@@ -40,6 +40,8 @@ window.addEventListener('load', () => {
     }
 });*/
 
+let hayPendientes = false; // Para verificar si hay reportes pendientes
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const res = await fetch("https://gasguard-production.up.railway.app/api/reportes-afiliado", {
@@ -53,26 +55,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         const resJson = await res.json();
         const reportes = resJson.data;
 
-        console.log("Reportes recibidos:", reportes);
-
         const reportesContainer = document.getElementById("containerreportes");
         if (!reportesContainer) {
             console.error("❌ No se encontró el contenedor con id 'containerreportes'");
             return;
         }
 
-        
         let grupoContenedores = null;
 
         reportes.forEach((reporte, index) => {
-              console.log(`📄 Reporte #${index + 1}:`, reporte);
-
-            const tipoReporte = parseInt(reporte.id_tireporte);
-            console.log("➡️ id_tireporte:", tipoReporte);
-
-             if (isNaN(tipoReporte)) {
-                 console.warn("❌ id_tireporte inválido. Verifica que venga en el JSON desde el backend.");
-                }
             if (index % 4 === 0) {
                 grupoContenedores = document.createElement("div");
                 grupoContenedores.classList.add("grupodetarjetas");
@@ -82,32 +73,42 @@ document.addEventListener("DOMContentLoaded", async () => {
             const tarjeta = document.createElement("div");
             tarjeta.classList.add("tarjeta");
 
-            // Ícono principal según tipo de reporte (id_tireporte)
+            // Ícono principal según tipo
+            const tipoReporte = parseInt(reporte.id_tireporte);
             const icono = document.createElement("i");
-            switch (reporte.id_tireporte) {
-                case 1: // Instalación
+            switch (tipoReporte) {
+                case 1:
                     icono.className = "fa fa-truck-ramp-box";
                     break;
-                case 2: // Fuga
+                case 2:
                     icono.className = "fa fa-screwdriver-wrench";
                     break;
-                case 3: // Desinstalación
+                case 3:
                     icono.className = "fa fa-truck";
                     break;
                 default:
-                    icono.className = "fa fa-file";
+                    icono.className = "fa fa-question-circle";
             }
 
-            // Bloque texto
             const textotarjeta = document.createElement("div");
             textotarjeta.classList.add("textotarjeta");
 
             const estado = document.createElement("h2");
             const estadoIcon = document.createElement("i");
             estadoIcon.className = "fa fa-circle";
+
+            const estadoRaw = reporte.estado_reporte?.toLowerCase();
+            const estadoTexto = estadoRaw === "realizada" ? "Solucionado" : "Pendiente";
             estado.appendChild(estadoIcon);
-            const estadoTexto = reporte.estado?.toLowerCase() === "realizada" ? "Solucionado" : "Pendiente";
             estado.innerHTML += ` ${estadoTexto}`;
+
+            // Color del icono según estado
+            if (estadoRaw === "pendiente") {
+                estadoIcon.style.color = "#FDCD0F"; // amarillo
+                hayPendientes = true;
+            } else {
+                estadoIcon.style.color = "#01E17B"; // verde
+            }
 
             const encargado = document.createElement("p");
             encargado.textContent = "Encargado:";
@@ -127,8 +128,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             textotarjeta.appendChild(fechaRegistro);
             textotarjeta.appendChild(fechaInicio);
 
-            // Si está solucionado, mostrar fecha de solución
-            if (reporte.estado?.toLowerCase() === "realizada") {
+            if (estadoRaw === "realizada") {
                 const fechaSolucion = document.createElement("p");
                 fechaSolucion.textContent = "Fecha de solución:";
                 const fechaFin = document.createElement("p");
@@ -141,28 +141,39 @@ document.addEventListener("DOMContentLoaded", async () => {
             btnVerMas.textContent = "Ver más";
             textotarjeta.appendChild(btnVerMas);
 
-            // Si está pendiente, agregar ícono de cancelar (❌)
-            if (reporte.estado?.toLowerCase() === "pendiente") {
+            // ❌ Ícono de cancelar si está pendiente
+            if (estadoRaw === "pendiente") {
                 const iconCancel = document.createElement("div");
-                iconCancel.classList.add("centrareltache"); // usa tu misma clase
+                iconCancel.classList.add("centrareltache");
                 const tache = document.createElement("i");
                 tache.className = "fa fa-xmark";
                 iconCancel.appendChild(tache);
                 tarjeta.appendChild(iconCancel);
             }
 
-            // Agregar elementos a la tarjeta
             tarjeta.appendChild(icono);
             tarjeta.appendChild(textotarjeta);
-
-            // Agregar tarjeta al grupo
             grupoContenedores.appendChild(tarjeta);
         });
+
+        // 🎯 Evento para mostrar alerta si hay reportes pendientes
+        const botonAnadir = document.getElementById("anadirreporte");
+        if (botonAnadir) {
+            botonAnadir.addEventListener("click", () => {
+                if (hayPendientes) {
+                    mostraralerta("warning", "No puedes añadir un nuevo reporte mientras exista uno pendiente.");
+                } else {
+                    // Aquí podrías abrir el modal normal si quieres
+                    console.log("No hay pendientes, puedes continuar con el alta de un nuevo reporte.");
+                }
+            });
+        }
 
     } catch (error) {
         console.error("Error:", error);
     }
 });
+
 
 ///////////////////////////////////////////////////////////ALERTAAAAAAAAAAAAAAAAAAAAAAAAA
 
