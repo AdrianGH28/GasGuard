@@ -43,35 +43,6 @@ document.getElementById("form-reporte-fuga").addEventListener("submit", async (e
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const res = await fetch("https://gasguard-production.up.railway.app/api/reportes-afiliado", {
-            credentials: "include" // Para enviar cookies de sesión automáticamente
-        });
-
-        if (!res.ok) {
-            throw new Error("Error al obtener los reportes del afiliado.");
-        }
-
-        const resJson = await res.json();
-        //lo de reportes y reportesContainer es una idea de nombre, cambialo
-        // si quieres
-        const reportes = resJson.data;
-
-        const reportesContainer = document.getElementById("containerreportes"); // /aqui va el id del contenedor donde pondras los reportes/
-
-        let grupoContenedores = null;
-        reportes.forEach((reporte, index) => {
-            // /aqui generas los contenedores de reporte/
-       
-        });
-
-
-    } catch (error) {
-        console.error("Error:", error);
-    }
-});
-
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const res = await fetch("https://gasguard-production.up.railway.app/api/reportes-afiliado", {
             credentials: "include"
         });
 
@@ -82,23 +53,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         const resJson = await res.json();
         const reportes = resJson.data;
 
+        console.log("Reportes recibidos:", reportes); // 👈 Verifica que llegan
+
         const reportesContainer = document.getElementById("containerreportes");
+        if (!reportesContainer) {
+            console.error("No se encontró el contenedor con id 'containerreportes'");
+            return;
+        }
 
         let grupoContenedores = null;
 
         reportes.forEach((reporte, index) => {
-            // Crear nuevo grupo cada 4 tarjetas
             if (index % 4 === 0) {
                 grupoContenedores = document.createElement("div");
                 grupoContenedores.classList.add("grupodetarjetas");
                 reportesContainer.appendChild(grupoContenedores);
             }
 
-            // Crear tarjeta
             const tarjeta = document.createElement("div");
             tarjeta.classList.add("tarjeta");
 
-            // Icono según tipo de reporte
+            // Ícono según tipo de reporte
             const icono = document.createElement("i");
             switch (reporte.tipo) {
                 case "Instalación":
@@ -111,10 +86,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     icono.className = "fa fa-truck";
                     break;
                 default:
-                    icono.className = "fa fa-file"; // fallback
+                    icono.className = "fa fa-file";
             }
 
-            // Contenido de la tarjeta
             const textotarjeta = document.createElement("div");
             textotarjeta.classList.add("textotarjeta");
 
@@ -155,13 +129,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             btnVerMas.textContent = "Ver más";
             textotarjeta.appendChild(btnVerMas);
 
-            // Si está pendiente, se agrega ícono de cancelar
             if (reporte.estado === "Pendiente") {
                 const iconCancel = document.createElement("div");
                 iconCancel.classList.add("centrareltache");
                 const tache = document.createElement("i");
                 tache.className = "fa fa-xmark";
-                // Aquí puedes agregar lógica para cancelar
                 iconCancel.appendChild(tache);
                 tarjeta.appendChild(iconCancel);
             }
