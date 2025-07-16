@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const resJson = await res.json();
         const reportes = resJson.data;
 
-        console.log("Reportes recibidos:", reportes); // 👈 Verifica que llegan
+        console.log("Reportes recibidos:", reportes);
 
         const reportesContainer = document.getElementById("containerreportes");
         if (!reportesContainer) {
@@ -73,16 +73,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             const tarjeta = document.createElement("div");
             tarjeta.classList.add("tarjeta");
 
-            // Ícono según tipo de reporte
+            // Icono según id_tireporte
             const icono = document.createElement("i");
-            switch (reporte.tipo) {
-                case "Instalación":
+            switch (reporte.id_tireporte) {
+                case 1: // Instalación
                     icono.className = "fa fa-truck-ramp-box";
                     break;
-                case "Fuga":
+                case 2: // Fuga
                     icono.className = "fa fa-screwdriver-wrench";
                     break;
-                case "Desinstalación":
+                case 3: // Desinstalación
                     icono.className = "fa fa-truck";
                     break;
                 default:
@@ -92,11 +92,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             const textotarjeta = document.createElement("div");
             textotarjeta.classList.add("textotarjeta");
 
+            // Estado
             const estado = document.createElement("h2");
             const estadoIcon = document.createElement("i");
             estadoIcon.className = "fa fa-circle";
             estado.appendChild(estadoIcon);
-            estado.innerHTML += ` ${reporte.estado}`;
+            const estadoTexto = reporte.estado?.toLowerCase() === "realizada" ? "Solucionado" : "Pendiente";
+            estado.innerHTML += ` ${estadoTexto}`;
 
             const encargado = document.createElement("p");
             encargado.textContent = "Encargado:";
@@ -116,7 +118,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             textotarjeta.appendChild(fechaRegistro);
             textotarjeta.appendChild(fechaInicio);
 
-            if (reporte.estado === "realizada") {
+            // Si solucionado, mostrar fecha de solución
+            if (reporte.estado?.toLowerCase() === "realizada") {
                 const fechaSolucion = document.createElement("p");
                 fechaSolucion.textContent = "Fecha de solución:";
                 const fechaFin = document.createElement("p");
@@ -129,7 +132,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             btnVerMas.textContent = "Ver más";
             textotarjeta.appendChild(btnVerMas);
 
-            if (reporte.estado === "pendiente") {
+            // Si está pendiente, mostrar ícono de cancelar
+            if (reporte.estado?.toLowerCase() === "pendiente") {
                 const iconCancel = document.createElement("div");
                 iconCancel.classList.add("centrareltache");
                 const tache = document.createElement("i");
