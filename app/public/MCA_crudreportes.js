@@ -4,7 +4,7 @@ window.addEventListener('load', () => {
     body.style.opacity='1';
 });
 
-document.getElementById("form-reporte-fuga").addEventListener("submit", async (e) => {
+/*document.getElementById("form-reporte-fuga").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const descripcion = document.querySelector('#descripcion').value;
@@ -38,7 +38,7 @@ document.getElementById("form-reporte-fuga").addEventListener("submit", async (e
         console.error('Error al generar reporte:', error);
         mostraralerta('error', "Error de conexión con el servidor.");
     }
-});
+});*/
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
