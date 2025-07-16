@@ -1,7 +1,7 @@
 //form-reporte-fuga es una idea de nombre para el id del forms, camialoo dependiendo de como lo  llames
 window.addEventListener('load', () => {
     const body = document.body;
-    body.style.opacity = '1';
+    body.style.opacity='1';
 });
 
 /*document.getElementById("form-reporte-fuga").addEventListener("submit", async (e) => {
@@ -143,19 +143,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // ❌ Ícono de cancelar si está pendiente
             if (estadoRaw === "pendiente" && tipoReporte === 2) {
-                const iconCancel = document.createElement("div");
-                iconCancel.classList.add("centrareltache");
-                const tache = document.createElement("i");
-                tache.className = "fa fa-xmark";
+    const iconCancel = document.createElement("div");
+    iconCancel.classList.add("centrareltache");
+    const tache = document.createElement("i");
+    tache.className = "fa fa-xmark";
 
-                // Puedes añadir aquí un evento click si más adelante deseas cancelar
-                tache.addEventListener("click", () => {
-                    mostraralerta("warning", "¿Estás seguro de cancelar este reporte de fuga?");
-                });
+    // Puedes añadir aquí un evento click si más adelante deseas cancelar
+    tache.addEventListener("click", () => {
+        mostraralerta("warning", "¿Estás seguro de cancelar este reporte de fuga?");
+    });
 
-                iconCancel.appendChild(tache);
-                tarjeta.appendChild(iconCancel);
-            }
+    iconCancel.appendChild(tache);
+    tarjeta.appendChild(iconCancel);
+}
 
             tarjeta.appendChild(icono);
             tarjeta.appendChild(textotarjeta);
@@ -182,6 +182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 ///////////////////////////////////////////////////////////ALERTAAAAAAAAAAAAAAAAAAAAAAAAA
+
 let alertaTimeout;
 let alertaTipoActual = "";
 
@@ -298,7 +299,6 @@ window.addEventListener('load', () => {
     const body = document.body;
     body.style.opacity='1';
 });
-
 
 ///////////////////////barra de filtros
 document.addEventListener("DOMContentLoaded", function () {
