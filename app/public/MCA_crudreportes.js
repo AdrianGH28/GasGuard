@@ -182,7 +182,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 ///////////////////////////////////////////////////////////ALERTAAAAAAAAAAAAAAAAAAAAAAAAA
-
 let alertaTimeout;
 let alertaTipoActual = "";
 
@@ -224,10 +223,10 @@ function mostrarNuevaAlerta(type, message) {
     if (cancelarButton) cancelarButton.style.display = 'none';
 
     const tipos = {
-        info: { clase: 'alert-info', icon: 'fa-circle-info', titulo: 'Información', color: '#4B85F5', aceptarColor: '#6C7D7D', aceptarBold: '400' },
+        info:    { clase: 'alert-info',    icon: 'fa-circle-info',      titulo: 'Información', color: '#4B85F5', aceptarColor: '#6C7D7D', aceptarBold: '400' },
         warning: { clase: 'alert-warning', icon: 'fa-circle-exclamation', titulo: 'Advertencia', color: '#FDCD0F', aceptarColor: '#FDCD0F', aceptarBold: '700' },
-        error: { clase: 'alert-error', icon: 'fa-circle-xmark', titulo: 'Error', color: '#F04349', aceptarColor: '#6C7D7D', aceptarBold: '400' },
-        success: { clase: 'alert-success', icon: 'fa-circle-check', titulo: 'Éxito', color: '#01E17B', aceptarColor: '#6C7D7D', aceptarBold: '400' },
+        error:   { clase: 'alert-error',   icon: 'fa-circle-xmark',      titulo: 'Error',        color: '#F04349', aceptarColor: '#6C7D7D', aceptarBold: '400' },
+        success: { clase: 'alert-success', icon: 'fa-circle-check',       titulo: 'Éxito',        color: '#01E17B', aceptarColor: '#6C7D7D', aceptarBold: '400' },
     };
 
     const config = tipos[type] || tipos.info;
@@ -297,8 +296,9 @@ function cerraralerta(callback) {
 
 window.addEventListener('load', () => {
     const body = document.body;
-    body.style.opacity = '1';
+    body.style.opacity='1';
 });
+
 
 ///////////////////////barra de filtros
 document.addEventListener("DOMContentLoaded", function () {
