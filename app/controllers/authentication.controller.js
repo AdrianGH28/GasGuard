@@ -35,6 +35,72 @@ export const usuarios = [{
 }];
 
 
+
+export async function login(req, res) {
+    console.log('Request Body:', req.body);
+    const { correo, password } = req.body;
+
+    if (!correo || !password) {
+        return res.status(400).send({ status: "Error", message: "Los campos están incompletos" });
+    }
+
+    try {
+        const [rows] = await pool.execute('SELECT * FROM musuario WHERE correo_user = ?', [correo]);
+
+        if (rows.length === 0) {
+            return res.status(400).send({ status: "Error", message: "Correo o contraseña incorrectos" });
+        }
+
+        const usuario = rows[0];
+        const loginCorrecto = await bcryptjs.compare(password, usuario.contra_user);
+
+        if (!loginCorrecto) {
+            return res.status(400).send({ status: "Error", message: "Correo o contraseña incorrectos" });
+        }
+
+        if (usuario.verif_user === 1) {
+            const token = jsonwebtoken.sign(
+                { id_user: usuario.id_user, correo: usuario.correo_user },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRATION }
+            );
+
+            res.cookie("jwt", token, {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
+                path: "/"
+            });
+
+            // Redirección según el rol
+            let redirectPath;
+
+            if (usuario.rol_user === null) {
+                redirectPath = '/maeseleccioninfo'; // empresa
+            } else if (usuario.rol_user === 'afiliado') {
+                redirectPath = '/mcaseleccioninfo';
+            } else if (usuario.rol_user === 'admin') {
+                redirectPath = '/maaseleccioninfo';
+            } else if (usuario.rol_user === 'user') {
+                redirectPath = '/principal';
+            } else {
+                redirectPath = '/maeseleccioninfo'; // fallback
+            }
+
+            return res.send({ status: "ok", message: "Usuario loggeado", redirect: redirectPath });
+        } else {
+            return res.send({ status: "pending", message: "Verificación requerida", redirect: '/paso4' });
+        }
+    } catch (error) {
+        console.error('Error durante login:', error);
+        return res.status(500).send({ status: "Error", message: "Error durante login" });
+    }
+}
+
+
+//LOGIN SIN RUTAS
+/*
 export async function login(req, res) {
     console.log('Request Body:', req.body);
     const { correo, password } = req.body;
@@ -80,7 +146,7 @@ export async function login(req, res) {
         return res.status(500).send({ status: "Error", message: "Error durante login" });
     }
 }
-
+/*
 
 /*
 async function login(req, res) {
