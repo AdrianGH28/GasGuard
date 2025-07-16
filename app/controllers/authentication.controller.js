@@ -1177,13 +1177,13 @@ async function repagoempresa(req, res) {
 // Paso 4: Crear el folio
         const folio_facto = `FAC-${año}-${numeroFormateado}`;
         let id_fact;
-        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE folio_fact = ? AND id_pago = ?', [folio_factp, id_pago]);
+        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE folio_fact = ? AND id_pago = ?', [folio_facto, id_pago]);
         if (factResult.length > 0) {
             id_fact = factResult[0].id_fact;
         } else {
             const [insertResult] = await pool.execute(
             'INSERT INTO dfactura (folio_fact, id_pago) VALUES (?, ?)',
-            [folio_factp, id_pago]
+            [folio_facto, id_pago]
             );
             id_fact = insertResult.insertId;
         }
