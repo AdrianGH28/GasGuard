@@ -269,15 +269,10 @@ async function handleSubmit(event) {
 */
 async function handleSubmit(event) {
   event.preventDefault();
-  const stripeEmail = document.getElementById("email").value; // Solo para Stripe
   const userEmail = localStorage.getItem('resetEmail'); // Usuario que recibirá la suscripción
   const cardholderName = document.getElementById("cardholder-name").value;
         console.log("Correo asociado:", userEmail);
         console.log("Correo almacenado en localStorage:", localStorage.getItem('resetEmail'));
-  if (!stripeEmail) {
-    mostrarAlerta("error", "Se requiere un correo electrónico para el pago");
-    return;
-  }
   
   if (!userEmail) {
     mostrarAlerta("error", "No se encontró el usuario logueado");
@@ -306,7 +301,7 @@ async function handleSubmit(event) {
     const customerResponse = await fetch("/api/create-customer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: stripeEmail }),
+      body: JSON.stringify({ email: userEmail }),
     });
     
     if (!customerResponse.ok) {
@@ -321,7 +316,7 @@ async function handleSubmit(event) {
       type: 'card',
       card: cardElement,
       billing_details: {
-        email: stripeEmail,
+        email: userEmail,
         name: cardholderName
       }
     });
