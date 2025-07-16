@@ -565,6 +565,8 @@ app.post('/api/filtrar-reportes', async (req, res) => {
 
 
 
+
+
 //ADMIN OBTENCION DE DATOS DE USUARIOS---------------
 app.get("/api/usuarios-individuales", authorization.proteccion, async (req, res) => {
     try {
