@@ -1102,7 +1102,7 @@ export async function getUserInfo(req, res) {
 
 
 async function repagoempresa(req, res) {
-    const { tiplan, noAfiliados, correo, monto, meses } = req.body;
+    const { tiplan, noAfiliados, correo, monto, meses, typepago } = req.body;
 
     if (!tiplan || !noAfiliados) {
         return res.status(400).json({ status: "Error", message: "Los campos están incompletos" });
@@ -1150,14 +1150,39 @@ async function repagoempresa(req, res) {
             id_plan = insertResult.insertId;
         }
 
+        let id_pago;
+        const [pagoResult] = await pool.execute('SELECT id_pago FROM dpago WHERE tipo_pago = ? AND fecha_pago = ?', [typepago, fechaInicio]);
+        if (pagoResult.length > 0) {
+            id_pago = pagoResult[0].id_pago;
+        } else {
+            const [insertResult] = await pool.execute(
+                'INSERT INTO id_pago (tipo_pago, fecha_pago) VALUES (?, ?)',
+                [typepago, fechaInicio]
+            );
+            id_pago = insertResult.insertId;
+        }
+
+        const folio_fact = crypto.randomBytes(6).toString("hex").toUpperCase();
+        let id_fact;
+        const [factResult] = await pool.execute('SELECT id_fact FROM dpago WHERE folio_fact = ? AND id_pago = ?', [folio_fact, id_pago]);
+        if (factResult.length > 0) {
+            id_fact = factResult[0].id_fact;
+        } else {
+            const [insertResult] = await pool.execute(
+                'INSERT INTO id_fact (folio_fact, id_pago) VALUES (?, ?)',
+                [folio_fact, id_pago]
+            );
+            id_fact = insertResult.insertId;
+        }
+
         // Obtener o crear suscripción
 
         const [insertResult] = await pool.execute(
-            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_plan) VALUES (?, ?, ?, ?, ?)',
-            [fechaInicio, fechaFinStr, estatus, monto, id_plan]
+            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_fact, id_plan) VALUES (?, ?, ?, ?, ?)',
+            [fechaInicio, fechaFinStr, estatus, monto,id_fact, id_plan]
         );
         const id_susc = insertResult.insertId;
-        const rol = 'empresa';
+
         await pool.execute(
             'UPDATE musuario SET id_susc = ? WHERE correo_user = ?',
             [id_susc, correo]

@@ -373,7 +373,8 @@ async function handleSubmit(event) {
         noAfiliados,
         monto: montoTotal,
         meses: mesespl,
-        subscriptionId: subscription.id
+        subscriptionId: subscription.id,
+        typepago: 'card'
       })
     });
     
