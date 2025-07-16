@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         console.log("Reportes recibidos:", reportes); // 👈 Verifica que llegan
 
-        const reportesContainer = document.getElementById("containerreportes");
+        const reportesContainer = document.getElementById("containercuentas");
         if (!reportesContainer) {
             console.error("No se encontró el contenedor con id 'containerreportes'");
             return;
