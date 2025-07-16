@@ -1162,15 +1162,28 @@ async function repagoempresa(req, res) {
             id_pago = insertResult.insertId;
         }
 
-        const folio_fact = crypto.randomBytes(6).toString("hex").toUpperCase();
+        const año = new Date().getFullYear();
+
+        // Paso 2: Contar cuántas facturas se han generado este año
+        const [facturasAño] = await pool.execute(
+        'SELECT COUNT(*) AS total FROM dfactura WHERE folio_fact LIKE ?',
+        [`FAC-${año}-%`]
+        );
+
+// Paso 3: Generar número consecutivo
+        const siguienteNumero = facturasAño[0].total + 1;
+        const numeroFormateado = String(siguienteNumero).padStart(6, '0'); // "000001"
+
+// Paso 4: Crear el folio
+        const folio_facto = `FAC-${año}-${numeroFormateado}`;
         let id_fact;
-        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE  id_pago = ?', [ id_pago]);
+        const [factResult] = await pool.execute('SELECT id_fact FROM dfactura WHERE folio_fact = ? AND id_pago = ?', [folio_factp, id_pago]);
         if (factResult.length > 0) {
             id_fact = factResult[0].id_fact;
         } else {
             const [insertResult] = await pool.execute(
-                'INSERT INTO dfactura ( id_pago) VALUES ( ?)',
-                [ id_pago]
+            'INSERT INTO dfactura (folio_fact, id_pago) VALUES (?, ?)',
+            [folio_factp, id_pago]
             );
             id_fact = insertResult.insertId;
         }
@@ -1179,7 +1192,7 @@ async function repagoempresa(req, res) {
 
         const [insertResult] = await pool.execute(
             'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_fact, id_plan) VALUES (?, ?, ?, ?, ?, ?)',
-            [fechaInicio, fechaFinStr, estatus, monto,id_fact , id_plan]
+            [fechaInicio, fechaFinStr, estatus, monto, id_fact, id_plan]
         );
         const id_susc = insertResult.insertId;
 
