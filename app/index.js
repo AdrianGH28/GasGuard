@@ -496,75 +496,73 @@ app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => 
         return res.status(500).send({ status: "Error", message: "Error al obtener reportes." });
     }
 });
-
-app.post("/api/reportes-filtrados", authorization.proteccion, async (req, res) => {
+app.post('/api/filtrar-reportes', async (req, res) => {
     try {
-        const id_user = req.user.id_user;
-
-        // Recibe los filtros del body
-        const {
-            estado,
-            tipo,
-            mes,
-            anio,
-            fechaInicio,
-            fechaFin
-        } = req.body;
+        const { estado, tipo, mes, año, fechaRegistro, fechaSolucion } = req.body;
 
         let query = `
-            SELECT 
-                r.id_reporte,
-                r.nmticket_reporte,
-                r.estado_reporte,
-                r.descri_reporte,
-                DATE_FORMAT(r.fecini_reporte, '%Y-%m-%d') AS fecini_reporte,
-                DATE_FORMAT(r.fecfin_reporte, '%Y-%m-%d') AS fecfin_reporte,
-                tr.nom_tireporte,
-                r.id_reltecnico
+            SELECT r.*, t.nom_tireporte, u.nom_user AS nombre_tecnico
             FROM mreporte r
-            INNER JOIN ctiporeporte tr ON r.id_tireporte = tr.id_tireporte
-            WHERE r.id_user = ?
+            LEFT JOIN ctiporeporte t ON r.id_tireporte = t.id_tireporte
+            LEFT JOIN musuario u ON r.id_reltecnico = u.id_user
+            WHERE 1 = 1
         `;
 
-        const params = [id_user];
+        const params = [];
 
         if (estado) {
+            const estadoBD = estado.toLowerCase() === "solucionado" ? "realizada" : "pendiente";
             query += " AND r.estado_reporte = ?";
-            params.push(estado.toLowerCase());
+            params.push(estadoBD);
         }
 
         if (tipo) {
-            query += " AND tr.nom_tireporte = ?";
-            params.push(tipo.toLowerCase());
+            // Mapeo del texto visible en el filtro al valor en base de datos
+            const tipoMap = {
+                "Instalación": "instalacion",
+                "Reparación": "fuga",
+                "Retiro": "desinstalacion"
+            };
+            const tipoBD = tipoMap[tipo];
+            if (tipoBD) {
+                query += " AND t.nom_tireporte = ?";
+                params.push(tipoBD);
+            }
         }
 
         if (mes) {
+            const mesNumero = {
+                Enero: 1, Febrero: 2, Marzo: 3, Abril: 4, Mayo: 5, Junio: 6,
+                Julio: 7, Agosto: 8, Septiembre: 9, Octubre: 10, Noviembre: 11, Diciembre: 12
+            }[mes];
             query += " AND MONTH(r.fecini_reporte) = ?";
-            params.push(mes); // espera número de mes
+            params.push(mesNumero);
         }
 
-        if (anio) {
+        if (año) {
             query += " AND YEAR(r.fecini_reporte) = ?";
-            params.push(anio);
+            params.push(Number(año));
         }
 
-        if (fechaInicio && fechaFin) {
-            query += " AND r.fecini_reporte BETWEEN ? AND ?";
-            params.push(fechaInicio, fechaFin);
+        if (fechaRegistro) {
+            query += " AND DATE(r.fecini_reporte) = ?";
+            params.push(fechaRegistro);
         }
 
-        const [rows] = await pool.execute(query, params);
-
-        if (rows.length === 0) {
-            return res.status(404).json({ status: "error", message: "No se encontraron reportes." });
+        if (fechaSolucion) {
+            query += " AND DATE(r.fecfin_reporte) = ?";
+            params.push(fechaSolucion);
         }
 
-        res.json({ status: "ok", data: rows });
+        const [result] = await pool.execute(query, params);
+        res.json({ status: 'OK', data: result });
+
     } catch (error) {
-        console.error("Error al filtrar reportes:", error);
-        res.status(500).json({ status: "error", message: "Error al filtrar reportes" });
+        console.error("❌ Error al filtrar reportes:", error);
+        res.status(500).json({ status: 'Error', message: 'Error al obtener reportes filtrados' });
     }
 });
+
 
 
 //ADMIN OBTENCION DE DATOS DE USUARIOS---------------
