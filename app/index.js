@@ -20,10 +20,10 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 import { createWebhookHandlers } from './webhook-handler.js';
 const {
-  handleInvoicePaymentSucceeded,
-  handleInvoicePaymentFailed,
-  handleSubscriptionDeleted,
-  handleSubscriptionUpdated
+    handleInvoicePaymentSucceeded,
+    handleInvoicePaymentFailed,
+    handleSubscriptionDeleted,
+    handleSubscriptionUpdated
 } = createWebhookHandlers(stripe);
 
 
@@ -208,36 +208,36 @@ app.put("/api/update-user", authorization.proteccion, async (req, res) => {
         }
 
         // 2. Obtener la contraseña actual del usuario desde la base de datos
-const [[userRow]] = await pool.execute(
-    'SELECT contra_user FROM musuario WHERE correo_user = ? LIMIT 1',
-    [correoOriginal]
-);
+        const [[userRow]] = await pool.execute(
+            'SELECT contra_user FROM musuario WHERE correo_user = ? LIMIT 1',
+            [correoOriginal]
+        );
 
-// Verificar si el usuario fue encontrado
-if (!userRow) {
-    return res.status(404).send({ status: "error", message: "Usuario no encontrado" });
-}
+        // Verificar si el usuario fue encontrado
+        if (!userRow) {
+            return res.status(404).send({ status: "error", message: "Usuario no encontrado" });
+        }
 
-// 3. Si la nueva contraseña no es null, la comparamos con la contraseña actual
-let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
+        // 3. Si la nueva contraseña no es null, la comparamos con la contraseña actual
+        let hashPassword = userRow.contra_user; // Mantener la contraseña original por defecto
 
-if (password) {
-    console.log("🔐 Contraseña recibida del frontend:", password);
-    console.log("🔒 Contraseña actual de la base de datos (hash):", userRow.contra_user);
+        if (password) {
+            console.log("🔐 Contraseña recibida del frontend:", password);
+            console.log("🔒 Contraseña actual de la base de datos (hash):", userRow.contra_user);
 
-    // Comparamos la contraseña actual con la nueva
-    const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
-    console.log("🟢 ¿La contraseña es la misma?:", mismaPassword);
+            // Comparamos la contraseña actual con la nueva
+            const mismaPassword = await bcryptjs.compare(password, userRow.contra_user);
+            console.log("🟢 ¿La contraseña es la misma?:", mismaPassword);
 
-    if (!mismaPassword) {
-        // Si la contraseña es diferente, la encriptamos
-        const salt = await bcryptjs.genSalt(5);
-        hashPassword = await bcryptjs.hash(password, salt);
-        console.log("🔁 Nueva contraseña hasheada:", hashPassword);
-    } else {
-        console.log("✅ La contraseña no cambió, se mantiene el hash actual.");
-    }
-}
+            if (!mismaPassword) {
+                // Si la contraseña es diferente, la encriptamos
+                const salt = await bcryptjs.genSalt(5);
+                hashPassword = await bcryptjs.hash(password, salt);
+                console.log("🔁 Nueva contraseña hasheada:", hashPassword);
+            } else {
+                console.log("✅ La contraseña no cambió, se mantiene el hash actual.");
+            }
+        }
 
 
         // 4. Actualización de usuario y dirección en una sola consulta
@@ -604,361 +604,361 @@ app.get("/api/histor", async (req, res) => {
 });
 
 app.post('/api/create-customer', async (req, res) => {
-  try {
-    const { email } = req.body;
-    
-    if (!email) {
-      return res.status(400).json({ error: "El email es obligatorio" });
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: "El email es obligatorio" });
+        }
+
+        // Buscar si el cliente ya existe
+        const existingCustomers = await stripe.customers.list({ email });
+        let customer;
+
+        if (existingCustomers.data.length > 0) {
+            customer = existingCustomers.data[0];
+        } else {
+            customer = await stripe.customers.create({ email });
+        }
+
+        res.json({ customerId: customer.id });
+    } catch (error) {
+        console.error("Error creando cliente:", error);
+        res.status(500).json({ error: "Error al crear cliente en Stripe" });
     }
-    
-    // Buscar si el cliente ya existe
-    const existingCustomers = await stripe.customers.list({ email });
-    let customer;
-    
-    if (existingCustomers.data.length > 0) {
-      customer = existingCustomers.data[0];
-    } else {
-      customer = await stripe.customers.create({ email });
-    }
-    
-    res.json({ customerId: customer.id });
-  } catch (error) {
-    console.error("Error creando cliente:", error);
-    res.status(500).json({ error: "Error al crear cliente en Stripe" });
-  }
 });
 
 app.post('/api/attach-payment-method', async (req, res) => {
-  try {
-    const { customerId, paymentMethodId, setAsDefault } = req.body;
-    
-    if (!customerId || !paymentMethodId) {
-      return res.status(400).json({ error: "Datos incompletos" });
-    }
-    
-    // Adjuntar método de pago al cliente
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customerId
-    });
-    
-    // Si se solicitó, establecer este método como predeterminado
-    if (setAsDefault) {
-      await stripe.customers.update(customerId, {
-        invoice_settings: {
-          default_payment_method: paymentMethodId
+    try {
+        const { customerId, paymentMethodId, setAsDefault } = req.body;
+
+        if (!customerId || !paymentMethodId) {
+            return res.status(400).json({ error: "Datos incompletos" });
         }
-      });
+
+        // Adjuntar método de pago al cliente
+        await stripe.paymentMethods.attach(paymentMethodId, {
+            customer: customerId
+        });
+
+        // Si se solicitó, establecer este método como predeterminado
+        if (setAsDefault) {
+            await stripe.customers.update(customerId, {
+                invoice_settings: {
+                    default_payment_method: paymentMethodId
+                }
+            });
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Error adjuntando método de pago:", error);
+        res.status(500).json({ error: "Error al adjuntar método de pago: " + error.message });
     }
-    
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error adjuntando método de pago:", error);
-    res.status(500).json({ error: "Error al adjuntar método de pago: " + error.message });
-  }
 });
 
 // Crear suscripción en Stripe
 
 app.post("/api/create-subscription", async (req, res) => {
-  const { customerId, tiplan, afiliados, montoTotal, paymentMethodId } = req.body;
+    const { customerId, tiplan, afiliados, montoTotal, paymentMethodId } = req.body;
 
-  if (!customerId || !tiplan || !afiliados || !montoTotal || !paymentMethodId) {
-    return res.status(400).json({ error: "Datos incompletos" });
-  }
+    if (!customerId || !tiplan || !afiliados || !montoTotal || !paymentMethodId) {
+        return res.status(400).json({ error: "Datos incompletos" });
+    }
 
-  // Configuración del intervalo según el plan
-  let interval = "month";
-  let intervalCount = 1;
-  
-  if (tiplan === "semestral") {
-    interval = "month";
-    intervalCount = 6;
-  } else if (tiplan === "anual") {
-    interval = "year";
-    intervalCount = 1;
-  }
+    // Configuración del intervalo según el plan
+    let interval = "month";
+    let intervalCount = 1;
 
-  try {
-    // Primero, crear un producto para esta suscripción
-    const product = await stripe.products.create({
-      name: `Plan ${tiplan} con ${afiliados} afiliados`,
-      metadata: {
-        tiplan: tiplan,
-        afiliados: afiliados.toString()
-      }
-    });
+    if (tiplan === "semestral") {
+        interval = "month";
+        intervalCount = 6;
+    } else if (tiplan === "anual") {
+        interval = "year";
+        intervalCount = 1;
+    }
 
-    // Luego crear un precio para este producto
-    const price = await stripe.prices.create({
-      product: product.id,
-      currency: "mxn",
-      unit_amount: montoTotal,
-      recurring: {
-        interval: interval,
-        interval_count: intervalCount
-      }
-    });
+    try {
+        // Primero, crear un producto para esta suscripción
+        const product = await stripe.products.create({
+            name: `Plan ${tiplan} con ${afiliados} afiliados`,
+            metadata: {
+                tiplan: tiplan,
+                afiliados: afiliados.toString()
+            }
+        });
 
-    // Crear la suscripción con el precio y método de pago
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{
-        price: price.id,
-      }],
-      default_payment_method: paymentMethodId,
-      payment_settings: {
-        payment_method_types: ['card'],
-        save_default_payment_method: 'on_subscription'
-      },
-      metadata: {
-        tiplan: tiplan,
-        afiliados: afiliados.toString(),
-        montoTotal: montoTotal.toString()
-      }
-    });
+        // Luego crear un precio para este producto
+        const price = await stripe.prices.create({
+            product: product.id,
+            currency: "mxn",
+            unit_amount: montoTotal,
+            recurring: {
+                interval: interval,
+                interval_count: intervalCount
+            }
+        });
 
-    // Si necesitas un client_secret para confirmación en el frontend,
-    // crea un PaymentIntent separado
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: montoTotal,
-      currency: 'mxn',
-      customer: customerId,
-      payment_method: paymentMethodId,
-      setup_future_usage: 'off_session',
-      confirm: false,
-      description: `Pago inicial para suscripción ${subscription.id}`,
-      metadata: {
-        subscription_id: subscription.id
-      }
-    });
+        // Crear la suscripción con el precio y método de pago
+        const subscription = await stripe.subscriptions.create({
+            customer: customerId,
+            items: [{
+                price: price.id,
+            }],
+            default_payment_method: paymentMethodId,
+            payment_settings: {
+                payment_method_types: ['card'],
+                save_default_payment_method: 'on_subscription'
+            },
+            metadata: {
+                tiplan: tiplan,
+                afiliados: afiliados.toString(),
+                montoTotal: montoTotal.toString()
+            }
+        });
 
-    res.json({
-      subscription: subscription, 
-      clientSecret: paymentIntent.client_secret
-    });
+        // Si necesitas un client_secret para confirmación en el frontend,
+        // crea un PaymentIntent separado
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: montoTotal,
+            currency: 'mxn',
+            customer: customerId,
+            payment_method: paymentMethodId,
+            setup_future_usage: 'off_session',
+            confirm: false,
+            description: `Pago inicial para suscripción ${subscription.id}`,
+            metadata: {
+                subscription_id: subscription.id
+            }
+        });
 
-  } catch (err) {
-    console.error("Error creando suscripción:", err);
-    res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
-  }
+        res.json({
+            subscription: subscription,
+            clientSecret: paymentIntent.client_secret
+        });
+
+    } catch (err) {
+        console.error("Error creando suscripción:", err);
+        res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
+    }
 });
 
 app.post("/api/create-subscription-indiv", async (req, res) => {
-  const { customerId, tiplan, montoTotal, paymentMethodId } = req.body;
+    const { customerId, tiplan, montoTotal, paymentMethodId } = req.body;
 
-  if (!customerId || !tiplan || !montoTotal || !paymentMethodId) {
-    return res.status(400).json({ error: "Datos incompletos" });
-  }
+    if (!customerId || !tiplan || !montoTotal || !paymentMethodId) {
+        return res.status(400).json({ error: "Datos incompletos" });
+    }
 
-  // Configuración del intervalo según el plan
-  let interval = "month";
-  let intervalCount = 1;
-  
-  if (tiplan === "semestral") {
-    interval = "month";
-    intervalCount = 6;
-  } else if (tiplan === "anual") {
-    interval = "year";
-    intervalCount = 1;
-  }
+    // Configuración del intervalo según el plan
+    let interval = "month";
+    let intervalCount = 1;
 
-  try {
-    // Primero, crear un producto para esta suscripción
-    const product = await stripe.products.create({
-      name: `Plan ${tiplan}`,
-      metadata: {
-        tiplan: tiplan
-      }
-    });
+    if (tiplan === "semestral") {
+        interval = "month";
+        intervalCount = 6;
+    } else if (tiplan === "anual") {
+        interval = "year";
+        intervalCount = 1;
+    }
 
-    // Luego crear un precio para este producto
-    const price = await stripe.prices.create({
-      product: product.id,
-      currency: "mxn",
-      unit_amount: montoTotal,
-      recurring: {
-        interval: interval,
-        interval_count: intervalCount
-      }
-    });
+    try {
+        // Primero, crear un producto para esta suscripción
+        const product = await stripe.products.create({
+            name: `Plan ${tiplan}`,
+            metadata: {
+                tiplan: tiplan
+            }
+        });
 
-    // Crear la suscripción con el precio y método de pago
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{
-        price: price.id,
-      }],
-      default_payment_method: paymentMethodId,
-      payment_settings: {
-        payment_method_types: ['card'],
-        save_default_payment_method: 'on_subscription'
-      },
-      metadata: {
-        tiplan: tiplan,
-        montoTotal: montoTotal.toString()
-      }
-    });
+        // Luego crear un precio para este producto
+        const price = await stripe.prices.create({
+            product: product.id,
+            currency: "mxn",
+            unit_amount: montoTotal,
+            recurring: {
+                interval: interval,
+                interval_count: intervalCount
+            }
+        });
 
-    // Si necesitas un client_secret para confirmación en el frontend,
-    // crea un PaymentIntent separado
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: montoTotal,
-      currency: 'mxn',
-      customer: customerId,
-      payment_method: paymentMethodId,
-      setup_future_usage: 'off_session',
-      confirm: false,
-      description: `Pago inicial para suscripción ${subscription.id}`,
-      metadata: {
-        subscription_id: subscription.id
-      }
-    });
+        // Crear la suscripción con el precio y método de pago
+        const subscription = await stripe.subscriptions.create({
+            customer: customerId,
+            items: [{
+                price: price.id,
+            }],
+            default_payment_method: paymentMethodId,
+            payment_settings: {
+                payment_method_types: ['card'],
+                save_default_payment_method: 'on_subscription'
+            },
+            metadata: {
+                tiplan: tiplan,
+                montoTotal: montoTotal.toString()
+            }
+        });
 
-    res.json({
-      subscription: subscription, 
-      clientSecret: paymentIntent.client_secret
-    });
+        // Si necesitas un client_secret para confirmación en el frontend,
+        // crea un PaymentIntent separado
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: montoTotal,
+            currency: 'mxn',
+            customer: customerId,
+            payment_method: paymentMethodId,
+            setup_future_usage: 'off_session',
+            confirm: false,
+            description: `Pago inicial para suscripción ${subscription.id}`,
+            metadata: {
+                subscription_id: subscription.id
+            }
+        });
 
-  } catch (err) {
-    console.error("Error creando suscripción:", err);
-    res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
-  }
+        res.json({
+            subscription: subscription,
+            clientSecret: paymentIntent.client_secret
+        });
+
+    } catch (err) {
+        console.error("Error creando suscripción:", err);
+        res.status(500).json({ error: "No se pudo crear la suscripción: " + err.message });
+    }
 });
 
 // Webhook para manejar eventos de Stripe
-app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  
-  let event;
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+    let event;
 
-  // Manejar los eventos según su tipo
-  try {
-    switch (event.type) {
-      case 'invoice.payment_succeeded':
-        await handleInvoicePaymentSucceeded(event.data.object);
-        break;
-      case 'invoice.payment_failed':
-        await handleInvoicePaymentFailed(event.data.object);
-        break;
-      case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object);
-        break;
-      case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object);
-        break;
-      default:
-        console.log(`Evento no manejado: ${event.type}`);
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    } catch (err) {
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    res.json({received: true});
-  } catch (error) {
-    console.error(`Error procesando evento ${event.type}:`, error);
-    res.status(500).json({error: 'Error procesando el evento'});
-  }
+
+    // Manejar los eventos según su tipo
+    try {
+        switch (event.type) {
+            case 'invoice.payment_succeeded':
+                await handleInvoicePaymentSucceeded(event.data.object);
+                break;
+            case 'invoice.payment_failed':
+                await handleInvoicePaymentFailed(event.data.object);
+                break;
+            case 'customer.subscription.deleted':
+                await handleSubscriptionDeleted(event.data.object);
+                break;
+            case 'customer.subscription.updated':
+                await handleSubscriptionUpdated(event.data.object);
+                break;
+            default:
+                console.log(`Evento no manejado: ${event.type}`);
+        }
+        res.json({ received: true });
+    } catch (error) {
+        console.error(`Error procesando evento ${event.type}:`, error);
+        res.status(500).json({ error: 'Error procesando el evento' });
+    }
 });
 
 // Endpoint para actualizar una suscripción existente
 app.post('/api/update-subscription', async (req, res) => {
-  const { subscriptionId, tiplan, afiliados, montoTotal } = req.body;
-  
-  if (!subscriptionId || !tiplan || !afiliados || !montoTotal) {
-    return res.status(400).json({ error: "Datos incompletos" });
-  }
-  
-  try {
-    // Configuración del intervalo según el plan
-    let interval = "month";
-    let intervalCount = 1;
-    
-    if (tiplan === "semestral") {
-      interval = "month";
-      intervalCount = 6;
-    } else if (tiplan === "anual") {
-      interval = "year";
-      intervalCount = 1;
+    const { subscriptionId, tiplan, afiliados, montoTotal } = req.body;
+
+    if (!subscriptionId || !tiplan || !afiliados || !montoTotal) {
+        return res.status(400).json({ error: "Datos incompletos" });
     }
-    
-    // Obtener la suscripción actual
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    
-    // Crear un nuevo producto para el plan actualizado
-    const product = await stripe.products.create({
-      name: `Plan ${tiplan} con ${afiliados} afiliados`,
-      metadata: {
-        tiplan: tiplan,
-        afiliados: afiliados.toString()
-      }
-    });
-    
-    // Crear un nuevo precio para el producto
-    const newPrice = await stripe.prices.create({
-      product: product.id,
-      currency: "mxn",
-      unit_amount: montoTotal,
-      recurring: {
-        interval: interval,
-        interval_count: intervalCount
-      },
-    });
-    
-    // Actualizar la suscripción con el nuevo precio
-    const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
-      items: [
-        {
-          id: subscription.items.data[0].id,
-          price: newPrice.id,
-        },
-      ],
-      metadata: {
-        tiplan: tiplan,
-        afiliados: afiliados.toString(),
-        montoTotal: montoTotal.toString()
-      },
-      proration_behavior: 'create_prorations',
-    });
-    
-    res.json({
-      updated: true,
-      subscriptionId: updatedSubscription.id
-    });
-    
-  } catch (error) {
-    console.error("Error actualizando suscripción:", error);
-    res.status(500).json({ error: "No se pudo actualizar la suscripción" });
-  }
+
+    try {
+        // Configuración del intervalo según el plan
+        let interval = "month";
+        let intervalCount = 1;
+
+        if (tiplan === "semestral") {
+            interval = "month";
+            intervalCount = 6;
+        } else if (tiplan === "anual") {
+            interval = "year";
+            intervalCount = 1;
+        }
+
+        // Obtener la suscripción actual
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
+        // Crear un nuevo producto para el plan actualizado
+        const product = await stripe.products.create({
+            name: `Plan ${tiplan} con ${afiliados} afiliados`,
+            metadata: {
+                tiplan: tiplan,
+                afiliados: afiliados.toString()
+            }
+        });
+
+        // Crear un nuevo precio para el producto
+        const newPrice = await stripe.prices.create({
+            product: product.id,
+            currency: "mxn",
+            unit_amount: montoTotal,
+            recurring: {
+                interval: interval,
+                interval_count: intervalCount
+            },
+        });
+
+        // Actualizar la suscripción con el nuevo precio
+        const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
+            items: [
+                {
+                    id: subscription.items.data[0].id,
+                    price: newPrice.id,
+                },
+            ],
+            metadata: {
+                tiplan: tiplan,
+                afiliados: afiliados.toString(),
+                montoTotal: montoTotal.toString()
+            },
+            proration_behavior: 'create_prorations',
+        });
+
+        res.json({
+            updated: true,
+            subscriptionId: updatedSubscription.id
+        });
+
+    } catch (error) {
+        console.error("Error actualizando suscripción:", error);
+        res.status(500).json({ error: "No se pudo actualizar la suscripción" });
+    }
 });
 
 app.post('/api/cancel-subscription', async (req, res) => {
-  const { subscriptionId } = req.body;
-  
-  if (!subscriptionId) {
-    return res.status(400).json({ error: "ID de suscripción requerido" });
-  }
-  
-  try {
-    const canceledSubscription = await stripe.subscriptions.cancel(subscriptionId);
-    
-    // Actualizar el estado en tu base de datos
-    // Aquí deberías incluir tu código para actualizar la BD
-    
-    res.json({
-      canceled: true,
-      subscriptionId: canceledSubscription.id
-    });
-    
-  } catch (error) {
-    console.error("Error cancelando suscripción:", error);
-    res.status(500).json({ error: "No se pudo cancelar la suscripción" });
-  }
+    const { subscriptionId } = req.body;
+
+    if (!subscriptionId) {
+        return res.status(400).json({ error: "ID de suscripción requerido" });
+    }
+
+    try {
+        const canceledSubscription = await stripe.subscriptions.cancel(subscriptionId);
+
+        // Actualizar el estado en tu base de datos
+        // Aquí deberías incluir tu código para actualizar la BD
+
+        res.json({
+            canceled: true,
+            subscriptionId: canceledSubscription.id
+        });
+
+    } catch (error) {
+        console.error("Error cancelando suscripción:", error);
+        res.status(500).json({ error: "No se pudo cancelar la suscripción" });
+    }
 });
 
- app.post("/api/pago", authorization.proteccion, async (req, res) => {
+app.post("/api/pago", authorization.proteccion, async (req, res) => {
     const { tipo_pago, num_tarjeta, fecha_pago } = req.body;
     if (!tipo_pago || !num_tarjeta || !fecha_pago) {
         return res.status(400).send({ status: "Error", message: "Faltan datos" });
@@ -979,7 +979,7 @@ app.post('/api/cancel-subscription', async (req, res) => {
 
 app.get("/api/precios", async (req, res) => {
     const { plan, noAfiliados } = req.body;
-    
+
 
     try {
         const [result] = await conexion.execute(`
@@ -1015,7 +1015,7 @@ app.post("/api/suscripcion", authorization.proteccion, async (req, res) => {
             return res.status(404).send({ status: "Error", message: "Plan no encontrado" });
         }
         const precioBase = planResult[0].precio;
-        
+
         // Calcular costo por afiliados
         const [afiliadoResult] = await conexion.execute("SELECT precio FROM cnumafil WHERE id_nmafil = ?", [num_afiliados]);
         if (afiliadoResult.length === 0) {
@@ -1024,7 +1024,7 @@ app.post("/api/suscripcion", authorization.proteccion, async (req, res) => {
         let precioAfiliados = afiliadoResult[0].precio * 6; // Multiplicar por 6 si es semestral
 
         const montoTotal = precioBase + precioAfiliados;
-        
+
         const [result] = await conexion.execute(
             "INSERT INTO msuscripcion (id_plan, id_fact, monto_susc) VALUES (?, ?, ?)",
             [id_plan, id_pago, montoTotal]
@@ -1061,21 +1061,21 @@ app.post("/api/factura", authorization.proteccion, async (req, res) => {
 const openai = new OpenAI({ apiKey: "OPENAI_API_KEY" }); // ← Usa tu API Key de OpenAI
 
 app.post("/api/chatbotMAE_cuentasafil", async (req, res) => {
-  const { message } = req.body;
+    const { message } = req.body;
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content:
-          "Eres un asistente de GasGuard. Ayudas a los usuarios a gestionar cuentas afiliadas a ti, pq el usuario que te habla es una empresa, las actividades que puedes realizar en la pagina son añadir una cuenta afiliada, eliminarla o puedes indicar que pase al area de reportes. Sé claro, conciso y técnico si es necesario. No olvides que eres un asistente, no exageres porfavor",
-      },
-      { role: "user", content: message },
-    ],
-  });
+    const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+            {
+                role: "system",
+                content:
+                    "Eres un asistente de GasGuard. Ayudas a los usuarios a gestionar cuentas afiliadas a ti, pq el usuario que te habla es una empresa, las actividades que puedes realizar en la pagina son añadir una cuenta afiliada, eliminarla o puedes indicar que pase al area de reportes. Sé claro, conciso y técnico si es necesario. No olvides que eres un asistente, no exageres porfavor",
+            },
+            { role: "user", content: message },
+        ],
+    });
 
-  res.json({ response: completion.choices[0].message.content });
+    res.json({ response: completion.choices[0].message.content });
 });
 
 
@@ -1642,8 +1642,11 @@ app.post('/api/sensor-value', async (req, res) => {
         }
 
         const fechaActual = new Date();
-        const fecha = fechaActual.toISOString().split('T')[0];         // YYYY-MM-DD
-        const hora = fechaActual.toTimeString().split(' ')[0];         // HH:MM:SS
+        fechaActual.setHours(fechaActual.getHours() - 6); // Ajuste UTC-6
+
+        const fecha = fechaActual.toISOString().split('T')[0];
+        const hora = fechaActual.toTimeString().split(' ')[0];
+        // HH:MM:SS
         const des_reg = 'Lectura automática desde ESP32';
 
         await pool.execute(
@@ -1906,12 +1909,12 @@ app.get("/api/grafica-reportes", async (req, res) => {
 
 /*  Pendientes = asignados ‑ realizados  */
 app.get("/api/reportes-atendidos-tecnicos", async (req, res) => {
-  const rango = req.query.rango || "mes";
-  const inicio = getFechaInicio(rango);
+    const rango = req.query.rango || "mes";
+    const inicio = getFechaInicio(rango);
 
-  try {
-    const [rows] = await pool.execute(
-      `SELECT 
+    try {
+        const [rows] = await pool.execute(
+            `SELECT 
           t.id_user                 AS id_tecnico,
           t.nom_user                AS tecnico,
           COUNT(r.id_reporte)                       AS asignados,
@@ -1925,24 +1928,24 @@ app.get("/api/reportes-atendidos-tecnicos", async (req, res) => {
        WHERE t.rol_user = 'tecnico'
        GROUP BY t.id_user, t.nom_user
        ORDER BY atendidos DESC`,
-      [inicio]
-    );
+            [inicio]
+        );
 
-    res.json({ status: "ok", data: rows });
-  } catch (error) {
-    console.error("Error reportes atendidos:", error);
-    res.status(500).json({ status: "error", message: "Error interno" });
-  }
+        res.json({ status: "ok", data: rows });
+    } catch (error) {
+        console.error("Error reportes atendidos:", error);
+        res.status(500).json({ status: "error", message: "Error interno" });
+    }
 });
 
 
 app.get("/api/reportes-realizados-tecnicos", async (req, res) => {
-  const rango = req.query.rango || "mes";
-  const inicio = getFechaInicio(rango);
+    const rango = req.query.rango || "mes";
+    const inicio = getFechaInicio(rango);
 
-  try {
-    const [rows] = await pool.execute(
-      `SELECT 
+    try {
+        const [rows] = await pool.execute(
+            `SELECT 
           t.id_user  AS id_tecnico,
           t.nom_user AS tecnico,
           COUNT(r.id_reporte) AS realizados
@@ -1954,12 +1957,12 @@ app.get("/api/reportes-realizados-tecnicos", async (req, res) => {
        WHERE t.rol_user = 'tecnico'
        GROUP BY t.id_user, t.nom_user
        ORDER BY realizados DESC`,
-      [inicio]
-    );
+            [inicio]
+        );
 
-    res.json({ status: "ok", data: rows });
-  } catch (error) {
-    console.error("Error reportes realizados:", error);
-    res.status(500).json({ status: "error", message: "Error interno" });
-  }
+        res.json({ status: "ok", data: rows });
+    } catch (error) {
+        console.error("Error reportes realizados:", error);
+        res.status(500).json({ status: "error", message: "Error interno" });
+    }
 });
