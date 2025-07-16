@@ -613,7 +613,7 @@ export const registrarAfiliado = async (req, res) => {
         // Insertar usuario afiliado
         const [insertUsuario] = await pool.execute(
             'INSERT INTO musuario (nom_user, correo_user, contra_user, rol_user, id_direccion, id_relempr, id_estcuenta, dispositivo_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1, 'Inactiva']
+            [nombre, correo, hashPassword, 'afiliado', id_direccion, idEmpresa, 1, 'Inactivo']
         );
 
         const idAfiliado = insertUsuario.insertId;
