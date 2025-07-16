@@ -1,5 +1,58 @@
 window.onload = function() {
     
+    // Primero define el gauge
+    const ctxGauge = document.getElementById('myChart').getContext('2d');
+    const gradientSegment = ctxGauge.createLinearGradient(0, 0, 700, 0);
+    gradientSegment.addColorStop(0, 'red');
+    gradientSegment.addColorStop(1, 'red');
+
+    const dataGauge = {
+        labels: ['Score', 'Gray Area'],
+        datasets: [{
+            label: 'Weekly Sales',
+            data: [0, 4000],
+            backgroundColor: [gradientSegment, 'rgba(211, 211, 211, 0.2)'],
+            borderColor: ['rgba(211, 211, 211, 0.2)'],
+            borderWidth: 0,
+            cutout: '90%',
+            circumference: 180,
+            rotation: 270,
+        }]
+    };
+
+    const gaugeChartText = {
+        id: 'gaugeChartText',
+        afterDatasetsDraw(chart, args, pluginOptions) {
+            const { ctx, data, chartArea: { top, bottom, left, right, width, height } } = chart;
+            ctx.save();
+            const xCoor = chart.getDatasetMeta(0).data[0].x;
+            const yCoor = chart.getDatasetMeta(0).data[0].y;
+            const score = data.datasets[0].data[0];
+            let rating = score < 1000 ? 'OK' : score < 1500 ? 'Cuidado' : 'PELIGRO';
+
+            ctx.font = `30px sans-serif`;
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.fillText(score, xCoor, yCoor);
+            ctx.fillText(rating, xCoor, yCoor - 120);
+            ctx.restore();
+        }
+    };
+
+    const configGauge = {
+        type: 'doughnut',
+        data: dataGauge,
+        options: {
+            aspectRatio: 1.5,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        },
+        plugins: [gaugeChartText]
+    };
+
+    const myGaugeChart = new Chart(ctxGauge, configGauge);
     
     
     
@@ -183,7 +236,7 @@ window.onload = function() {
         dataLine.datasets[0].data = [...originalDataLine.datasets[0].data];
         myLineChart.update();
     }
-
+/*
     // Gráfico 2: Gauge
     const ctxGauge = document.getElementById('myChart').getContext('2d');
     const gradientSegment = ctxGauge.createLinearGradient(0, 0, 700, 0);
@@ -260,7 +313,7 @@ window.onload = function() {
     };
 
     const myGaugeChart = new Chart(ctxGauge, configGauge);
-
+*/
     // Instantly assign Chart.js version
     const chartVersion = document.getElementById('chartVersion');
     chartVersion.innerText = Chart.version;
