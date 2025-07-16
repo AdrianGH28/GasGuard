@@ -69,6 +69,113 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const res = await fetch("https://gasguard-production.up.railway.app/api/reportes-afiliado", {
+            credentials: "include"
+        });
+
+        if (!res.ok) {
+            throw new Error("Error al obtener los reportes del afiliado.");
+        }
+
+        const resJson = await res.json();
+        const reportes = resJson.data;
+
+        const reportesContainer = document.getElementById("containerreportes");
+
+        let grupoContenedores = null;
+
+        reportes.forEach((reporte, index) => {
+            // Crear nuevo grupo cada 4 tarjetas
+            if (index % 4 === 0) {
+                grupoContenedores = document.createElement("div");
+                grupoContenedores.classList.add("grupodetarjetas");
+                reportesContainer.appendChild(grupoContenedores);
+            }
+
+            // Crear tarjeta
+            const tarjeta = document.createElement("div");
+            tarjeta.classList.add("tarjeta");
+
+            // Icono según tipo de reporte
+            const icono = document.createElement("i");
+            switch (reporte.tipo) {
+                case "Instalación":
+                    icono.className = "fa fa-truck-ramp-box";
+                    break;
+                case "Fuga":
+                    icono.className = "fa fa-screwdriver-wrench";
+                    break;
+                case "Desinstalación":
+                    icono.className = "fa fa-truck";
+                    break;
+                default:
+                    icono.className = "fa fa-file"; // fallback
+            }
+
+            // Contenido de la tarjeta
+            const textotarjeta = document.createElement("div");
+            textotarjeta.classList.add("textotarjeta");
+
+            const estado = document.createElement("h2");
+            const estadoIcon = document.createElement("i");
+            estadoIcon.className = "fa fa-circle";
+            estado.appendChild(estadoIcon);
+            estado.innerHTML += ` ${reporte.estado}`;
+
+            const encargado = document.createElement("p");
+            encargado.textContent = "Encargado:";
+
+            const nombre = document.createElement("p");
+            nombre.textContent = reporte.nombre_tecnico || "Sin asignar";
+
+            const fechaRegistro = document.createElement("p");
+            fechaRegistro.textContent = "Fecha de registro:";
+
+            const fechaInicio = document.createElement("p");
+            fechaInicio.textContent = reporte.fecini_reporte || "No registrada";
+
+            textotarjeta.appendChild(estado);
+            textotarjeta.appendChild(encargado);
+            textotarjeta.appendChild(nombre);
+            textotarjeta.appendChild(fechaRegistro);
+            textotarjeta.appendChild(fechaInicio);
+
+            if (reporte.estado === "Solucionado") {
+                const fechaSolucion = document.createElement("p");
+                fechaSolucion.textContent = "Fecha de solución:";
+                const fechaFin = document.createElement("p");
+                fechaFin.textContent = reporte.fecfin_reporte || "No registrada";
+                textotarjeta.appendChild(fechaSolucion);
+                textotarjeta.appendChild(fechaFin);
+            }
+
+            const btnVerMas = document.createElement("button");
+            btnVerMas.textContent = "Ver más";
+            textotarjeta.appendChild(btnVerMas);
+
+            // Si está pendiente, se agrega ícono de cancelar
+            if (reporte.estado === "Pendiente") {
+                const iconCancel = document.createElement("div");
+                iconCancel.classList.add("centrareltache");
+                const tache = document.createElement("i");
+                tache.className = "fa fa-xmark";
+                // Aquí puedes agregar lógica para cancelar
+                iconCancel.appendChild(tache);
+                tarjeta.appendChild(iconCancel);
+            }
+
+            tarjeta.appendChild(icono);
+            tarjeta.appendChild(textotarjeta);
+            grupoContenedores.appendChild(tarjeta);
+        });
+
+    } catch (error) {
+        console.error("Error:", error);
+    }
+});
+
 ///////////////////////////////////////////////////////////ALERTAAAAAAAAAAAAAAAAAAAAAAAAA
 
 let alertaTimeout;
