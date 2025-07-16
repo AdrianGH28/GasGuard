@@ -188,4 +188,225 @@ window.addEventListener('load', () => {
     body.style.opacity='1';
 });
 
+///////////////////////barra de filtros
+document.addEventListener("DOMContentLoaded", function () {
+    const filtroPanel = document.getElementById("filtro-lateral");
+    const botonFiltrar = document.getElementById("filter-btn");
+    const contenedorPrincipal = document.getElementById("contenedor-principal");
+    const btnLimpiar = document.querySelector(".btn-limpiar-filtros");
+
+    if (botonFiltrar && filtroPanel && contenedorPrincipal) {
+        botonFiltrar.addEventListener("click", function () {
+            filtroPanel.classList.add("activo");
+            contenedorPrincipal.classList.add("expandido");
+            botonFiltrar.style.display = "none";
+        });
+    }
+
+    const cerrarBtn = document.querySelector('.cerrar-filtro');
+    if (cerrarBtn) {
+        cerrarBtn.addEventListener('click', ocultarFiltros);
+    }
+
+    document.querySelectorAll('.opcion-filtro').forEach(opcion => {
+        opcion.addEventListener('click', function () {
+            const grupo = this.closest('.contenedor-opciones');
+            const yaSeleccionada = this.classList.contains('activa');
+
+            grupo.querySelectorAll('.opcion-filtro').forEach(opt => {
+                opt.classList.remove('activa', 'no-hover');
+            });
+
+            if (!yaSeleccionada) {
+                this.classList.add('activa', 'no-hover');
+                grupo.classList.add('tiene-seleccion');
+            } else {
+                grupo.classList.remove('tiene-seleccion');
+            }
+
+            verificarFiltrosActivos();
+        });
+    });
+
+    document.querySelectorAll('.categoria-header').forEach(header => {
+        header.addEventListener('click', function () {
+            const categoria = this.closest('.categoria-filtro');
+            const esFecha = categoria.querySelector(".categoria-header span")?.textContent.includes("Fecha");
+            const dropdown = categoria.querySelector('.opciones-dropdown');
+            const yaTieneFlatpickr = dropdown.classList.contains("calendario-insertado");
+
+            categoria.classList.toggle('abierto');
+
+            if (esFecha && !yaTieneFlatpickr) {
+                configurarFlatpickr(dropdown);
+                dropdown.classList.add("calendario-insertado");
+            }
+        });
+    });
+
+    const filtrosConBuscador = ["Mes", "Año"];
+    document.querySelectorAll(".categoria-filtro").forEach(categoria => {
+        const header = categoria.querySelector(".categoria-header span")?.textContent.trim();
+        const contenedorOpciones = categoria.querySelector(".contenedor-opciones");
+
+        if (contenedorOpciones && filtrosConBuscador.includes(header)) {
+            const yaExiste = contenedorOpciones.querySelector(".input-buscador-filtro");
+            if (!yaExiste) {
+                const inputBusqueda = document.createElement("input");
+                inputBusqueda.type = "text";
+                inputBusqueda.placeholder = "Buscar...";
+                inputBusqueda.classList.add("input-buscador-filtro");
+
+                contenedorOpciones.classList.add("contenedor-opciones-scroll");
+                contenedorOpciones.insertBefore(inputBusqueda, contenedorOpciones.firstChild);
+
+                inputBusqueda.addEventListener("input", function () {
+                    const valor = this.value.toLowerCase();
+                    contenedorOpciones.querySelectorAll(".opcion-filtro").forEach(op => {
+                        const texto = op.textContent.toLowerCase();
+                        op.style.display = texto.includes(valor) ? "block" : "none";
+                    });
+                });
+            }
+        }
+    });
+
+    function verificarFiltrosActivos() {
+        const algunActivo = document.querySelector(".opcion-filtro.activa");
+        btnLimpiar.style.display = algunActivo ? "block" : "none";
+    }
+
+    window.limpiarFiltros = function () {
+        document.querySelectorAll('.opcion-filtro').forEach(opt => {
+            opt.classList.remove('activa', 'no-hover');
+        });
+        document.querySelectorAll('.contenedor-opciones').forEach(grupo => {
+            grupo.classList.remove('tiene-seleccion');
+        });
+        verificarFiltrosActivos();
+        pintarReportes(reportesDummy);
+    };
+
+    verificarFiltrosActivos();
+
+    function configurarFlatpickr(container) {
+        const calendarWrapper = document.createElement("div");
+        container.appendChild(calendarWrapper);
+
+        flatpickr(calendarWrapper, {
+            inline: true,
+            locale: "es",
+            dateFormat: "Y-m-d",
+            showMonths: 1,
+            onReady: function (selectedDates, dateStr, instance) {
+                const btnHoy = document.createElement("span");
+                btnHoy.textContent = "Hoy";
+                btnHoy.className = "flatpickr-today-btn";
+                btnHoy.style.cssText = "color:#333;cursor:pointer;font-size:14px;";
+
+                const btnLimpiar = document.createElement("span");
+                btnLimpiar.textContent = "Limpiar";
+                btnLimpiar.className = "flatpickr-clear-btn";
+                btnLimpiar.style.cssText = "color:#333;cursor:pointer;font-size:14px;";
+
+                btnHoy.addEventListener("click", () => instance.setDate(new Date()));
+                btnLimpiar.addEventListener("click", () => instance.clear());
+
+                const footer = document.createElement("div");
+                footer.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-top:1px solid #e6e6e6;margin-top:5px;";
+                footer.appendChild(btnLimpiar);
+                footer.appendChild(btnHoy);
+
+                instance.calendarContainer.appendChild(footer);
+            }
+        });
+    }
+
+    const btnAplicar = document.querySelector(".boton-aplicar-filtro");
+    if (btnAplicar) {
+        btnAplicar.addEventListener("click", function () {
+            const getFiltroSeleccionado = (nombreCategoria) => {
+                const categoria = Array.from(document.querySelectorAll(".categoria-filtro"))
+                    .find(cat => cat.querySelector(".categoria-header span")?.textContent.trim() === nombreCategoria);
+                const activa = categoria?.querySelector(".opcion-filtro.activa");
+                return activa?.textContent.trim() || "";
+            };
+
+            const estado = getFiltroSeleccionado("Estado");
+            const tipo = getFiltroSeleccionado("Tipo");
+            const mes = getFiltroSeleccionado("Mes");
+            const año = getFiltroSeleccionado("Año");
+
+            const fechaReg = document.querySelector("#fecha-registro input")?._flatpickr?.selectedDates?.[0];
+            const fechaSol = document.querySelector("#fecha-solucion input")?._flatpickr?.selectedDates?.[0];
+
+            const mesSel = !!mes;
+            const añoSel = !!año;
+            const fechaRegSel = !!fechaReg;
+            const fechaSolSel = !!fechaSol;
+
+            const invalido =
+                (mesSel && fechaRegSel) ||
+                (mesSel && fechaSolSel) ||
+                (añoSel && fechaRegSel && fechaSolSel) ||
+                (mesSel && añoSel && fechaRegSel) ||
+                (mesSel && añoSel && fechaSolSel);
+
+            if (invalido) {
+                console.log("❌ Combinación inválida: no se puede filtrar con fechas y mes/año al mismo tiempo.");
+                return;
+            }
+
+            const filtrados = reportesDummy.filter(rep => {
+                const estadoRep = rep.fechaSol ? "Solucionado" : "Pendiente";
+
+                const cumpleEstado = !estado || estadoRep === estado;
+                const cumpleTipo = !tipo || rep.tipo === tipo;
+
+                let cumpleMes = true;
+                let cumpleAño = true;
+                if (mesSel || añoSel) {
+                    const [añoReg, mesReg] = rep.fechaReg.split("-").map(Number);
+                    if (mesSel) {
+                        const numMes = convertirMesANumero(mes);
+                        cumpleMes = mesReg === numMes;
+                    }
+                    if (añoSel) {
+                        cumpleAño = añoReg === parseInt(año);
+                    }
+                }
+
+                const cumpleFechaReg = fechaRegSel ? rep.fechaReg === formatoFecha(fechaReg) : true;
+                const cumpleFechaSol = fechaSolSel ? rep.fechaSol === formatoFecha(fechaSol) : true;
+
+                return cumpleEstado && cumpleTipo && cumpleMes && cumpleAño && cumpleFechaReg && cumpleFechaSol;
+            });
+
+            pintarReportes(filtrados);
+        });
+    }
+
+    function convertirMesANumero(mesTexto) {
+        const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        const index = meses.findIndex(m => m.toLowerCase() === mesTexto.toLowerCase());
+        return index + 1;
+    }
+
+    function formatoFecha(date) {
+        return date.toISOString().split("T")[0];
+    }
+});
+
+function ocultarFiltros() {
+    const filtroPanel = document.getElementById("filtro-lateral");
+    const botonFiltrar = document.getElementById("filter-btn");
+    const contenedorPrincipal = document.getElementById("contenedor-principal");
+
+    if (filtroPanel && botonFiltrar && contenedorPrincipal) {
+        filtroPanel.classList.remove("activo");
+        contenedorPrincipal.classList.remove("expandido");
+        botonFiltrar.style.display = "inline-block";
+    }
+}
 

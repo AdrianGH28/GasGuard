@@ -779,8 +779,6 @@ footer p {
 
 
 /*BARRA DE FILTROS*/
-
-
 .filter-reportes {
     display: inline-flex;
     align-items: center;
@@ -804,13 +802,339 @@ footer p {
     top: -3px;
   }
   
-  /* Subrayado solo para el texto */
-  .filter-reportes .underline-text {
-      text-decoration: underline;
-    }
+/* Subrayado solo para el texto */
+.filter-reportes .underline-text {
+    text-decoration: underline;
+}
 
-    .header-top i {
-        font-size: 24px; 
-        color:#ff0000
-    }
-    
+/* panel */
+.filtro-lateral {
+    position: fixed;
+    top: 65px; /* debajo del navbar */
+    right: 0;
+    width: 242px;
+    height: calc(100vh - 67px);
+    background: #FFF;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.filtro-lateral.activo {
+    transform: translateX(0);
+}
+
+.filtro-lateral {
+    overflow-y: auto;
+}
+
+/* === CONTENEDOR PRINCIPAL CON EMPUJE IZQUIERDO === */
+#contenedor-principal {
+    transition: width 0.3s ease, margin 0.3s ease;
+    width: 100%;
+    margin-right: 0;
+}
+
+#contenedor-principal.expandido {
+    width: calc(100% - 242px); /* el panel ocupa espacio */
+    margin-right: 0;
+}
+
+.filtro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filtro-titulo {
+    color: rgba(0, 0, 0, 0.42);
+    font-family: Montserrat;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.cerrar-filtro {
+    position: absolute;
+    top: 22px; 
+    right: 20px; /* completamente al borde derecho */
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.42);
+    cursor: pointer;
+}
+
+.linea-divisoria {
+    width: 212px;
+    height: 0.5px;
+    background: rgba(0, 0, 0, 0.25);
+    margin: 12px 0 30px;
+    flex-shrink: 0;
+}
+
+/* Contenedor de cada categoría */
+.categoria-filtro {
+    margin-bottom: 12px;
+}
+
+/* Header de cada categoría */
+.categoria-header {
+    display: inline-flex;
+    padding-right: 8px;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    width: 100%;
+    border-radius: 8px;
+    border-bottom: 1px solid #E6E6E6;
+    background: #FFF;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 6px 10px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #737373;
+    letter-spacing: 0.16px;
+    line-height: 20px;
+}
+
+/* Ícono de despliegue */
+.icono-dropdown {
+    transition: transform 0.3s ease;
+}
+
+/* Opciones desplegables (inicialmente ocultas) */
+.opciones-dropdown {
+    display: none;
+    margin-top: 10px;
+}
+
+/* Cuando se despliegan */
+.categoria-filtro.abierto .opciones-dropdown {
+    display: block;
+}
+
+.categoria-filtro.abierto .icono-dropdown {
+    transform: rotate(180deg);
+}
+
+/* Botón inferior */
+.boton-filtro-container {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.boton-aplicar-filtro {
+    width: 154px;
+    height: 34px;
+    border-radius: 5px;
+    border: 1px solid #F00;
+    background: #FFF;
+    color: #F00;
+    text-align: center;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    cursor: pointer;
+}
+
+/* Íconos rotatorios (triángulo) */
+.icono-dropdown {
+    transition: transform 0.3s ease;
+}
+
+/* Rota solo si está abierto */
+.categoria-filtro.abierto .icono-dropdown {
+    transform: rotate(180deg);
+}
+
+/* Ícono fijo (calendario) */
+.icono-fijo {
+    transition: none !important;
+    transform: none !important;
+}
+
+.contenido-filtros {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* empuja el botón hacia abajo */
+    height: 100%;
+}
+
+/* Contenedor de opciones */
+.contenedor-opciones {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 0px;
+    align-self: stretch;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    background: #FFF;
+}
+
+/* Opciones individuales */
+.opcion-filtro {
+    color: #484848;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.16px;
+    width: 100%;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+/* Hover en cada opción */
+.opcion-filtro:hover {
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.42);
+    background: rgba(0, 0, 0, 0.10);
+    font-weight: 600;
+}
+
+/* Hover normal solo si el grupo NO tiene una activa */
+.contenedor-opciones:not(.tiene-seleccion) .opcion-filtro:hover {
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.42);
+    background: rgba(0, 0, 0, 0.10);
+    font-weight: 600;
+}
+
+/* Hover bloqueado si ya hay una activa en el grupo */
+.contenedor-opciones.tiene-seleccion .opcion-filtro:hover {
+    background: transparent;
+    border: none;
+    font-weight: 400;
+    cursor: default;
+}
+
+/* Opción seleccionada: se queda con el estilo hover */
+.opcion-filtro.activa {
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.42);
+    background: rgba(0, 0, 0, 0.10);
+    font-weight: 600;
+}
+
+/* Ícono check a la derecha */
+.opcion-filtro.activa::after {
+    content: "\f00c";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.42);
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.busqueda-filtro {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.16px;
+    color: #484848;
+    background-color: transparent;
+    border: none;
+    border-radius: 8px;
+    border-bottom: 1px solid var(--Grey-Grey-90, #E6E6E6);
+    margin-bottom: 8px;
+    outline: none;
+}
+
+.busqueda-filtro::placeholder {
+    color: rgba(0, 0, 0, 0.42);
+}
+
+/* Campo de búsqueda dentro de filtros */
+.input-buscador-filtro {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    border-bottom: 1px solid var(--Grey-Grey-90, #E6E6E6);
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: Montserrat;
+    outline: none;
+    color: #484848;
+    margin-bottom: 8px;
+}
+
+/* Contenedor de opciones con scroll */
+.contenedor-opciones-scroll {
+    max-height: 130px; /* Aproximadamente 3 opciones visibles */
+    overflow-y: auto;
+}
+
+/* Scroll personalizado */
+.contenedor-opciones-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.contenedor-opciones-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+.contenedor-opciones-scroll::-webkit-scrollbar-thumb {
+    background-color: #FA0000;
+    border-radius: 10px;
+}
+
+.contenedor-limpiar-filtros {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    padding-left: 110px;
+}
+
+.btn-limpiar-filtros {
+    font-family: Montserrat;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.42);
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    text-decoration: underline;
+}
+
+
+.input-fecha-filtro {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: Montserrat;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    color: #484848;
+    background-color: #fff;
+}
+
+/* Ajusta los botones del footer si los usas */
+.flatpickr-today-btn,
+.flatpickr-clear-btn {
+    font-size: 12px !important;
+}
+
+.flatpickr-calendar {
+    transform: scale(0.85); /* Escala todo el calendario en tamaño */
+    transform-origin: top left; /* Para que no se desplace raro */
+    font-size: 14px !important;
+    max-width: 230px;
+    margin-bottom: -35px !important;
+}
+
