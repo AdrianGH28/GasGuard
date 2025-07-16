@@ -1560,6 +1560,8 @@ app.delete("/api/trabajadoresadmin/:idCliente", authorization.proteccion, async 
     }
 });
 
+//ANTIGUO POST SENSOR-VALUE
+/*
 app.post('/api/sensor-value', async (req, res) => {
     try {
         const { resistencia } = req.body;
@@ -1585,7 +1587,11 @@ app.post('/api/sensor-value', async (req, res) => {
         res.status(500).json({ status: 'Error', message: 'Error interno del servidor' });
     }
 });
+*/
 
+
+
+//LUCERO
 /*
 app.get('/api/sensor-value',  authorization.proteccion, async (req, res) => {
     const idUsuario = req.user.id_user;
@@ -1604,6 +1610,9 @@ app.get('/api/sensor-value',  authorization.proteccion, async (req, res) => {
     }
 });
 */
+
+//ANTIGUO SENSOR-VALUE
+/*
 app.get('/api/sensor-value', async (req, res) => {
 
     try {
@@ -1619,6 +1628,60 @@ app.get('/api/sensor-value', async (req, res) => {
         }
     } catch (error) {
         console.error('Error al obtener el valor del sensor:', error);
+        res.status(500).json({ status: 'Error', message: 'Error al obtener los datos del sensor' });
+    }
+});
+*/
+
+app.post('/api/sensor-value', async (req, res) => {
+    try {
+        const { resistencia, userId } = req.body;
+
+        if (typeof resistencia !== 'number' || typeof userId !== 'number') {
+            return res.status(400).json({ status: 'Error', message: 'Datos inválidos' });
+        }
+
+        const fechaActual = new Date();
+        const fecha = fechaActual.toISOString().split('T')[0];         // YYYY-MM-DD
+        const hora = fechaActual.toTimeString().split(' ')[0];         // HH:MM:SS
+        const des_reg = 'Lectura automática desde ESP32';
+
+        await pool.execute(
+            `INSERT INTO dregistro (fecha, hora, des_reg, resistencia, id_user)
+             VALUES (?, ?, ?, ?, ?)`,
+            [fecha, hora, des_reg, resistencia, userId]
+        );
+
+        res.status(200).json({ status: 'OK', message: 'Registro guardado exitosamente' });
+    } catch (error) {
+        console.error('Error al guardar el valor del sensor:', error);
+        res.status(500).json({ status: 'Error', message: 'Error interno del servidor' });
+    }
+});
+
+
+
+app.get('/api/sensor-value', authorization.proteccion, async (req, res) => {
+    const idUsuario = req.user.id_user;
+
+    try {
+        const [rows] = await pool.execute(
+            `SELECT resistencia, fecha, hora
+             FROM dregistro
+             WHERE id_user = ?
+             ORDER BY id_registro DESC
+             LIMIT 1`,
+            [idUsuario]
+        );
+
+        if (rows.length > 0) {
+            const { resistencia, fecha, hora } = rows[0];
+            res.json({ resistencia, fecha, hora });
+        } else {
+            res.json({ resistencia: null, fecha: null, hora: null });
+        }
+    } catch (error) {
+        console.error('Error al obtener los valores del sensor:', error);
         res.status(500).json({ status: 'Error', message: 'Error al obtener los datos del sensor' });
     }
 });
