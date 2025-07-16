@@ -61,9 +61,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        
         let grupoContenedores = null;
 
         reportes.forEach((reporte, index) => {
+              console.log(`📄 Reporte #${index + 1}:`, reporte);
+
+            const tipoReporte = parseInt(reporte.id_tireporte);
+            console.log("➡️ id_tireporte:", tipoReporte);
+
+             if (isNaN(tipoReporte)) {
+                 console.warn("❌ id_tireporte inválido. Verifica que venga en el JSON desde el backend.");
+                }
             if (index % 4 === 0) {
                 grupoContenedores = document.createElement("div");
                 grupoContenedores.classList.add("grupodetarjetas");
