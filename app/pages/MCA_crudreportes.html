@@ -388,7 +388,109 @@
                 </div>
             </div>
         </div>
-        
+        <div id="filtro-lateral" class="filtro-lateral">
+      <div class="contenido-filtros">
+        <div class="filtro-header">
+          <span class="filtro-titulo">Filtrar por:</span>
+          <i class="fa fa-times cerrar-filtro" onclick="ocultarFiltros()"></i>
+        </div>
+
+        <div class="linea-divisoria"></div>
+
+        <div class="contenedor-limpiar-filtros">
+          <button class="btn-limpiar-filtros" onclick="limpiarFiltros()">Limpiar filtros</button>
+        </div>
+
+        <!-- Estado -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Estado</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">Pendiente</div>
+              <div class="opcion-filtro">Solucionado</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Tipo</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">Instalación</div>
+              <div class="opcion-filtro">Reparación</div>
+              <div class="opcion-filtro">Retiro</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mes -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Mes</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">Enero</div>
+              <div class="opcion-filtro">Febrero</div>
+              <div class="opcion-filtro">Marzo</div>
+              <div class="opcion-filtro">Abril</div>
+              <div class="opcion-filtro">Mayo</div>
+              <div class="opcion-filtro">Junio</div>
+              <div class="opcion-filtro">Julio</div>
+              <div class="opcion-filtro">Agosto</div>
+              <div class="opcion-filtro">Septiembre</div>
+              <div class="opcion-filtro">Octubre</div>
+              <div class="opcion-filtro">Noviembre</div>
+              <div class="opcion-filtro">Diciembre</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Año -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Año</span><i class="fa fa-caret-down icono-dropdown"></i>
+          </div>
+          <div class="opciones-dropdown">
+            <div class="contenedor-opciones">
+              <div class="opcion-filtro">2025</div>
+              <div class="opcion-filtro">2024</div>
+              <div class="opcion-filtro">2023</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fecha registro -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Fecha de registro</span>
+            <i class="fa fa-calendar icono-fijo"></i>
+          </div>
+          <div class="opciones-dropdown"></div>
+        </div>
+
+        <!-- Fecha solución -->
+        <div class="categoria-filtro">
+          <div class="categoria-header" onclick="toggleDropdown(this)">
+            <span>Fecha de solución</span>
+            <i class="fa fa-calendar icono-fijo"></i>
+          </div>
+          <div class="opciones-dropdown contenedor-fecha-solucion"></div>
+        </div>
+
+        <div class="boton-filtro-container">
+          <button class="boton-aplicar-filtro">Filtrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="lista-reportes" class="lista-reportes"></div>
+  </div>
 
     </div>
 
