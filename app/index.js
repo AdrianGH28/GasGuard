@@ -430,6 +430,7 @@ app.post("/api/reporte-fuga", authorization.proteccion, async (req, res) => {
     }
 });
 
+/*
 // Ruta para obtener reportes generados por el usuario logueado
 app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => {
     try {
@@ -446,6 +447,40 @@ app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => 
                 id_reltecnico
             FROM mreporte
             WHERE id_user = ?
+        `, [id_user]);
+
+        if (rows.length === 0) {
+            return res.status(404).send({ status: "Error", message: "No se encontraron reportes." });
+        }
+
+        return res.send({ status: "ok", data: rows });
+
+    } catch (error) {
+        console.error("Error al obtener reportes:", error);
+        return res.status(500).send({ status: "Error", message: "Error al obtener reportes." });
+    }
+});
+*/
+
+// Ruta para obtener reportes generados por el usuario logueado, incluyendo tipo de reporte
+app.get("/api/reportes-afiliado", authorization.proteccion, async (req, res) => {
+    try {
+        const id_user = req.user.id_user;
+
+        const [rows] = await pool.execute(`
+            SELECT 
+                r.id_reporte,
+                r.nmticket_reporte,
+                r.estado_reporte,
+                r.descri_reporte,
+                DATE_FORMAT(r.fecini_reporte, '%Y-%m-%d') AS fecini_reporte,
+                DATE_FORMAT(r.fecfin_reporte, '%Y-%m-%d') AS fecfin_reporte,
+                r.id_reltecnico,
+                r.id_tireporte,
+                t.nom_tireporte
+            FROM mreporte r
+            JOIN ctiporeporte t ON r.id_tireporte = t.id_tireporte
+            WHERE r.id_user = ?
         `, [id_user]);
 
         if (rows.length === 0) {
