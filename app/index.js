@@ -1758,3 +1758,63 @@ app.get("/api/grafica-reportes", async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 });
+
+/*  Pendientes = asignados ‑ realizados  */
+app.get("/api/reportes-atendidos-tecnicos", async (req, res) => {
+  const rango = req.query.rango || "mes";
+  const inicio = getFechaInicio(rango);
+
+  try {
+    const [rows] = await pool.execute(
+      `SELECT 
+          t.id_user                 AS id_tecnico,
+          t.nom_user                AS tecnico,
+          COUNT(r.id_reporte)                       AS asignados,
+          SUM(r.estado_reporte = 'realizada')       AS realizados,
+          (COUNT(r.id_reporte) - 
+           SUM(r.estado_reporte = 'realizada'))     AS atendidos
+       FROM musuario t
+       LEFT JOIN mreporte r
+              ON r.id_reltecnico = t.id_user
+             AND r.fecini_reporte >= ?
+       WHERE t.rol_user = 'tecnico'
+       GROUP BY t.id_user, t.nom_user
+       ORDER BY atendidos DESC`,
+      [inicio]
+    );
+
+    res.json({ status: "ok", data: rows });
+  } catch (error) {
+    console.error("Error reportes atendidos:", error);
+    res.status(500).json({ status: "error", message: "Error interno" });
+  }
+});
+
+
+app.get("/api/reportes-realizados-tecnicos", async (req, res) => {
+  const rango = req.query.rango || "mes";
+  const inicio = getFechaInicio(rango);
+
+  try {
+    const [rows] = await pool.execute(
+      `SELECT 
+          t.id_user  AS id_tecnico,
+          t.nom_user AS tecnico,
+          COUNT(r.id_reporte) AS realizados
+       FROM musuario t
+       LEFT JOIN mreporte r
+              ON r.id_reltecnico = t.id_user
+             AND r.estado_reporte = 'realizada'
+             AND r.fecini_reporte >= ?
+       WHERE t.rol_user = 'tecnico'
+       GROUP BY t.id_user, t.nom_user
+       ORDER BY realizados DESC`,
+      [inicio]
+    );
+
+    res.json({ status: "ok", data: rows });
+  } catch (error) {
+    console.error("Error reportes realizados:", error);
+    res.status(500).json({ status: "error", message: "Error interno" });
+  }
+});
