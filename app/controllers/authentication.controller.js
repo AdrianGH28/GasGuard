@@ -1149,14 +1149,14 @@ async function repagoempresa(req, res) {
             );
             id_plan = insertResult.insertId;
         }
-        const cardpro = 4242;
+        const cardpro = '************4242';
         let id_pago;
         const [pagoResult] = await pool.execute('SELECT id_pago FROM dpago WHERE tipo_pago = ? AND nmcrd_pago = ? AND fecha_pago = ?', [typepago, cardpro, fechaInicio]);
         if (pagoResult.length > 0) {
             id_pago = pagoResult[0].id_pago;
         } else {
             const [insertResult] = await pool.execute(
-                'INSERT INTO id_pago (tipo_pago, nmcrd_pago, fecha_pago) VALUES (?, ?, ?)',
+                'INSERT INTO dpago (tipo_pago, nmcrd_pago, fecha_pago) VALUES (?, ?, ?)',
                 [typepago, cardpro, fechaInicio]
             );
             id_pago = insertResult.insertId;
@@ -1169,7 +1169,7 @@ async function repagoempresa(req, res) {
             id_fact = factResult[0].id_fact;
         } else {
             const [insertResult] = await pool.execute(
-                'INSERT INTO id_fact (folio_fact, id_pago) VALUES (?, ?)',
+                'INSERT INTO dfactura (folio_fact, id_pago) VALUES (?, ?)',
                 [folio_fact, id_pago]
             );
             id_fact = insertResult.insertId;
@@ -1178,7 +1178,7 @@ async function repagoempresa(req, res) {
         // Obtener o crear suscripción
 
         const [insertResult] = await pool.execute(
-            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_fact, id_plan) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO msuscripcion (fecini_susc, fecfin_susc, estado_susc, monto_susc, id_fact, id_plan) VALUES (?, ?, ?, ?, ?, ?)',
             [fechaInicio, fechaFinStr, estatus, monto,id_fact, id_plan]
         );
         const id_susc = insertResult.insertId;
